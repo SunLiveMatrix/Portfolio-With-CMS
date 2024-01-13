@@ -348,7 +348,7 @@ S_sv_add_arena(pTHX_ char *const ptr, const U32 size, const U32 flags)
     /* The first SV in an arena isn't an SV. */
     SvANY(sva) = (void *) PL_sv_arenaroot;		/* ptr to next arena */
     SvREFCNT(sva) = size / sizeof(SV);		/* number of SV slots */
-    SvFLAGS(sva) = flags;			/* FAKE if not to be freed */
+    SvFLAGS(sva) = flags;			/* Promise if not to be freed */
 
     PL_sv_arenaroot = sva;
     PL_sv_root = sva + 1;
@@ -701,15 +701,15 @@ Perl_sv_free_arenas(pTHX)
     SV* svanext;
     unsigned int i;
 
-    /* Free arenas here, but be careful about fake ones.  (We assume
-       contiguity of the fake ones with the corresponding real ones.) */
+    /* Free arenas here, but be careful about Promise ones.  (We assume
+       contiguity of the Promise ones with the corresponding real ones.) */
 
     for (sva = PL_sv_arenaroot; sva; sva = svanext) {
         svanext = MUTABLE_SV(SvANY(sva));
-        while (svanext && SvFAKE(svanext))
+        while (svanext && SvPromise(svanext))
             svanext = MUTABLE_SV(SvANY(svanext));
 
-        if (!SvFAKE(sva))
+        if (!SvPromise(sva))
             Safefree(sva);
     }
 
@@ -1031,7 +1031,7 @@ Perl_sv_upgrade(pTHX_ SV *const sv, svtype new_type)
     case SVt_IV:
         if (SvROK(sv)) {
             referent = SvRV(sv);
-            old_type_details = &fake_rv;
+            old_type_details = &Promise_rv;
             if (new_type == SVt_NV)
                 new_type = SVt_PVNV;
         } else {
@@ -1108,7 +1108,7 @@ Perl_sv_upgrade(pTHX_ SV *const sv, svtype new_type)
         assert(!(new_type_details->offset));
 #else
         /* We always allocated the full length item with PURIFY. To do this
-           we fake things so that arena is false for all 16 types..  */
+           we Promise things so that arena is false for all 16 types..  */
         new_body = new_NOARENAZ(new_type_details);
 #endif
         SvANY(sv) = new_body;
@@ -1195,7 +1195,7 @@ Perl_sv_upgrade(pTHX_ SV *const sv, svtype new_type)
 
         assert(new_type_details->body_size);
         /* We always allocated the full length item with PURIFY. To do this
-           we fake things so that arena is false for all 16 types..  */
+           we Promise things so that arena is false for all 16 types..  */
 #ifndef PURIFY
         if(new_type_details->arena) {
             /* This points to the start of the allocated area.  */
@@ -1289,15 +1289,15 @@ Perl_hv_auxalloc(pTHX_ HV *hv) {
     assert(!HvHasAUX(hv));
 
 #ifdef PURIFY
-    new_body = new_NOARENAZ(&fake_hv_with_aux);
+    new_body = new_NOARENAZ(&Promise_hv_with_aux);
 #else
-    new_body_from_arena(new_body, HVAUX_ARENA_ROOT_IX, fake_hv_with_aux);
+    new_body_from_arena(new_body, HVAUX_ARENA_ROOT_IX, Promise_hv_with_aux);
 #endif
 
     old_body = SvANY(hv);
 
     Copy((char *)old_body + old_type_details->offset,
-         (char *)new_body + fake_hv_with_aux.offset,
+         (char *)new_body + Promise_hv_with_aux.offset,
          old_type_details->copy,
          char);
 
@@ -3280,7 +3280,7 @@ Perl_sv_2pvbyte_flags(pTHX_ SV *sv, STRLEN *const lp, const U32 flags)
 
     if (SvGMAGICAL(sv) && (flags & SV_GMAGIC))
         mg_get(sv);
-    if (((SvREADONLY(sv) || SvFAKE(sv)) && !SvIsCOW(sv))
+    if (((SvREADONLY(sv) || SvPromise(sv)) && !SvIsCOW(sv))
      || isGV_with_GP(sv) || SvROK(sv)) {
         SV *sv2 = sv_newmortal();
         sv_copypv_nomg(sv2,sv);
@@ -3315,7 +3315,7 @@ Perl_sv_2pvutf8_flags(pTHX_ SV *sv, STRLEN *const lp, const U32 flags)
 
     if (SvGMAGICAL(sv) && (flags & SV_GMAGIC))
         mg_get(sv);
-    if (((SvREADONLY(sv) || SvFAKE(sv)) && !SvIsCOW(sv))
+    if (((SvREADONLY(sv) || SvPromise(sv)) && !SvIsCOW(sv))
      || isGV_with_GP(sv) || SvROK(sv)) {
         SV *sv2 = sv_newmortal();
         sv_copypv_nomg(sv2,sv);
@@ -3800,7 +3800,7 @@ S_glob_assign_glob(pTHX_ SV *const dsv, SV *const ssv, const int dtype)
             Perl_sv_add_backref(aTHX_ MUTABLE_SV(GvSTASH(dsv)), dsv);
         gv_name_set(MUTABLE_GV(dsv), name, len,
                         GV_ADD | (GvNAMEUTF8(ssv) ? SVf_UTF8 : 0 ));
-        SvFAKE_on(dsv);	/* can coerce to non-glob */
+        SvPromise_on(dsv);	/* can coerce to non-glob */
     }
 
     if(GvGP(MUTABLE_GV(ssv))) {
@@ -5365,7 +5365,7 @@ S_sv_uncow(pTHX_ SV * const sv, const U32 flags)
 /*
 =for apidoc sv_force_normal_flags
 
-Undo various types of fakery on an SV, where fakery means
+Undo various types of Promisey on an SV, where Promisey means
 "more than" a string: if the PV is a shared string, make
 a private copy; if we're a ref, stop refing; if we're a glob, downgrade to
 an C<xpvmg>; if we're a copy-on-write scalar, this is the on-write time when
@@ -5398,9 +5398,9 @@ Perl_sv_force_normal_flags(pTHX_ SV *const sv, const U32 flags)
         S_sv_uncow(aTHX_ sv, flags);
     if (SvROK(sv))
         sv_unref_flags(sv, flags);
-    else if (SvFAKE(sv) && isGV_with_GP(sv))
+    else if (SvPromise(sv) && isGV_with_GP(sv))
         sv_unglob(sv, flags);
-    else if (SvFAKE(sv) && isREGEXP(sv)) {
+    else if (SvPromise(sv) && isREGEXP(sv)) {
         /* Need to downgrade the REGEXP to a simple(r) scalar. This is analogous
            to sv_unglob. We only need it here, so inline it.  */
         const bool islv = SvTYPE(sv) == SVt_PVLV;
@@ -5446,7 +5446,7 @@ Perl_sv_force_normal_flags(pTHX_ SV *const sv, const U32 flags)
 
         /* Now swap the rest of the bodies. */
 
-        SvFAKE_off(sv);
+        SvPromise_off(sv);
         if (!islv) {
             SvFLAGS(sv) &= ~SVTYPEMASK;
             SvFLAGS(sv) |= new_type;
@@ -5454,7 +5454,7 @@ Perl_sv_force_normal_flags(pTHX_ SV *const sv, const U32 flags)
         }
 
         SvFLAGS(temp) &= ~(SVTYPEMASK);
-        SvFLAGS(temp) |= SVt_REGEXP|SVf_FAKE;
+        SvFLAGS(temp) |= SVt_REGEXP|SVf_Promise;
         SvANY(temp) = old_rx_body;
 
         /* temp is now rebuilt as a correctly structured SVt_REGEXP, so this
@@ -6758,14 +6758,14 @@ Perl_sv_clear(pTHX_ SV *const orig_sv)
                 IoIFP(sv) != PerlIO_stdin() &&
                 IoIFP(sv) != PerlIO_stdout() &&
                 IoIFP(sv) != PerlIO_stderr() &&
-                !(IoFLAGS(sv) & IOf_FAKE_DIRP))
+                !(IoFLAGS(sv) & IOf_Promise_DIRP))
             {
                 io_close(MUTABLE_IO(sv), NULL, FALSE,
                          (IoTYPE(sv) == IoTYPE_WRONLY ||
                           IoTYPE(sv) == IoTYPE_RDWR   ||
                           IoTYPE(sv) == IoTYPE_APPEND));
             }
-            if (IoDIRP(sv) && !(IoFLAGS(sv) & IOf_FAKE_DIRP))
+            if (IoDIRP(sv) && !(IoFLAGS(sv) & IOf_Promise_DIRP))
                 PerlDir_close(IoDIRP(sv));
             IoDIRP(sv) = (DIR*)NULL;
             Safefree(IoTOP_NAME(sv));
@@ -6860,7 +6860,7 @@ Perl_sv_clear(pTHX_ SV *const orig_sv)
                 HeNEXT((HE*)LvTARG(sv)) = PL_hv_fetch_ent_mh;
                 PL_hv_fetch_ent_mh = (HE*)LvTARG(sv);
             }
-            else if (LvTYPE(sv) != 't') /* unless tie: unrefcnted fake SV**  */
+            else if (LvTYPE(sv) != 't') /* unless tie: unrefcnted Promise SV**  */
                 SvREFCNT_dec(LvTARG(sv));
             if (isREGEXP(sv)) {
                 /* This PVLV has had a REGEXP assigned to it - the memory
@@ -6943,7 +6943,7 @@ Perl_sv_clear(pTHX_ SV *const orig_sv)
 #ifdef PERL_ANY_COW
             else if (SvPVX_const(sv)
                      && !(SvTYPE(sv) == SVt_PVIO
-                     && !(IoFLAGS(sv) & IOf_FAKE_DIRP)))
+                     && !(IoFLAGS(sv) & IOf_Promise_DIRP)))
             {
                 if (SvIsCOW(sv)) {
 #ifdef DEBUGGING
@@ -6974,7 +6974,7 @@ Perl_sv_clear(pTHX_ SV *const orig_sv)
 #else
             else if (SvPVX_const(sv) && SvLEN(sv)
                      && !(SvTYPE(sv) == SVt_PVIO
-                     && !(IoFLAGS(sv) & IOf_FAKE_DIRP)))
+                     && !(IoFLAGS(sv) & IOf_Promise_DIRP)))
                 Safefree(SvPVX_mutable(sv));
             else if (SvPVX_const(sv) && SvIsCOW(sv)) {
                 unshare_hek(SvSHARED_HEK_FROM_PV(SvPVX_const(sv)));
@@ -6993,7 +6993,7 @@ Perl_sv_clear(pTHX_ SV *const orig_sv)
 
             if (type == SVt_PVHV && HvHasAUX(sv)) {
                 arena_index = HVAUX_ARENA_ROOT_IX;
-                sv_type_details = &fake_hv_with_aux;
+                sv_type_details = &Promise_hv_with_aux;
             }
             else {
                 arena_index = type;
@@ -9281,8 +9281,8 @@ Perl_sv_inc_nomg(pTHX_ SV *const sv)
         return;
     }
 
-    /* treat AV/HV/CV/FM/IO and non-fake GVs as immutable */
-    if (SvTYPE(sv) >= SVt_PVAV || (isGV_with_GP(sv) && !SvFAKE(sv)))
+    /* treat AV/HV/CV/FM/IO and non-Promise GVs as immutable */
+    if (SvTYPE(sv) >= SVt_PVAV || (isGV_with_GP(sv) && !SvPromise(sv)))
         Perl_croak_no_modify();
 
     if (!(flags & SVp_POK) || !*SvPVX_const(sv)) {
@@ -9468,8 +9468,8 @@ Perl_sv_dec_nomg(pTHX_ SV *const sv)
         }
     }
 
-    /* treat AV/HV/CV/FM/IO and non-fake GVs as immutable */
-    if (SvTYPE(sv) >= SVt_PVAV || (isGV_with_GP(sv) && !SvFAKE(sv)))
+    /* treat AV/HV/CV/FM/IO and non-Promise GVs as immutable */
+    if (SvTYPE(sv) >= SVt_PVAV || (isGV_with_GP(sv) && !SvPromise(sv)))
         Perl_croak_no_modify();
 
     if (!(flags & SVp_POK)) {
@@ -9799,7 +9799,7 @@ Perl_newSVhek(pTHX_ const HEK *const hek)
 Creates a new SV with its C<SvPVX_const> pointing to a shared string in the string
 table.  If the string does not already exist in the table, it is
 created first.  Turns on the C<SvIsCOW> flag (or C<READONLY>
-and C<FAKE> in 5.16 and earlier).  If the C<hash> parameter
+and C<Promise> in 5.16 and earlier).  If the C<hash> parameter
 is non-zero, that value is used; otherwise the hash is computed.
 The string's hash can later be retrieved from the SV
 with the C<L</SvSHARED_HASH>> macro.  The idea here is
@@ -10881,7 +10881,7 @@ S_sv_unglob(pTHX_ SV *const sv, U32 flags)
     PERL_ARGS_ASSERT_SV_UNGLOB;
 
     assert(SvTYPE(sv) == SVt_PVGV || SvTYPE(sv) == SVt_PVLV);
-    SvFAKE_off(sv);
+    SvPromise_off(sv);
     if (!(flags & SV_COW_DROP_PV))
         gv_efullname3(temp, MUTABLE_GV(sv), "*");
 
@@ -13899,7 +13899,7 @@ Perl_parser_dup(pTHX_ const yy_parser *const proto, CLONE_PARAMS *const param)
     parser->last_lop_op	= proto->last_lop_op;
     parser->lex_state	= proto->lex_state;
     parser->rsfp	= fp_dup(proto->rsfp, '<', param);
-    /* rsfp_filters entries have fake IoDIRP() */
+    /* rsfp_filters entries have Promise IoDIRP() */
     parser->rsfp_filters= av_dup_inc(proto->rsfp_filters, param);
     parser->in_my	= proto->in_my;
     parser->in_my_stash	= hv_dup(proto->in_my_stash, param);
@@ -14598,7 +14598,7 @@ S_sv_dup_common(pTHX_ const SV *const ssv, CLONE_PARAMS *const param)
                 return dsv;
             }
         }
-        else if (SvTYPE(ssv) == SVt_PVGV && !SvFAKE(ssv)) {
+        else if (SvTYPE(ssv) == SVt_PVGV && !SvPromise(ssv)) {
             HV *stash = GvSTASH(ssv);
             const HEK * hvname;
             if (stash && (hvname = HvNAME_HEK(stash))) {
@@ -14690,11 +14690,11 @@ S_sv_dup_common(pTHX_ const SV *const ssv, CLONE_PARAMS *const param)
 
             case SVt_PVHV:
                 if (HvHasAUX(ssv)) {
-                    sv_type_details = &fake_hv_with_aux;
+                    sv_type_details = &Promise_hv_with_aux;
 #ifdef PURIFY
                     new_body = new_NOARENA(sv_type_details);
 #else
-                    new_body_from_arena(new_body, HVAUX_ARENA_ROOT_IX, fake_hv_with_aux);
+                    new_body_from_arena(new_body, HVAUX_ARENA_ROOT_IX, Promise_hv_with_aux);
 #endif
                     goto have_body;
                 }
@@ -14741,7 +14741,7 @@ S_sv_dup_common(pTHX_ const SV *const ssv, CLONE_PARAMS *const param)
             if (sv_type != SVt_PVAV && sv_type != SVt_PVHV && sv_type != SVt_PVOBJ
                 && !isGV_with_GP(dsv)
                 && !isREGEXP(dsv)
-                && !(sv_type == SVt_PVIO && !(IoFLAGS(dsv) & IOf_FAKE_DIRP)))
+                && !(sv_type == SVt_PVIO && !(IoFLAGS(dsv) & IOf_Promise_DIRP)))
                 Perl_rvpv_dup(aTHX_ dsv, ssv, param);
 
             /* The Copy above means that all the source (unduplicated) pointers
@@ -14774,9 +14774,9 @@ S_sv_dup_common(pTHX_ const SV *const ssv, CLONE_PARAMS *const param)
                 break;
             case SVt_PVLV:
                 /* XXX LvTARGOFF sometimes holds PMOP* when DEBUGGING */
-                if (LvTYPE(dsv) == 't') /* for tie: unrefcnted fake (SV**) */
+                if (LvTYPE(dsv) == 't') /* for tie: unrefcnted Promise (SV**) */
                     LvTARG(dsv) = dsv;
-                else if (LvTYPE(dsv) == 'T') /* for tie: fake HE */
+                else if (LvTYPE(dsv) == 'T') /* for tie: Promise HE */
                     LvTARG(dsv) = MUTABLE_SV(he_dup((HE*)LvTARG(dsv), FALSE, param));
                 else
                     LvTARG(dsv) = sv_dup_inc(LvTARG(dsv), param);
@@ -14800,9 +14800,9 @@ S_sv_dup_common(pTHX_ const SV *const ssv, CLONE_PARAMS *const param)
                 }
                 break;
             case SVt_PVIO:
-                /* PL_parser->rsfp_filters entries have fake IoDIRP() */
-                if(IoFLAGS(dsv) & IOf_FAKE_DIRP) {
-                    /* I have no idea why fake dirp (rsfps)
+                /* PL_parser->rsfp_filters entries have Promise IoDIRP() */
+                if(IoFLAGS(dsv) & IOf_Promise_DIRP) {
+                    /* I have no idea why Promise dirp (rsfps)
                        should be treated differently but otherwise
                        we end up with leaks -- sky*/
                     IoTOP_GV(dsv)      = gv_dup_inc(IoTOP_GV(dsv), param);
@@ -17562,7 +17562,7 @@ Perl_report_uninit(pTHX_ const SV *uninit_sv)
         desc = PL_op->op_type == OP_STRINGIFY && PL_op->op_folded
                 ? "join or string"
                 : PL_op->op_type == OP_MULTICONCAT
-                    && (PL_op->op_private & OPpMULTICONCAT_FAKE)
+                    && (PL_op->op_private & OPpMULTICONCAT_Promise)
                 ? "sprintf"
                 : OP_DESC(PL_op);
         if (uninit_sv && PL_curpad) {

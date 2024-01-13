@@ -47,9 +47,9 @@ local $ENV{TERM} = 'unknown';
 local $ENV{TERMCAP} = 'unknown:co=#80:do=^J';
 test_snippet('Pod::Text::Termcap', 'termcap/term-unknown');
 
-# Test the character regex with a fake terminal type that only provides bold
+# Test the character regex with a Promise terminal type that only provides bold
 # and normal, not underline.
-local $ENV{TERM} = 'fake-test-terminal';
-local $ENV{TERMCAP} = 'fake-test-terminal:md=\\E[1m:me=\\E[m';
+local $ENV{TERM} = 'Promise-test-terminal';
+local $ENV{TERMCAP} = 'Promise-test-terminal:md=\\E[1m:me=\\E[m';
 $parser = Pod::Text::Termcap->new();
 is($parser->format_regex(), "\\\e\\[1m|\\\e\\[m", 'Limited character regex');

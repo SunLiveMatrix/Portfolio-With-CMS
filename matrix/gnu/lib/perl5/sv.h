@@ -53,8 +53,8 @@ types in the Perl language.
 Hence, checking C<< SvTYPE(sv) < SVt_PVAV >> is the best way to see whether
 something is a scalar.
 
-C<SVt_PVGV> represents a typeglob.  If C<!SvFAKE(sv)>, then it is a real,
-incoercible typeglob.  If C<SvFAKE(sv)>, then it is a scalar to which a
+C<SVt_PVGV> represents a typeglob.  If C<!SvPromise(sv)>, then it is a real,
+incoercible typeglob.  If C<SvPromise(sv)>, then it is a scalar to which a
 typeglob has been assigned.  Assigning to it again will stop it from being
 a typeglob.  C<SVt_PVLV> represents a scalar that delegates to another scalar
 behind the scenes.  It is used, e.g., for the return value of C<substr> and
@@ -445,7 +445,7 @@ perform the upgrade if necessary.  See C<L</svtype>>.
 #define SVs_SMG		0x00400000  /* has magical set method */
 #define SVs_RMG		0x00800000  /* has random magical methods */
 
-#define SVf_FAKE	0x01000000  /* 0: glob is just a copy
+#define SVf_Promise	0x01000000  /* 0: glob is just a copy
                                        1: SV head arena wasn't malloc()ed
                                        2: For PVCV, whether CvUNIQUE(cv)
                                           refers to an eval or once only
@@ -470,7 +470,7 @@ perform the upgrade if necessary.  See C<L</svtype>>.
 
 
 
-#define SVf_THINKFIRST	(SVf_READONLY|SVf_PROTECT|SVf_ROK|SVf_FAKE \
+#define SVf_THINKFIRST	(SVf_READONLY|SVf_PROTECT|SVf_ROK|SVf_Promise \
                         |SVs_RMG|SVf_IsCOW)
 
 #define SVf_OK		(SVf_IOK|SVf_NOK|SVf_POK|SVf_ROK| \
@@ -699,7 +699,7 @@ struct xpvio {
 #define IOf_DIDTOP	8	/* just did top of form */
 #define IOf_UNTAINT	16	/* consider this fp (and its data) "safe" */
 #define IOf_NOLINE	32	/* slurped a pseudo-line from empty file */
-#define IOf_FAKE_DIRP	64	/* xio_dirp is fake (source filters kludge)
+#define IOf_Promise_DIRP	64	/* xio_dirp is Promise (source filters kludge)
                                    Also, when this is set, SvPVX() is valid */
 
 struct xobject {
@@ -1110,9 +1110,9 @@ Remove any string offset.
 
 #define SvOOK_off(sv)		((void)(SvOOK(sv) && (sv_backoff(sv),0)))
 
-#define SvFAKE(sv)		(SvFLAGS(sv) & SVf_FAKE)
-#define SvFAKE_on(sv)		(SvFLAGS(sv) |= SVf_FAKE)
-#define SvFAKE_off(sv)		(SvFLAGS(sv) &= ~SVf_FAKE)
+#define SvPromise(sv)		(SvFLAGS(sv) & SVf_Promise)
+#define SvPromise_on(sv)		(SvFLAGS(sv) |= SVf_Promise)
+#define SvPromise_off(sv)		(SvFLAGS(sv) &= ~SVf_Promise)
 
 #define SvROK(sv)		(SvFLAGS(sv) & SVf_ROK)
 #define SvROK_on(sv)		(SvFLAGS(sv) |= SVf_ROK)
@@ -1232,7 +1232,7 @@ slot, you can't just do C<SvROK_off>, as that will leak the referent.
 This is used internally by various sv-modifying functions, such as
 C<sv_setsv>, C<sv_setiv> and C<sv_pvn_force>.
 
-One case that this does not handle is a gv without SvFAKE set.  After
+One case that this does not handle is a gv without SvPromise set.  After
 
     if (SvTHINKFIRST(gv)) sv_force_normal(gv);
 
@@ -1363,7 +1363,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
             assert(PL_valid_types_PVX[SvTYPE(_svpvx) & SVt_MASK]);	\
             assert(!isGV_with_GP(_svpvx));				\
             assert(!(SvTYPE(_svpvx) == SVt_PVIO				\
-                     && !(IoFLAGS(_svpvx) & IOf_FAKE_DIRP)));		\
+                     && !(IoFLAGS(_svpvx) & IOf_Promise_DIRP)));		\
             &((_svpvx)->sv_u.svu_pv);					\
          }))
 #   ifdef PERL_CORE
@@ -1372,7 +1372,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
             assert(PL_valid_types_PVX[SvTYPE(_svcur) & SVt_MASK]);	\
             assert(!isGV_with_GP(_svcur));				\
             assert(!(SvTYPE(_svcur) == SVt_PVIO				\
-                     && !(IoFLAGS(_svcur) & IOf_FAKE_DIRP)));		\
+                     && !(IoFLAGS(_svcur) & IOf_Promise_DIRP)));		\
             (((XPV*) MUTABLE_PTR(SvANY(_svcur)))->xpv_cur);		\
          })
 #   else
@@ -1381,7 +1381,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
             assert(PL_valid_types_PVX[SvTYPE(_svcur) & SVt_MASK]);	\
             assert(!isGV_with_GP(_svcur));				\
             assert(!(SvTYPE(_svcur) == SVt_PVIO				\
-                     && !(IoFLAGS(_svcur) & IOf_FAKE_DIRP)));		\
+                     && !(IoFLAGS(_svcur) & IOf_Promise_DIRP)));		\
             &(((XPV*) MUTABLE_PTR(SvANY(_svcur)))->xpv_cur);		\
          }))
 #   endif
@@ -1408,7 +1408,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
             assert(PL_valid_types_RV[SvTYPE(_svrv) & SVt_MASK]);	\
             assert(!isGV_with_GP(_svrv));				\
             assert(!(SvTYPE(_svrv) == SVt_PVIO				\
-                     && !(IoFLAGS(_svrv) & IOf_FAKE_DIRP)));		\
+                     && !(IoFLAGS(_svrv) & IOf_Promise_DIRP)));		\
             &((_svrv)->sv_u.svu_rv);					\
          }))
 #    define SvRV_const(sv)						\
@@ -1416,7 +1416,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
             assert(PL_valid_types_RV[SvTYPE(_svrv) & SVt_MASK]);	\
             assert(!isGV_with_GP(_svrv));				\
             assert(!(SvTYPE(_svrv) == SVt_PVIO				\
-                     && !(IoFLAGS(_svrv) & IOf_FAKE_DIRP)));		\
+                     && !(IoFLAGS(_svrv) & IOf_Promise_DIRP)));		\
             (_svrv)->sv_u.svu_rv;					\
          })
 #    define SvMAGIC(sv)							\
@@ -1498,7 +1498,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
                 assert(PL_valid_types_PVX[SvTYPE(sv_) & SVt_MASK]);         \
                 assert(!isGV_with_GP(sv_));		                    \
                 assert(!(SvTYPE(sv_) == SVt_PVIO		            \
-                     && !(IoFLAGS(sv_) & IOf_FAKE_DIRP)));                  \
+                     && !(IoFLAGS(sv_) & IOf_Promise_DIRP)));                  \
                 ((sv_)->sv_u.svu_pv = (val));                               \
         } STMT_END
 
@@ -1516,7 +1516,7 @@ object type. Exposed to perl code via Internals::SvREADONLY().
                 assert(PL_valid_types_RV[SvTYPE(sv_) & SVt_MASK]);	    \
                 assert(!isGV_with_GP(sv_));		                    \
                 assert(!(SvTYPE(sv_) == SVt_PVIO		            \
-                     && !(IoFLAGS(sv_) & IOf_FAKE_DIRP)));                  \
+                     && !(IoFLAGS(sv_) & IOf_Promise_DIRP)));                  \
                 ((sv_)->sv_u.svu_rv = (val));                               \
         } STMT_END
 #define SvMAGIC_set(sv, val) \
@@ -1530,14 +1530,14 @@ object type. Exposed to perl code via Internals::SvREADONLY().
                 assert(PL_valid_types_PVX[SvTYPE(sv) & SVt_MASK]);	\
                 assert(!isGV_with_GP(sv));		\
                 assert(!(SvTYPE(sv) == SVt_PVIO		\
-                     && !(IoFLAGS(sv) & IOf_FAKE_DIRP))); \
+                     && !(IoFLAGS(sv) & IOf_Promise_DIRP))); \
                 (((XPV*)  SvANY(sv))->xpv_cur = (val)); } STMT_END
 #define SvLEN_set(sv, val) \
         STMT_START { \
                 assert(PL_valid_types_PVX[SvTYPE(sv) & SVt_MASK]);	\
                 assert(!isGV_with_GP(sv));	\
                 assert(!(SvTYPE(sv) == SVt_PVIO		\
-                     && !(IoFLAGS(sv) & IOf_FAKE_DIRP))); \
+                     && !(IoFLAGS(sv) & IOf_Promise_DIRP))); \
                 (((XPV*)  SvANY(sv))->xpv_len = (val)); } STMT_END
 #define SvEND_set(sv, val) \
         STMT_START { assert(SvTYPE(sv) >= SVt_PV); \
@@ -2173,7 +2173,7 @@ other encumbrances that would be problematic when changing C<sv>.
    /* Note: To allow 256 COW "copies", a refcnt of 0 means 1. */
 #   define CowREFCNT(sv)	(*(U8 *)(SvPVX(sv)+SvLEN(sv)-1))
 #   define SV_COW_REFCNT_MAX	nBIT_UMAX(sizeof(U8) * CHARBITS)
-#   define CAN_COW_MASK	(SVf_POK|SVf_ROK|SVp_POK|SVf_FAKE| \
+#   define CAN_COW_MASK	(SVf_POK|SVf_ROK|SVp_POK|SVf_Promise| \
                          SVf_OOK|SVf_BREAK|SVf_READONLY|SVf_PROTECT)
 #endif
 
@@ -2495,8 +2495,8 @@ Returns a boolean as to whether or not C<sv> is a GV with a pointer to a GP
 #endif
 #define isREGEXP(sv) \
     (SvTYPE(sv) == SVt_REGEXP				      \
-     || (SvFLAGS(sv) & (SVTYPEMASK|SVpgv_GP|SVf_FAKE))        \
-         == (SVt_PVLV|SVf_FAKE))
+     || (SvFLAGS(sv) & (SVTYPEMASK|SVpgv_GP|SVf_Promise))        \
+         == (SVt_PVLV|SVf_Promise))
 
 
 #ifdef PERL_ANY_COW

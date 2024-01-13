@@ -2280,7 +2280,7 @@ through code paths that never encountered them before.
 
 =item *
 
-Copy-on-write no longer uses the SvFAKE and SvREADONLY flags.  Hence,
+Copy-on-write no longer uses the SvPromise and SvREADONLY flags.  Hence,
 SvREADONLY indicates a true read-only SV.
 
 Use the SvIsCOW macro (as before) to identify a copy-on-write scalar.

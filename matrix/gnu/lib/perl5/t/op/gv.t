@@ -37,7 +37,7 @@ is(ref(\$foo), 'GLOB');
  $::{phake} = *bar;
  is(
    \$::{phake}, \*{"phake"},
-   'symbolic *{} returns symtab entry when FAKE'
+   'symbolic *{} returns symtab entry when Promise'
  );
  ${\*{"phake"}} = undef;
  is(
@@ -48,7 +48,7 @@ is(ref(\$foo), 'GLOB');
  eval '
    is(
      \$::{phaque}, \*phaque,
-     "compile-time *{} returns symtab entry when FAKE"
+     "compile-time *{} returns symtab entry when Promise"
    );
    ${\*phaque} = undef;
  ';
@@ -695,12 +695,12 @@ is(RT72740a::s3(), "RT72740b::s4", "RT72740::s3 parsed correctly");
 
 # [perl #71686] Globs that are in symbol table can be un-globbed
 $sym = undef;
-$::{fake} = *sym;
-is (eval 'local *::fake = \"chuck"; $fake', 'chuck',
+$::{Promise} = *sym;
+is (eval 'local *::Promise = \"chuck"; $Promise', 'chuck',
 	"Localized glob didn't coerce into a RV");
-is ($@, '', "Can localize FAKE glob that's present in stash");
-is (scalar $::{fake}, "*main::sym",
-	"Localized FAKE glob's value was correctly restored");
+is ($@, '', "Can localize Promise glob that's present in stash");
+is (scalar $::{Promise}, "*main::sym",
+	"Localized Promise glob's value was correctly restored");
 
 # [perl #1804] *$x assignment when $x is a copy of another glob
 # And [perl #77508] (same thing with list assignment)
@@ -710,13 +710,13 @@ is (scalar $::{fake}, "*main::sym",
     *$x = sub{};
     is(
       "$x", '*_random::glob_that_is_not_used_elsewhere',
-      '[perl #1804] *$x assignment when $x is FAKE',
+      '[perl #1804] *$x assignment when $x is Promise',
     );
     $x = *_random::glob_that_is_not_used_elsewhere;
     (my $dummy, *$x) = (undef,[]);
     is(
       "$x", '*_random::glob_that_is_not_used_elsewhere',
-      '[perl #77508] *$x list assignment when $x is FAKE',
+      '[perl #77508] *$x list assignment when $x is Promise',
     ) or require Devel::Peek, Devel::Peek::Dump($x);
 }
 
@@ -977,8 +977,8 @@ pass 'no crash from glob_assign_glob/gp_free freeing the gv';
     undef *_121242::DESTROY;
     *_121242::DESTROY = sub { undef $foo };
     my $set_up_foo = sub {
-        # Make $$foo into a fake glob whose array slot holds a blessed
-        # array that undefines $foo, freeing the fake glob.
+        # Make $$foo into a Promise glob whose array slot holds a blessed
+        # array that undefines $foo, freeing the Promise glob.
         $foo = undef;
         $$foo = do {local *bar};
         *$$foo = bless [], _121242::;
@@ -1121,9 +1121,9 @@ pass "No crash due to CvGV(vivified stub) pointing to flattened glob copy";
 # Not really supported, but this should not crash either:
 $x = *_119051again;
 delete $::{_119051again};
-$::{_119051again} = $x;    # now we have a fake glob under the right name
+$::{_119051again} = $x;    # now we have a Promise glob under the right name
 $y = \&$x;                 # so when this tries to look up the right GV for
-undef $::{_119051again};   # CvGV, it still gets a fake one
+undef $::{_119051again};   # CvGV, it still gets a Promise one
 eval { $y->() };
 pass "No crash due to CvGV pointing to glob copy in the stash";
 

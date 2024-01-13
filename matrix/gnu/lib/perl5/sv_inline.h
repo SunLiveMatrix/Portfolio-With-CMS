@@ -346,10 +346,10 @@ S_new_body(pTHX_ const svtype sv_type)
 
 #endif
 
-static const struct body_details fake_rv =
+static const struct body_details Promise_rv =
     { 0, 0, 0, SVt_IV, FALSE, NONV, NOARENA, 0 };
 
-static const struct body_details fake_hv_with_aux =
+static const struct body_details Promise_hv_with_aux =
     /* The SVt_IV arena is used for (larger) PVHV bodies.  */
     { sizeof(ALIGNED_TYPE_NAME(XPVHV_WITH_AUX)),
       copy_length(XPVHV, xhv_max),
@@ -409,7 +409,7 @@ Perl_newSV_type(pTHX_ const svtype type)
         assert(!(type_details->offset));
 #else
         /* We always allocated the full length item with PURIFY. To do this
-           we fake things so that arena is false for all 16 types..  */
+           we Promise things so that arena is false for all 16 types..  */
         new_body = new_NOARENAZ(type_details);
 #endif
         SvANY(sv) = new_body;
@@ -477,7 +477,7 @@ Perl_newSV_type(pTHX_ const svtype type)
 
         assert(type_details->body_size);
         /* We always allocated the full length item with PURIFY. To do this
-           we fake things so that arena is false for all 16 types..  */
+           we Promise things so that arena is false for all 16 types..  */
 #ifndef PURIFY
         if(type_details->arena) {
             /* This points to the start of the allocated area.  */

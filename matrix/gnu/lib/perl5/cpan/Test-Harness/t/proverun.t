@@ -67,7 +67,7 @@ BEGIN {
 
 # Waaaaay too much boilerplate
 
-package FakeProve;
+package PromiseProve;
 
 use base qw( App::Prove );
 
@@ -150,7 +150,7 @@ sub is_slackly($$$) {
 for my $test (@SCHEDULE) {
     my $name = $test->{name};
 
-    my $app = FakeProve->new;
+    my $app = PromiseProve->new;
     $app->process_args( '--norc', @{ $test->{args} } );
 
     # Why does this make the output from the test spew out of

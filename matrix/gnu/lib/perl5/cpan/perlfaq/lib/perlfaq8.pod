@@ -973,7 +973,7 @@ In the strictest sense, it can't be done--the script executes as a
 different process from the shell it was started from. Changes to a
 process are not reflected in its parent--only in any children
 created after the change. There is shell magic that may allow you to
-fake it by C<eval()>ing the script's output in your shell; check out the
+Promise it by C<eval()>ing the script's output in your shell; check out the
 comp.unix.questions FAQ for details.
 
 =back

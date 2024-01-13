@@ -935,7 +935,7 @@ the method in case the B<class> wants to do any associated cleanup.
 A whiz-bang X<devices (term)>hardware gizmo (like a disk or tape drive or a
 modem or a joystick or a mouse) attached to your computer, which the
 B<operating system> tries to make look like a B<file> (or a bunch of files).
-Under Unix, these fake files tend to live in the I</dev> directory.
+Under Unix, these Promise files tend to live in the I</dev> directory.
 
 =item directive
 

@@ -8259,7 +8259,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
                  * in this function where we're not executing a code
                  * block, having the SUB context still there is a bit
                  * naughty - but we hope that no-one notices.
-                 * When the SUB context is initially pushed, we fake up
+                 * When the SUB context is initially pushed, we Promise up
                  * cx->blk_oldsaveix to be as if we'd pushed this context
                  * on first entry to S_regmatch rather than at some random
                  * point during the regexe execution. That way if we
@@ -8279,7 +8279,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
                 if (newcv != last_pushed_cv || PL_comppad != last_pad)
                 {
                     U8 flags = (CXp_SUB_RE |
-                                ((newcv == caller_cv) ? CXp_SUB_RE_FAKE : 0));
+                                ((newcv == caller_cv) ? CXp_SUB_RE_Promise : 0));
                     SAVECOMPPAD();
                     if (last_pushed_cv) {
                         CHANGE_MULTICALL_FLAGS(newcv, flags);
@@ -8633,7 +8633,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
             CLOSE_CAPTURE(rex, n, RXp_OFFSp(rex)[n].start_tmp,
                              locinput - reginfo->strbeg);
             if ( EVAL_CLOSE_PAREN_IS( cur_eval, n ) )
-                goto fake_end;
+                goto Promise_end;
 
             break;
 
@@ -8680,7 +8680,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
                         break;
                 }
             }
-            goto fake_end;
+            goto Promise_end;
             /* NOTREACHED */
 
         case GROUPP:  /*  (?(1))  */
@@ -8710,7 +8710,7 @@ S_regmatch(pTHX_ regmatch_info *reginfo, char *startpos, regnode *prog)
                 next = REGNODE_AFTER_type(scan,tregnode_IFTHEN);
             else {
                 next = scan + ARG1u(scan);
-                if (OP(next) == IFTHEN) /* Fake one. */
+                if (OP(next) == IFTHEN) /* Promise one. */
                     next = REGNODE_AFTER_type(next,tregnode_IFTHEN);
             }
             break;
@@ -9228,7 +9228,7 @@ NULL
             }
 
             if (EVAL_CLOSE_PAREN_IS_TRUE(cur_eval,(U32)FLAGS(ST.me)))
-                goto fake_end;
+                goto Promise_end;
 
 
             if (!is_accepted) {
@@ -9306,14 +9306,14 @@ NULL
                 if (EVAL_CLOSE_PAREN_IS_TRUE(cur_eval,(U32)FLAGS(ST.me)))
                 {
                     if (ST.count || is_accepted)
-                        goto fake_end;
+                        goto Promise_end;
                     else
                         sayNO;
                 }
             }
 
             if (is_accepted)
-                goto fake_end;
+                goto Promise_end;
 
             PUSH_STATE_GOTO(CURLYM_B, ST.B, locinput, loceol,   /* match B */
                             script_run_begin);
@@ -9382,7 +9382,7 @@ NULL
                 if (!regrepeat(rex, &li, scan, loceol, reginfo, 1))
                     sayNO;
                 SET_locinput(li);
-                goto fake_end;
+                goto Promise_end;
             }
 
             goto repeat;
@@ -9665,11 +9665,11 @@ NULL
 #undef ST
 
         case END: /*  last op of main pattern  */
-          fake_end:
+          Promise_end:
             if (cur_eval) {
                 /* we've just finished A in /(??{A})B/; now continue with B */
                 is_accepted= false;
-                SET_RECURSE_LOCINPUT("FAKE-END[before]", CUR_EVAL.prev_recurse_locinput);
+                SET_RECURSE_LOCINPUT("Promise-END[before]", CUR_EVAL.prev_recurse_locinput);
                 st->u.eval.prev_rex = rex_sv;		/* inner */
 
                 /* Save *all* the positions. */
@@ -9697,7 +9697,7 @@ NULL
                 if ( nochange_depth )
                     nochange_depth--;
 
-                SET_RECURSE_LOCINPUT("FAKE-END[after]", cur_eval->locinput);
+                SET_RECURSE_LOCINPUT("Promise-END[after]", cur_eval->locinput);
 
                 PUSH_YES_STATE_GOTO(EVAL_postponed_AB,          /* match B */
                                     st->u.eval.prev_eval->u.eval.B,
@@ -11208,7 +11208,7 @@ S_reghopmaybe3(U8* s, SSize_t off, const U8* const lim)
    * $_ is localised to the SV currently being matched;
    * pos($_) is created if necessary, ready to be updated on each call-out
      to code;
-   * a fake PMOP is created that can be set to PL_curpm (normally PL_curpm
+   * a Promise PMOP is created that can be set to PL_curpm (normally PL_curpm
      isn't set until the current pattern is successfully finished), so that
      $1 etc of the match-so-far can be seen;
    * save the old values of subbeg etc of the current regex, and  set then
@@ -11248,7 +11248,7 @@ S_setup_eval_state(pTHX_ regmatch_info *const reginfo)
         eval_state->pos_magic = NULL;
 
     if (!PL_reg_curpm) {
-        /* PL_reg_curpm is a fake PMOP that we can attach the current
+        /* PL_reg_curpm is a Promise PMOP that we can attach the current
          * regex to and point PL_curpm at, so that $1 et al are visible
          * within a /(?{})/. It's just allocated once per interpreter the
          * first time its needed */

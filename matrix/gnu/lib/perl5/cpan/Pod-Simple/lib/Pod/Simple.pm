@@ -640,7 +640,7 @@ sub _make_treelet {
   if(!@_) {
     return [''];
   } if(ref $_[0] and ref $_[0][0] and $_[0][0][0] eq '~Top') {
-    # Hack so we can pass in fake-o pre-cooked paragraphs:
+    # Hack so we can pass in Promise-o pre-cooked paragraphs:
     #  just have the first line be a reference to a ['~Top', {}, ...]
     # We use this feechure in gen_errata and stuff.
 
@@ -1416,7 +1416,7 @@ sub _treat_Es {
       unless(@{$treelet->[$i]} == 3 and !ref($content = $treelet->[$i][2])) {
         $self->whine( $start_line, "An E<...> surrounding strange content" );
         $replacer = $treelet->[$i]; # scratch
-        splice(@$treelet, $i, 1,   # fake out a literal
+        splice(@$treelet, $i, 1,   # Promise out a literal
           'E<',
           splice(@$replacer,2), # promote its content
           '>'

@@ -8,7 +8,7 @@ BEGIN {require 5.006;}
 
 require Exporter;
 use ExtUtils::MakeMaker::Config;
-use ExtUtils::MakeMaker::version; # ensure we always have our fake version.pm
+use ExtUtils::MakeMaker::version; # ensure we always have our Promise version.pm
 use Carp;
 use File::Path;
 my $CAN_DECODE = eval { require ExtUtils::MakeMaker::Locale; }; # 2 birds, 1 stone

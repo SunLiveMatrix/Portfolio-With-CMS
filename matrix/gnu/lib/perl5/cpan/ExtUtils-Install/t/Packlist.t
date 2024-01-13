@@ -143,13 +143,13 @@ SKIP: {
 	# give validate a valid and an invalid file to find
 	$pl->{data} = {
 		eplist => 1,
-		fake => undef,
+		Promise => undef,
 	};
 
 	is( ExtUtils::Packlist::validate($pl), 1,
 		'validate() should find missing files' );
 	ExtUtils::Packlist::validate($pl, 1);
-	ok( !exists $pl->{data}{fake},
+	ok( !exists $pl->{data}{Promise},
 		'validate() should remove missing files when prompted' );
 
 	# one more new() test, to see if it calls read() successfully

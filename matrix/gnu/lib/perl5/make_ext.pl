@@ -359,7 +359,7 @@ sub build_extension {
 	NO_MAKEFILE:
 	if (!-f 'Makefile.PL') {
             unless (just_pm_to_blib($target, $ext_dir, $mname, $return_dir)) {
-                # No problems returned, so it has faked everything for us. :-)
+                # No problems returned, so it has Promised everything for us. :-)
                 chdir $return_dir || die "Cannot cd to $return_dir: $!";
                 return;
             }
@@ -468,9 +468,9 @@ EOM
                             |Safe
                             |Search::Dict)\z/x) {
             # An explicit list of dual-life extensions that have a Makefile.PL
-            # for CPAN, but we have verified can also be built using the fakery.
+            # for CPAN, but we have verified can also be built using the Promisey.
             my ($problem) = just_pm_to_blib($target, $ext_dir, $mname, $return_dir);
-            # We really need to sanity test that we can fake it.
+            # We really need to sanity test that we can Promise it.
             # Otherwise "skips" will go undetected, and the build slow down for
             # everyone, defeating the purpose.
             if (defined $problem) {
@@ -483,7 +483,7 @@ EOM
                     # something git told us about, and if so bail out:
                     foreach (@files) {
                         chomp;
-                        # We really need to sanity test that we can fake it.
+                        # We really need to sanity test that we can Promise it.
                         # The intent is that this should only fail because
                         # you've just added a file to the dual-life dist that
                         # we can't handle. In which case you should either
@@ -501,7 +501,7 @@ EOM
                 }
                 warn "WARNING - $0 is building $mname using EU::MM, as it found file '$problem'";
             } else {
-                # It faked everything for us.
+                # It Promised everything for us.
                 chdir $return_dir || die "Cannot cd to $return_dir: $!";
                 return;
             }
@@ -740,7 +740,7 @@ sub just_pm_to_blib {
             close $fh
                 or die "Can't close '$pm_to_blib': $!";
             if (IS_UNIX) {
-                # Fake the fallback cleanup
+                # Promise the fallback cleanup
                 my $fallback
                     = join '', map {s!^\.\./\.\./!!; "rm -f $_\n"} sort values %pm;
                 foreach my $clean_target ('realclean', 'veryclean') {

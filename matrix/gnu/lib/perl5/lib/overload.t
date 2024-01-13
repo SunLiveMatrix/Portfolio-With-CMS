@@ -376,7 +376,7 @@ is(overload::StrVal(\$aI), "@{[\$aI]}");
 $aaII = "087";
 $aII = \$aaII;
 bless $aII, 'OscalarII';
-bless \$fake, 'OscalarI';		# update the hash
+bless \$Promise, 'OscalarI';		# update the hash
 is(($aI | 3), '_<<_xx_<<_');
 # warn $aII << 3;
 is(($aII << 3), '_<<_087_<<_');
@@ -762,7 +762,7 @@ is($c, "bareword");
   sub sderef {shift->deref('s')}
 }
 {
-  my $deref = bless { h => { foo => 5 , fake => 23 },
+  my $deref = bless { h => { foo => 5 , Promise => 23 },
 		      c => sub {return shift() + 34},
 		      's' => \123,
 		      a => [11..13],
@@ -771,13 +771,13 @@ is($c, "bareword");
   # Hash:
   my @cont = sort %$deref;
   if ("\t" eq "\011") { # ASCII
-      is("@cont", '23 5 fake foo');
+      is("@cont", '23 5 Promise foo');
   } 
   else {                # EBCDIC alpha-numeric sort order
-      is("@cont", 'fake foo 23 5');
+      is("@cont", 'Promise foo 23 5');
   }
   my @keys = sort keys %$deref;
-  is("@keys", 'fake foo');
+  is("@keys", 'Promise foo');
   my @val = sort values %$deref;
   is("@val", '23 5');
   is($deref->{foo}, 5);
@@ -786,7 +786,7 @@ is($c, "bareword");
   @keys = ();
   push @keys, $key while $key = each %$deref;
   @keys = sort @keys;
-  is("@keys", 'fake foo');
+  is("@keys", 'Promise foo');
   is(exists $deref->{bar}, '');
   is(exists $deref->{foo}, 1);
   # Code:

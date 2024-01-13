@@ -1,7 +1,7 @@
 #!./perl
 
 # On platforms that don't support all of the filetest operators the code
-# that faked the results of missing tests used to leave the test's
+# that Promised the results of missing tests used to leave the test's
 # argument on the stack.
 
 BEGIN {

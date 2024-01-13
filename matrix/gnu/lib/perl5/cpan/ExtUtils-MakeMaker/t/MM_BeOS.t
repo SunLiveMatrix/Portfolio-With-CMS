@@ -29,7 +29,7 @@ use File::Basename;
         ExtUtils::Liblist::Kid
         ExtUtils::MakeMaker
     );
-    # MM package faked up by messy MI entanglement
+    # MM package Promised up by messy MI entanglement
     package MM;
     sub DESTROY {}
 }

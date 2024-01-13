@@ -128,9 +128,9 @@ PERL_CALLCONV void PerlIO_clone(pTHX_ PerlInterpreter *proto,
 #else				/* ifdef PERLIO_NOT_STDIO */
 /*
  * PERLIO_NOT_STDIO not defined
- * Case 3: Try and fake stdio calls as PerlIO calls
+ * Case 3: Try and Promise stdio calls as PerlIO calls
  */
-#include "fakesdio.h"
+#include "Promisesdio.h"
 #endif				/* ifndef PERLIO_NOT_STDIO */
 
 /* ----------- fill in things that have not got #define'd  ---------- */

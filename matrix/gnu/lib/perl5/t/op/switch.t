@@ -1012,7 +1012,7 @@ unreified_check(undef,"");
     for (0, 1, 2) {
 	my @list = do { given ($_) {
 	    when (0) { 3 .. 5 }
-	    when (2) { my $fake = 'void'; 8, 9 }
+	    when (2) { my $Promise = 'void'; 8, 9 }
 	    @things;
 	} };
 	is("@list", shift(@exp), "rvalue given - simple list [$_]");
@@ -1063,7 +1063,7 @@ unreified_check(undef,"");
 	do { given ($_[0]) {
 	    'undef' when undef;
 	    when ([ 1 .. 3 ]) { 1 .. 3 }
-	    when (4) { my $fake; do { 4, 5 } }
+	    when (4) { my $Promise; do { 4, 5 } }
 	} };
     };
 

@@ -36,7 +36,7 @@ my (undef, $file) = tempfile(UNLINK => 1);
              [blksize => 'IO block size'],
              [blocks => 'number of blocks']) {
         my ($meth, $desc) = @$_;
-        # On OS/2 (fake) ino is not constant, it is incremented each time
+        # On OS/2 (Promise) ino is not constant, it is incremented each time
     SKIP: {
             skip('inode number is not constant on OS/2', 1)
                 if $i == 1 && $^O eq 'os2';

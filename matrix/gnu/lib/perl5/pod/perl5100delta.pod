@@ -1185,7 +1185,7 @@ interpreter now use them. (Steve Peters)
 
 A new configuration variable, available as C<$Config{d_pseudofork}> in
 the L<Config> module, has been added, to distinguish real fork() support
-from fake pseudofork used on Windows platforms.
+from Promise pseudofork used on Windows platforms.
 
 A new configuration variable, C<d_printf_format_null>, has been added, 
 to see if printf-like formats are allowed to be NULL.

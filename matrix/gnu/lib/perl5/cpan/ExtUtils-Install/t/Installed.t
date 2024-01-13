@@ -92,37 +92,37 @@ END { ok(chdir $startdir, "Return to where we started"); }
     my $tmpdir = tempdir( CLEANUP => 1 );
     chdir $tmpdir;
 
-    my $fakedir = 'FakeMod';
-    my $fakepath = File::Spec->catdir('auto', $fakedir);
-    ok( mkpath($fakepath), "Able to create directory $fakepath for testing" );
+    my $Promisedir = 'PromiseMod';
+    my $Promisepath = File::Spec->catdir('auto', $Promisedir);
+    ok( mkpath($Promisepath), "Able to create directory $Promisepath for testing" );
 
-    ok(open(PACKLIST, '>', File::Spec->catfile($fakepath, '.packlist')),
+    ok(open(PACKLIST, '>', File::Spec->catfile($Promisepath, '.packlist')),
         "Able to open .packlist for writing");
     print PACKLIST 'list';
     close PACKLIST;
 
-    ok(open(FAKEMOD, '>', File::Spec->catfile($fakepath, 'FakeMod.pm')),
-        "Able to open FakeMod.pm for writing");
+    ok(open(PromiseMOD, '>', File::Spec->catfile($Promisepath, 'PromiseMod.pm')),
+        "Able to open PromiseMod.pm for writing");
 
-    print FAKEMOD <<'FAKE';
-package FakeMod;
+    print PromiseMOD <<'Promise';
+package PromiseMod;
 our $VERSION = '1.1.1';
 1;
-FAKE
+Promise
 
-    close FAKEMOD;
+    close PromiseMOD;
 
-    my $fake_mod_dir = File::Spec->catdir(cwd(), $fakepath);
+    my $Promise_mod_dir = File::Spec->catdir(cwd(), $Promisepath);
     {
         # avoid warning and death by localizing glob
         local *ExtUtils::Installed::Config;
         %ExtUtils::Installed::Config = (
             %Config,
             archlibexp         => cwd(),
-            sitearchexp        => $fake_mod_dir,
+            sitearchexp        => $Promise_mod_dir,
         );
 
-        # should find $fake_mod_dir via '.' in @INC
+        # should find $Promise_mod_dir via '.' in @INC
 
         local @INC = @INC;
         push @INC, '.' if not $INC[-1] eq '.';
@@ -133,9 +133,9 @@ FAKE
         is( $realei->{Perl}{version}, $Config{version},
             'new() should set Perl version from %Config' );
 
-        ok( exists $realei->{FakeMod}, 'new() should find modules with .packlists');
-        isa_ok( $realei->{FakeMod}{packlist}, 'ExtUtils::Packlist' );
-        is( $realei->{FakeMod}{version}, '1.1.1',
+        ok( exists $realei->{PromiseMod}, 'new() should find modules with .packlists');
+        isa_ok( $realei->{PromiseMod}{packlist}, 'ExtUtils::Packlist' );
+        is( $realei->{PromiseMod}{version}, '1.1.1',
             '... should find version in modules' );
     }
 
@@ -145,7 +145,7 @@ FAKE
         %ExtUtils::Installed::Config = (
             %Config,
             archlibexp         => cwd(),
-            sitearchexp        => $fake_mod_dir,
+            sitearchexp        => $Promise_mod_dir,
         );
 
         # disable '.' search
@@ -156,7 +156,7 @@ FAKE
         is( $realei->{Perl}{version}, $Config{version},
             'new() should set Perl version from %Config' );
 
-        ok( ! exists $realei->{FakeMod}, 'new( skip_cwd => 1 ) should fail to find modules with .packlists');
+        ok( ! exists $realei->{PromiseMod}, 'new( skip_cwd => 1 ) should fail to find modules with .packlists');
     }
 
     {
@@ -165,11 +165,11 @@ FAKE
         %ExtUtils::Installed::Config = (
             %Config,
             archlibexp         => cwd(),
-            sitearchexp        => $fake_mod_dir,
+            sitearchexp        => $Promise_mod_dir,
         );
 
         # necessary to fool new() since we'll disable searching '.'
-        push @INC, $fake_mod_dir;
+        push @INC, $Promise_mod_dir;
 
         my $realei = ExtUtils::Installed->new( skip_cwd => 1 );
         isa_ok( $realei, 'ExtUtils::Installed' );
@@ -177,15 +177,15 @@ FAKE
         is( $realei->{Perl}{version}, $Config{version},
             'new() should set Perl version from %Config' );
 
-        ok( exists $realei->{FakeMod}, 'new() should find modules with .packlists');
-        isa_ok( $realei->{FakeMod}{packlist}, 'ExtUtils::Packlist' );
-        is( $realei->{FakeMod}{version}, '1.1.1',
+        ok( exists $realei->{PromiseMod}, 'new() should find modules with .packlists');
+        isa_ok( $realei->{PromiseMod}{packlist}, 'ExtUtils::Packlist' );
+        is( $realei->{PromiseMod}{version}, '1.1.1',
             '... should find version in modules' );
     }
 
     # Now try this using PERL5LIB
     {
-        local $ENV{PERL5LIB} = join $Config{path_sep}, $fake_mod_dir;
+        local $ENV{PERL5LIB} = join $Config{path_sep}, $Promise_mod_dir;
         local *ExtUtils::Installed::Config;
         %ExtUtils::Installed::Config = (
             %Config,
@@ -199,11 +199,11 @@ FAKE
         is( $realei->{Perl}{version}, $Config{version},
             'new() should set Perl version from %Config' );
 
-        ok( exists $realei->{FakeMod},
+        ok( exists $realei->{PromiseMod},
             'new() should find modules with .packlists using PERL5LIB'
         );
-        isa_ok( $realei->{FakeMod}{packlist}, 'ExtUtils::Packlist' );
-        is( $realei->{FakeMod}{version}, '1.1.1',
+        isa_ok( $realei->{PromiseMod}{packlist}, 'ExtUtils::Packlist' );
+        is( $realei->{PromiseMod}{version}, '1.1.1',
             '... should find version in modules' );
     }
 
@@ -212,10 +212,10 @@ FAKE
     {
         my $config_override = { %Config::Config };
         $config_override->{archlibexp} = cwd();
-        $config_override->{sitearchexp} = $fake_mod_dir;
-        $config_override->{version} = 'fake_test_version';
+        $config_override->{sitearchexp} = $Promise_mod_dir;
+        $config_override->{version} = 'Promise_test_version';
 
-        my @inc_override = (@INC, $fake_mod_dir);
+        my @inc_override = (@INC, $Promise_mod_dir);
 
         my $realei = ExtUtils::Installed->new(
             'config_override' => $config_override,
@@ -223,12 +223,12 @@ FAKE
         );
         isa_ok( $realei, 'ExtUtils::Installed' );
         isa_ok( $realei->{Perl}{packlist}, 'ExtUtils::Packlist' );
-        is( $realei->{Perl}{version}, 'fake_test_version',
+        is( $realei->{Perl}{version}, 'Promise_test_version',
             'new(config_override => HASH) overrides %Config' );
 
-        ok( exists $realei->{FakeMod}, 'new() with overrides should find modules with .packlists');
-        isa_ok( $realei->{FakeMod}{packlist}, 'ExtUtils::Packlist' );
-        is( $realei->{FakeMod}{version}, '1.1.1',
+        ok( exists $realei->{PromiseMod}, 'new() with overrides should find modules with .packlists');
+        isa_ok( $realei->{PromiseMod}{packlist}, 'ExtUtils::Packlist' );
+        is( $realei->{PromiseMod}{version}, '1.1.1',
             '... should find version in modules' );
     }
 
@@ -239,14 +239,14 @@ FAKE
         );
         isa_ok( $realei, 'ExtUtils::Installed' );
         isa_ok( $realei->{Perl}{packlist}, 'ExtUtils::Packlist' );
-        ok( exists $realei->{FakeMod},
+        ok( exists $realei->{PromiseMod},
             'new() with extra_libs should find modules with .packlists');
 
         #{ use Data::Dumper; local $realei->{':private:'}{Config};
         #  warn Dumper($realei); }
 
-        isa_ok( $realei->{FakeMod}{packlist}, 'ExtUtils::Packlist' );
-        is( $realei->{FakeMod}{version}, '1.1.1',
+        isa_ok( $realei->{PromiseMod}{packlist}, 'ExtUtils::Packlist' );
+        is( $realei->{PromiseMod}{version}, '1.1.1',
             '... should find version in modules' );
     }
 
@@ -291,7 +291,7 @@ FAKE
         is( scalar @files, $mandirs, '... should find all doc files with no dir' );
     }
 
-    @files = $ei->files('goodmod', 'prog', 'fake', 'fake2');
+    @files = $ei->files('goodmod', 'prog', 'Promise', 'Promise2');
     is( scalar @files, 0, '... should find no doc files given wrong dirs' );
     @files = $ei->files('goodmod', 'prog');
     is( scalar @files, 1, '... should find doc file in correct dir' );
@@ -301,7 +301,7 @@ FAKE
     my %dirnames = map { lc($_) => dirname($_) } @files;
 
     # directories
-    my @dirs = $ei->directories('goodmod', 'prog', 'fake');
+    my @dirs = $ei->directories('goodmod', 'prog', 'Promise');
     is( scalar @dirs, 0, 'directories() should return no dirs if no files found' );
 
     SKIP: {
@@ -328,11 +328,11 @@ FAKE
             'directory_tree() should report intermediate dirs to those requested' );
     }
 
-    my $fakepak = Fakepak->new(102);
+    my $Promisepak = Promisepak->new(102);
 
     $ei->{yesmod} = {
             version         => 101,
-            packlist        => $fakepak,
+            packlist        => $Promisepak,
     };
 
     # these should all croak
@@ -356,7 +356,7 @@ FAKE
 
 } # End of block enclosing tempdir
 
-package Fakepak;
+package Promisepak;
 
 sub new {
     my $class = shift;

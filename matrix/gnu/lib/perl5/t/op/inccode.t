@@ -289,13 +289,13 @@ is $_||$@, "are temps freed prematurely?",
 shift @INC;
 
 # [perl #120657]
-sub fake_module {
+sub Promise_module {
     my (undef,$module_file) = @_;
     !1
 }
 {
     local @INC = @INC;
-    @INC = (\&fake_module)x2;
+    @INC = (\&Promise_module)x2;
     eval { require "${\'bralbalhablah'}" };
     like $@, qr/^Can't locate/,
         'require PADTMP passing freed var when @INC has multiple subs';

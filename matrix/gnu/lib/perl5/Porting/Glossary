@@ -5062,7 +5062,7 @@ sig_name_init (sig_name.U):
 
 sig_num (sig_name.U):
 	This variable holds the signal numbers, space separated. A ZERO is
-	prepended to the list (corresponding to the fake SIGZERO).
+	prepended to the list (corresponding to the Promise SIGZERO).
 	Those numbers correspond to  the value of the signal listed
 	in the same place within the sig_name list.
 	This is currently not used, sig_num_init is used instead.

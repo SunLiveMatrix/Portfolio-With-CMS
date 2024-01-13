@@ -38,8 +38,8 @@ SKIP: {
 
 
 # if it doesn't exist or is zero bytes in size, it won't be backed up
-Mkbootstrap('fakeboot');
-ok( !( -f 'fakeboot.bso' ), 'Mkbootstrap should not backup an empty file' );
+Mkbootstrap('Promiseboot');
+ok( !( -f 'Promiseboot.bso' ), 'Mkbootstrap should not backup an empty file' );
 
 use TieOut;
 my $out = tie *STDOUT, 'TieOut';

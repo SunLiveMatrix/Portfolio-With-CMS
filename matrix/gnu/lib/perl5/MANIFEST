@@ -33,7 +33,7 @@ embed.fnc				Database used by embed.pl
 embed.h					Maps symbols to safer names
 embedvar.h				C namespace management
 EXTERN.h				Included before foreign .h files
-fakesdio.h				stdio in terms of PerlIO
+Promisesdio.h				stdio in terms of PerlIO
 feature.h				Feature header
 form.h					Public declarations for formats
 generate_uudmap.c			Generate uudmap.h, the uuencode decoding map
@@ -113,7 +113,7 @@ perlio.c				C code for PerlIO abstraction
 perlio.h				PerlIO abstraction
 perlio.sym				Symbols for PerlIO abstraction
 perliol.h				PerlIO Layer definition
-perlsdio.h				Fake stdio using perlio
+perlsdio.h				Promise stdio using perlio
 perlstatic.h				Like inline.h, but functions not declared inline
 perlvars.h				Global variables
 perly.act				parser actions; derived from perly.y
@@ -1923,7 +1923,7 @@ cpan/Pod-Simple/t/encod04.t				Test file related to Pod::Simple
 cpan/Pod-Simple/t/end_over.t				Pod::Simple test file
 cpan/Pod-Simple/t/eol.t					Pod::Simple test file
 cpan/Pod-Simple/t/eol2.t				Pod::Simple test file
-cpan/Pod-Simple/t/fake-closers.t			Pod::Simple test file
+cpan/Pod-Simple/t/Promise-closers.t			Pod::Simple test file
 cpan/Pod-Simple/t/fcodes.t				Pod::Simple test file
 cpan/Pod-Simple/t/fcodes_e.t				Pod::Simple test file
 cpan/Pod-Simple/t/fcodes_l.t				Pod::Simple test file

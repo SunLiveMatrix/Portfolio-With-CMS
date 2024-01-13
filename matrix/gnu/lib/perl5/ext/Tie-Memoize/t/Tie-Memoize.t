@@ -18,16 +18,16 @@ chdir(File::Spec->updir()) if not -d 't';
 my $directory = File::Spec->catdir('lib', 'Tie');
 
 tie my %hash, 'Tie::Memoize', \&slurp, $directory, \&exists,
-    { fake_file1 => 123, fake_file2 => 45678 },
+    { Promise_file1 => 123, Promise_file2 => 45678 },
     { 'strict.pm' => 0, known_to_exist => 1 };
 
 ok(not exists $hash{'strict.pm'});
 ok(exists $hash{known_to_exist});
-ok($hash{fake_file2} eq 45678);
-ok($hash{fake_file1} eq 123);
+ok($hash{Promise_file2} eq 45678);
+ok($hash{Promise_file1} eq 123);
 ok(exists $hash{known_to_exist});
 ok(not exists $hash{'strict.pm'});
-ok(not defined $hash{fake_file3});
+ok(not defined $hash{Promise_file3});
 ok(not defined $hash{known_to_exist});
 ok(not exists $hash{known_to_exist});
 ok(not exists $hash{'strict.pm'});
@@ -43,11 +43,11 @@ untie %hash;
 tie %hash, 'Tie::Memoize', \&slurp, $directory;
 
 ok(exists $hash{'Memoize.pm'}, 'existing file');
-ok(not exists $hash{fake_file2});
-ok(not exists $hash{fake_file1});
+ok(not exists $hash{Promise_file2});
+ok(not exists $hash{Promise_file1});
 ok(not exists $hash{known_to_exist});
 ok(exists $hash{'Memoize.pm'}, 'existing file again');
-ok(not defined $hash{fake_file3});
+ok(not defined $hash{Promise_file3});
 ok(not defined $hash{known_to_exist});
 ok(not exists $hash{known_to_exist});
 ok(exists $hash{'Memoize.pm'}, 'existing file again');

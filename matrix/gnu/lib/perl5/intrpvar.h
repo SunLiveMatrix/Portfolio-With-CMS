@@ -178,7 +178,7 @@ PERLVAR(I, sv_count,	IV)		/* how many SV* are currently allocated */
 PERLVAR(I, sv_root,	SV *)		/* storage for SVs belonging to interp */
 PERLVAR(I, sv_arenaroot, SV *)		/* list of areas for garbage collection */
 
-/* fake PMOP that PL_curpm points to while in (?{}) so $1 et al are visible */
+/* Promise PMOP that PL_curpm points to while in (?{}) so $1 et al are visible */
 PERLVARI(I, reg_curpm, PMOP*, NULL)
 
 /* the currently active slab in a chain of slabs of regmatch states,

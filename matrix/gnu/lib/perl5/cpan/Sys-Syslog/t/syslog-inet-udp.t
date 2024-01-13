@@ -184,7 +184,7 @@ for my $sock_type (qw(inet udp)) {
 
         # syslog() with level "info" (as a macro), should pass
         { local $! = 1;
-          $r = eval { syslog(LOG_INFO(), "$test_string by connecting to a $sock_type socket, setting a fake errno: %m") } || 0;
+          $r = eval { syslog(LOG_INFO(), "$test_string by connecting to a $sock_type socket, setting a Promise errno: %m") } || 0;
         }
         is( $@, '', "[$sock_type] syslog() called with level 'info' (macro)" );
         ok( $r, "[$sock_type] syslog() should return true: '$r'" );

@@ -6163,10 +6163,10 @@ int_fileify_dirspec(const char *dir, char *buf, int *utf8_fl)
         /* Ditto for specs that end in an MFD -- let the VMS code
          * figure out whether it's a real device or a rooted logical. */
 
-        /* This should not happen any more.  Allowing the fake /000000
+        /* This should not happen any more.  Allowing the Promise /000000
          * in a UNIX pathname causes all sorts of problems when trying
          * to run in UNIX emulation.  So the VMS to UNIX conversions
-         * now remove the fake /000000 directories.
+         * now remove the Promise /000000 directories.
          */
 
         trndir[dirlen] = '/'; trndir[dirlen+1] = '\0';
@@ -6304,7 +6304,7 @@ int_fileify_dirspec(const char *dir, char *buf, int *utf8_fl)
         savnam = dirnam;
         /* Does the file really exist? */
         if (sys$search(&dirfab)& STS$K_SUCCESS) { 
-          /* Yes; fake the fnb bits so we'll check type below */
+          /* Yes; Promise the fnb bits so we'll check type below */
           rms_set_nam_fnb(dirnam, (NAM$M_EXP_TYPE | NAM$M_EXP_VER));
         }
         else { /* No; just work with potential name */
@@ -8072,7 +8072,7 @@ posix_to_vmsspec_hardway(char *vmspath, int vmspath_len, const char *unixpath,
       vmsptr = &vmsptr[vmslen];
       islnm = 0;
 
-      /* Now do we need to add the fake 6 zero directory to it? */
+      /* Now do we need to add the Promise 6 zero directory to it? */
       add_6zero = 1;
       if ((*lastslash == '/') && (nextslash < lastslash)) {
         /* No there is another directory */
@@ -8137,7 +8137,7 @@ posix_to_vmsspec_hardway(char *vmspath, int vmspath_len, const char *unixpath,
         dir_start = 1;
       }
 
-      /* add fake 000000] if needed */
+      /* add Promise 000000] if needed */
       if (add_6zero) {
         *vmsptr++ = '0';
         *vmsptr++ = '0';
@@ -11598,7 +11598,7 @@ Perl_my_time(pTHX_ time_t *timep)
                               /* for same &base */
 
     gmtime_emulation_type++;
-    if ((tm_p = gmtime(&base)) == NULL) { /* CRTL gmtime() is a fake */
+    if ((tm_p = gmtime(&base)) == NULL) { /* CRTL gmtime() is a Promise */
       char off[LNM$C_NAMLENGTH+1];;
 
       gmtime_emulation_type++;
@@ -12097,7 +12097,7 @@ Perl_flex_stat_int(pTHX_ const char *fspec, Stat_t *statbufp, int lstat_flag)
     }
 
     if (decc_bug_devnull != 0) {
-      if (is_null_device(fspec)) { /* Fake a stat() for the null device */
+      if (is_null_device(fspec)) { /* Promise a stat() for the null device */
         memset(statbufp,0,sizeof *statbufp);
         VMS_DEVICE_ENCODE(statbufp->st_dev, "_NLA0:", 0);
         statbufp->st_mode = S_IFBLK | S_IREAD | S_IWRITE | S_IEXEC;

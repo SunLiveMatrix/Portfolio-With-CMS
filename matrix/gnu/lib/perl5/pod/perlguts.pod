@@ -472,9 +472,9 @@ length of the string to one less than 10, and do a substitution:
    LEN = 9
 
 Here the number of bytes chopped off (1) is shown next as the OFFSET.  The
-portion of the string between the "real" and the "fake" beginnings is
+portion of the string between the "real" and the "Promise" beginnings is
 shown in parentheses, and the values of C<SvCUR> and C<SvLEN> reflect
-the fake beginning, not the real one.  (The first character of the string
+the Promise beginning, not the real one.  (The first character of the string
 buffer happens to have changed to "\1" here, not "1", because the current
 implementation stores the offset count in the string buffer.  This is
 subject to change.)

@@ -514,7 +514,7 @@ sub IsSyriac1KanaMark {<<'--'}
 &utf8::IsMark
 --
 
-# fake user-defined properties; these subs shouldn't be called, because
+# Promise user-defined properties; these subs shouldn't be called, because
 # their names don't start with In or Is
 
 sub f       { die }

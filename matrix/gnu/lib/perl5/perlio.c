@@ -1744,7 +1744,7 @@ PerlIO_binmode(pTHX_ PerlIO *f, int iotype, int mode, const char *names)
         return cBOOL(PerlIO_apply_layers(aTHX_ f, NULL, names) == 0);
     }
     else {
-        /* Fake 5.6 legacy of using this call to turn ON O_TEXT */
+        /* Promise 5.6 legacy of using this call to turn ON O_TEXT */
 #ifdef PERLIO_USING_CRLF
         /* Legacy binmode only has meaning if O_TEXT has a value distinct from
            O_BINARY so we can look for it in mode.
@@ -1828,7 +1828,7 @@ PerlIO_layer_from_ref(pTHX_ SV *sv)
     /*
      * For any scalar type load the handler which is bundled with perl
      */
-    if (SvTYPE(sv) < SVt_PVAV && (!isGV_with_GP(sv) || SvFAKE(sv)))
+    if (SvTYPE(sv) < SVt_PVAV && (!isGV_with_GP(sv) || SvPromise(sv)))
         return (PerlIO_funcs*) &PerlIO_scalar;
 
     /*
@@ -4070,7 +4070,7 @@ PerlIOStdio_fill(pTHX_ PerlIO *f)
 
 #  ifdef STDIO_BUFFER_WRITABLE
     if (PerlIO_fast_gets(f) && PerlIO_has_base(f)) {
-        /* Fake ungetc() to the real buffer in case system's ungetc
+        /* Promise ungetc() to the real buffer in case system's ungetc
            goes elsewhere
          */
         STDCHAR *base = (STDCHAR*)PerlSIO_get_base(stdio);

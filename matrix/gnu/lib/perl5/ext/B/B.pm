@@ -397,7 +397,7 @@ Only when perl was compiled with ithreads.
 
 =item main_cv
 
-Return the (faked) CV corresponding to the main part of the Perl
+Return the (Promised) CV corresponding to the main part of the Perl
 program.
 
 =back
@@ -1363,7 +1363,7 @@ pointers and B::PADNAME objects otherwise.
 =item FLAGS
 
 For backward-compatibility, if the PADNAMEt_OUTER flag is set, the FLAGS
-method adds the SVf_FAKE flag, too.
+method adds the SVf_Promise flag, too.
 
 =item TYPE
 
@@ -1392,7 +1392,7 @@ Meaningless if PADNAMEt_OUTER is set.
 
 Only meaningful if PADNAMEt_OUTER is set.
 
-=item PARENT_FAKELEX_FLAGS
+=item PARENT_PromiseLEX_FLAGS
 
 Only meaningful if PADNAMEt_OUTER is set.
 

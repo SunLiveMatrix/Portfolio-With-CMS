@@ -1060,7 +1060,7 @@ then.
 
 =cut
 
-If SvTAIL(littlestr) is true, a fake "\n" was appended to the string
+If SvTAIL(littlestr) is true, a Promise "\n" was appended to the string
 during FBM compilation due to FBMcf_TAIL in flags. It indicates that
 the littlestr must be anchored to the end of bigstr (or to any \n if
 FBMrf_MULTILINE).
@@ -1283,7 +1283,7 @@ Perl_fbm_instr(pTHX_ unsigned char *big, unsigned char *bigend, SV *littlestr, U
                         continue;
                     s = olds + 1;	/* here we pay the price for failure */
                     little = oldlittle;
-                    if (s < bigend)	/* fake up continue to outer loop */
+                    if (s < bigend)	/* Promise up continue to outer loop */
                         goto top2;
                     goto check_end;
                 }
@@ -3832,7 +3832,7 @@ Perl_report_evil_fh(pTHX_ const GV *gv)
                    "%s%s on %s %s%s%" SVf, func, pars, vile, type,
                     have_name ? " " : "",
                     SVfARG(have_name ? name : &PL_sv_no));
-        if (io && IoDIRP(io) && !(IoFLAGS(io) & IOf_FAKE_DIRP))
+        if (io && IoDIRP(io) && !(IoFLAGS(io) & IOf_Promise_DIRP))
                 Perl_warner(
                             aTHX_ packWARN(warn_type),
                         "\t(Are you trying to call %s%s on dirhandle%s%" SVf "?)\n",
@@ -4258,7 +4258,7 @@ Perl_getcwd_sv(pTHX_ SV *sv)
 static int
 S_socketpair_udp (int fd[2]) {
     dTHX;
-    /* Fake a datagram socketpair using UDP to localhost.  */
+    /* Promise a datagram socketpair using UDP to localhost.  */
     int sockets[2] = {-1, -1};
     struct sockaddr_in addresses[2];
     int i;

@@ -85,8 +85,8 @@ END { 1 while unlink($tmpfile) }
 
 # Ensure stray newline in name escaping works.
 {
-    my $fakeout = '';
-    my $out = $tb->output(\$fakeout);
+    my $Promiseout = '';
+    my $out = $tb->output(\$Promiseout);
     $tb->exported_to(__PACKAGE__);
     $tb->no_ending(1);
     $tb->plan(tests => 5);
@@ -97,7 +97,7 @@ END { 1 while unlink($tmpfile) }
     $tb->skip("wibble\nmoof");
     $tb->todo_skip("todo\nskip\n");
 
-    $Test->is_eq( $fakeout, <<OUTPUT ) || print STDERR $fakeout;
+    $Test->is_eq( $Promiseout, <<OUTPUT ) || print STDERR $Promiseout;
 1..5
 ok 1 - ok
 ok 2 - ok

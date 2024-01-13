@@ -34,7 +34,7 @@ use overload
                       };
 
 sub _swap {
-    # a fake _swap, which reverses the params
+    # a Promise _swap, which reverses the params
     my $self = shift;           # for override in subclass
     if ($_[2]) {
         my $c = ref ($_[0] ) || 'Math::Foo';

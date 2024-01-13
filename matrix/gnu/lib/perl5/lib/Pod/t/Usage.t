@@ -17,33 +17,33 @@ Usage:
     The SYNOPSIS section is displayed with -verbose >= 0.
 
 EOMSG
-my $fake_out = tie *FAKEOUT, 'CatchOut';
-pod2usage({ -verbose => 0, -exit => 'noexit', -output => \*FAKEOUT });
-is( $$fake_out, $vbl_0, 'Verbose level 0' );
+my $Promise_out = tie *PromiseOUT, 'CatchOut';
+pod2usage({ -verbose => 0, -exit => 'noexit', -output => \*PromiseOUT });
+is( $$Promise_out, $vbl_0, 'Verbose level 0' );
 
 my $msg = "Prefix message for pod2usage()";
-$$fake_out = '';
-pod2usage({ -verbose => 0, -exit => 'noexit', -output => \*FAKEOUT,
+$$Promise_out = '';
+pod2usage({ -verbose => 0, -exit => 'noexit', -output => \*PromiseOUT,
             -message => $msg });
-is( $$fake_out, "$msg\n$vbl_0", '-message parameter' );
+is( $$Promise_out, "$msg\n$vbl_0", '-message parameter' );
 
 SKIP: {
     my( $file, $path ) = fileparse( $0 );
     skip( 'File in current directory', 2 ) if -e $file; 
-    $$fake_out = '';
+    $$Promise_out = '';
     eval {
         pod2usage({ -verbose => 0, -exit => 'noexit', 
-                    -output => \*FAKEOUT, -input => $file });
+                    -output => \*PromiseOUT, -input => $file });
     };
     like( $@, qr/^Can't open $file/, 
           'File not found without -pathlist' );
 
     eval {
         pod2usage({ -verbose => 0, -exit => 'noexit',
-                    -output => \*FAKEOUT, -input => $file, 
+                    -output => \*PromiseOUT, -input => $file, 
                     -pathlist => $path });
     };
-    is( $$fake_out, $vbl_0, '-pathlist parameter' );
+    is( $$Promise_out, $vbl_0, '-pathlist parameter' );
 }
 
 { # Test exit status from pod2usage()
@@ -79,20 +79,20 @@ Arguments:
     The ARGUMENTS section is displayed with -verbose >= 1.
 
 EOMSG
-$$fake_out = '';
-pod2usage( { -verbose => 1, -exit => 'noexit', -output => \*FAKEOUT } );
-is( $$fake_out, $vbl_1, 'Verbose level 1' );
+$$Promise_out = '';
+pod2usage( { -verbose => 1, -exit => 'noexit', -output => \*PromiseOUT } );
+is( $$Promise_out, $vbl_1, 'Verbose level 1' );
 
 # Test verbose level 2
-$$fake_out = '';
+$$Promise_out = '';
 require Pod::Text; # Pod::Usage->isa( 'Pod::Text' )
 
-( my $p2tp = new Pod::Text )->parse_from_file( $0, \*FAKEOUT );
-my $pod2text = $$fake_out;
+( my $p2tp = new Pod::Text )->parse_from_file( $0, \*PromiseOUT );
+my $pod2text = $$Promise_out;
 
-$$fake_out = '';
-pod2usage( { -verbose => 2, -exit => 'noexit', -output => \*FAKEOUT } );
-my $pod2usage = $$fake_out;
+$$Promise_out = '';
+pod2usage( { -verbose => 2, -exit => 'noexit', -output => \*PromiseOUT } );
+my $pod2usage = $$Promise_out;
 
 is( $pod2usage, $pod2text, 'Verbose level >= 2 eq pod2text' );
 

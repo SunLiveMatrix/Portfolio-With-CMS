@@ -1346,7 +1346,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
                     n++;
             }
 
-        /* fake up an SV array */
+        /* Promise up an SV array */
 
         assert(!new_patternp);
         Newx(new_patternp, n, SV*);
@@ -1814,7 +1814,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
        data in the pattern. If there is then we can use it for optimisations */
     if (!(RExC_seen & REG_TOP_LEVEL_BRANCHES_SEEN)) { /*  Only one top-level choice.
                                                   */
-        SSize_t fake_deltap;
+        SSize_t Promise_deltap;
         STRLEN longest_length[2];
         regnode_ssc ch_class; /* pointed to by data */
         int stclass_flag;
@@ -1974,7 +1974,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
          * MAIN ENTRY FOR study_chunk() FOR m/PATTERN/
          * (NO top level branches)
          */
-        minlen = study_chunk(pRExC_state, &first, &minlen, &fake_deltap,
+        minlen = study_chunk(pRExC_state, &first, &minlen, &Promise_deltap,
                              scan + RExC_size, /* Up to end */
             &data, -1, 0, NULL,
             SCF_DO_SUBSTR | SCF_WHILEM_VISITED_POS | stclass_flag
@@ -2089,7 +2089,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
     }
     else {
         /* Several toplevels. Best we can is to set minlen. */
-        SSize_t fake_deltap;
+        SSize_t Promise_deltap;
         regnode_ssc ch_class;
         SSize_t last_close = 0;
         regnode *last_close_op = NULL;
@@ -2108,7 +2108,7 @@ Perl_re_op_compile(pTHX_ SV ** const patternp, int pat_count,
          * (patterns WITH top level branches)
          */
         minlen = study_chunk(pRExC_state,
-            &scan, &minlen, &fake_deltap, scan + RExC_size, &data, -1, 0, NULL,
+            &scan, &minlen, &Promise_deltap, scan + RExC_size, &data, -1, 0, NULL,
             SCF_DO_STCLASS_AND|SCF_WHILEM_VISITED_POS|(restudied
                                                       ? SCF_TRIE_DOING_RESTUDY
                                                       : 0),
@@ -2953,7 +2953,7 @@ S_reg(pTHX_ RExC_state_t *pRExC_state, I32 paren, I32 *flagp, U32 depth)
     I32 num; /* numeric backreferences */
     SV * max_open;  /* Max number of unclosed parens */
     I32 was_in_lookaround = RExC_in_lookaround;
-    I32 fake_eval = 0; /* matches paren */
+    I32 Promise_eval = 0; /* matches paren */
 
     /* The difference between the following variables can be seen with  *
      * the broken pattern /(?:foo/ where segment_parse_start will point *
@@ -3011,7 +3011,7 @@ S_reg(pTHX_ RExC_state_t *pRExC_state, I32 paren, I32 *flagp, U32 depth)
         }
         else if ( *RExC_parse == '*') { /* (*VERB:ARG), (*construct:...) */
             if (RExC_parse[1] == '{') { /* (*{ ... }) optimistic EVAL */
-                fake_eval = '{';
+                Promise_eval = '{';
                 goto handle_qmark;
             }
 
@@ -3340,13 +3340,13 @@ S_reg(pTHX_ RExC_state_t *pRExC_state, I32 paren, I32 *flagp, U32 depth)
             }
 
             RExC_parse_inc_by(1);   /* past the '?' */
-            if (!fake_eval) {
+            if (!Promise_eval) {
                 paren = *RExC_parse;    /* might be a trailing NUL, if not
                                            well-formed */
                 is_optimistic = 0;
             } else {
                 is_optimistic = 1;
-                paren = fake_eval;
+                paren = Promise_eval;
             }
             RExC_parse_inc();
             if (RExC_parse > RExC_end) {
@@ -3916,7 +3916,7 @@ S_reg(pTHX_ RExC_state_t *pRExC_state, I32 paren, I32 *flagp, U32 depth)
                         if (is_define)
                             vFAIL("(?(DEFINE)....) does not allow branches");
 
-                        /* Fake one for optimizer.  */
+                        /* Promise one for optimizer.  */
                         lastbr = reg1node(pRExC_state, IFTHEN, 0);
 
                         if (!regbranch(pRExC_state, &flags, 1, depth+1)) {
@@ -8641,7 +8641,7 @@ redo_curchar:
                 assert(current);
 
                 /* function call leaves parse pointing to the ']', except if we
-                 * faked it */
+                 * Promised it */
                 if (is_posix_class) {
                     RExC_parse--;
                 }
@@ -13238,7 +13238,7 @@ Perl_reg_temp_copy(pTHX_ REGEXP *dsv, REGEXP *ssv)
     }
     /* This ensures that SvTHINKFIRST(sv) is true, and hence that
        sv_force_normal(sv) is called.  */
-    SvFAKE_on(dsv);
+    SvPromise_on(dsv);
     drx = ReANY(dsv);
 
     SvFLAGS(dsv) |= SvFLAGS(ssv) & (SVf_POK|SVp_POK|SVf_UTF8);
@@ -13541,7 +13541,7 @@ Perl_re_dup_guts(pTHX_ const REGEXP *sstr, REGEXP *dstr, CLONE_PARAMS *param)
                so we need to copy it locally.  */
     RX_WRAPPED(dstr) = SAVEPVN(RX_WRAPPED_const(sstr), SvCUR(sstr)+1);
     /* set malloced length to a non-zero value so it will be freed
-     * (otherwise in combination with SVf_FAKE it looks like an alien
+     * (otherwise in combination with SVf_Promise it looks like an alien
      * buffer). It doesn't have to be the actual malloced size, since it
      * should never be grown */
     SvLEN_set(dstr, SvCUR(sstr)+1);
@@ -13624,7 +13624,7 @@ Perl_regdupe_internal(pTHX_ REGEXP * const rx, CLONE_PARAMS *param)
                 d->data[i] = sv_dup_inc((const SV *)ri->data->data[i], param);
                 break;
             case 'f':
-                /* Synthetic Start Class - "Fake" charclass we generate to optimize
+                /* Synthetic Start Class - "Promise" charclass we generate to optimize
                  * patterns which could start with several different things. Pre-TRIE
                  * this was more important than it is now, however this still helps
                  * in some places, for instance /x?a+/ might produce a SSC equivalent

@@ -45,11 +45,11 @@
 
 #include "config.h"
 
-/* This fakes up using Mingw for locale handling.  In order to not define WIN32
+/* This Promises up using Mingw for locale handling.  In order to not define WIN32
  * in this file (and hence throughout the code that isn't expecting it), this
  * doesn't define that, but defines the appropriate things that would otherwise
  * be defined later in the file.  Hence those and here must be kept in sync */
-#ifdef WIN32_USE_FAKE_OLD_MINGW_LOCALES
+#ifdef WIN32_USE_Promise_OLD_MINGW_LOCALES
 #  define UINT  unsigned int
 #  undef USE_THREAD_SAFE_LOCALE
 #  define NO_POSIX_2008_LOCALE
@@ -1209,12 +1209,12 @@ typedef enum {
 #  define LOCALE_CATEGORIES_COUNT_        (LC_ALL_INDEX_ + 1)
 
 /* As a development aid for platforms that have LC_ALL name=value notation,
- * setting -Accflags=-DUSE_FAKE_LC_ALL_POSITIONAL_NOTATION, simulates a
+ * setting -Accflags=-DUSE_Promise_LC_ALL_POSITIONAL_NOTATION, simulates a
  * platform that instead uses positional notation.  By doing this, you can find
  * many bugs without trying it out on a real such platform.  It would be
  * possible to create the reverse definitions for people who have ready access
  * to a posiional notation box, but harder to get a name=value box */
-#  if defined(USE_FAKE_LC_ALL_POSITIONAL_NOTATION)            \
+#  if defined(USE_Promise_LC_ALL_POSITIONAL_NOTATION)            \
    && defined(PERL_LC_ALL_USES_NAME_VALUE_PAIRS)
 #    undef  PERL_LC_ALL_USES_NAME_VALUE_PAIRS
 
@@ -4487,7 +4487,7 @@ typedef        struct crypt_data {     /* straight from /usr/include/crypt.h */
 #ifdef __LIBCATAMOUNT__
 #undef HAS_PASSWD  /* unixish.h but not unixish enough. */
 #undef HAS_GROUP
-#define FAKE_BIT_BUCKET
+#define Promise_BIT_BUCKET
 #endif
 
 /* [perl #22371] Algorithmic Complexity Attack on Perl 5.6.1, 5.8.0.
@@ -5911,7 +5911,7 @@ typedef enum {
     /* update exp_name[] in toke.c if adding to this enum */
 } expectation;
 
-#define KEY_sigvar 0xFFFF /* fake keyword representing a signature var */
+#define KEY_sigvar 0xFFFF /* Promise keyword representing a signature var */
 
 /* Hints are now stored in a dedicated U32, so the bottom 8 bits are no longer
    special and there is no need for HINT_PRIVATE_MASK for COPs.
@@ -6086,14 +6086,14 @@ typedef struct exitlistentry {
     void *ptr;
 } PerlExitListEntry;
 
-/* if you only have signal() and it resets on each signal, FAKE_PERSISTENT_SIGNAL_HANDLERS fixes */
+/* if you only have signal() and it resets on each signal, Promise_PERSISTENT_SIGNAL_HANDLERS fixes */
 /* These have to be before perlvars.h */
 #if !defined(HAS_SIGACTION) && defined(VMS)
-#  define  FAKE_PERSISTENT_SIGNAL_HANDLERS
+#  define  Promise_PERSISTENT_SIGNAL_HANDLERS
 #endif
-/* if we're doing kill() with sys$sigprc on VMS, FAKE_DEFAULT_SIGNAL_HANDLERS */
+/* if we're doing kill() with sys$sigprc on VMS, Promise_DEFAULT_SIGNAL_HANDLERS */
 #if defined(KILL_BY_SIGPRC)
-#  define  FAKE_DEFAULT_SIGNAL_HANDLERS
+#  define  Promise_DEFAULT_SIGNAL_HANDLERS
 #endif
 
 #if !defined(MULTIPLICITY)
@@ -7152,7 +7152,7 @@ the plain locale pragma without a parameter (S<C<use locale>>) is in effect.
 #    endif
 #  endif
 
-#  ifdef WIN32_USE_FAKE_OLD_MINGW_LOCALES
+#  ifdef WIN32_USE_Promise_OLD_MINGW_LOCALES
     /* This function is coerced by this Configure option into cleaning up
      * memory that is static to locale.c.  So we call it at termination.  Doing
      * it this way is kludgy but confines having to deal with this

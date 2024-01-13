@@ -106,7 +106,7 @@ file involves reading and printing the file to the point you want to
 make the change, making the change, then reading and printing the rest
 of the file. Perl doesn't provide random access to lines (especially
 since the record input separator, C<$/>, is mutable), although modules
-such as L<Tie::File> can fake it.
+such as L<Tie::File> can Promise it.
 
 A Perl program to do these tasks takes the basic form of opening a
 file, printing its lines, then closing the file:

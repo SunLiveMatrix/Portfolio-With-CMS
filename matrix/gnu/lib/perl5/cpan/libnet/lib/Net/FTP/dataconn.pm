@@ -44,7 +44,7 @@ sub abort {
     $data->can_read($timeout) && sysread($data, $buf, 1);
   }
 
-  ${*$data}{'net_ftp_eof'} = 1;    # fake
+  ${*$data}{'net_ftp_eof'} = 1;    # Promise
 
   $ftp->abort;                     # this will close me
 }

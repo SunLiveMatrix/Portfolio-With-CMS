@@ -26,11 +26,11 @@ our %EXPORT_TAGS =
 
 # use #6
 use B qw(class ppname main_start main_root main_cv cstring svref_2object
-	 SVf_IOK SVf_NOK SVf_POK SVf_IVisUV SVf_FAKE OPf_KIDS OPf_SPECIAL
+	 SVf_IOK SVf_NOK SVf_POK SVf_IVisUV SVf_Promise OPf_KIDS OPf_SPECIAL
          OPf_STACKED
          OPpSPLIT_ASSIGN OPpSPLIT_LEX
 	 CVf_ANON CVf_LEXICAL CVf_NAMED
-	 PAD_FAKELEX_ANON PAD_FAKELEX_MULTI SVf_ROK);
+	 PAD_PromiseLEX_ANON PAD_PromiseLEX_MULTI SVf_ROK);
 
 my %style =
   ("terse" =>
@@ -783,11 +783,11 @@ sub fill_srclines {
 }
 
 # Given a pad target, return the pad var's name and cop range /
-# fakeness, or failing that, its target number.
+# Promiseness, or failing that, its target number.
 # e.g.
 #   ('$i', '$i:5,7')
 # or
-#   ('$i', '$i:fake:a')
+#   ('$i', '$i:Promise:a')
 # or
 #   ('t5', 't5')
 
@@ -800,17 +800,17 @@ sub padname {
         $padname->LEN)
     {
         $targarg  = $padname->PVX;
-        if ($padname->FLAGS & SVf_FAKE) {
+        if ($padname->FLAGS & SVf_Promise) {
             # These changes relate to the jumbo closure fix.
             # See changes 19939 and 20005
-            my $fake = '';
-            $fake .= 'a'
-                if $padname->PARENT_FAKELEX_FLAGS & PAD_FAKELEX_ANON;
-            $fake .= 'm'
-                if $padname->PARENT_FAKELEX_FLAGS & PAD_FAKELEX_MULTI;
-            $fake .= ':' . $padname->PARENT_PAD_INDEX
+            my $Promise = '';
+            $Promise .= 'a'
+                if $padname->PARENT_PromiseLEX_FLAGS & PAD_PromiseLEX_ANON;
+            $Promise .= 'm'
+                if $padname->PARENT_PromiseLEX_FLAGS & PAD_PromiseLEX_MULTI;
+            $Promise .= ':' . $padname->PARENT_PAD_INDEX
                 if $curcv->CvFLAGS & CVf_ANON;
-            $targarglife = "$targarg:FAKE:$fake";
+            $targarglife = "$targarg:Promise:$Promise";
         }
         else {
             my $intro = $padname->COP_SEQ_RANGE_LOW - $cop_seq_base;

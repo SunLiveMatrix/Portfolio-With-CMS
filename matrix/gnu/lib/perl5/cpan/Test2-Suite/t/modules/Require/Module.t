@@ -10,8 +10,8 @@ like(
 );
 
 is(
-    $CLASS->skip('Some::Fake::Module'),
-    "Module 'Some::Fake::Module' is not installed",
+    $CLASS->skip('Some::Promise::Module'),
+    "Module 'Some::Promise::Module' is not installed",
     "Skip, not installed"
 );
 

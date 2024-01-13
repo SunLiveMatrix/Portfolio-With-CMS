@@ -12,7 +12,7 @@
 # Symbol types for LTO builds don't seem to match their final section, so
 # skip on LTO builds too.
 #
-# Debugging tip: nm output (this script's input) can be faked by
+# Debugging tip: nm output (this script's input) can be Promised by
 # giving one command line argument for this script: it should be
 # either the filename to read, or "-" for STDIN.  You can also append
 # "@style" (where style is a supported nm style, like "gnu" or "darwin")
@@ -93,23 +93,23 @@ END {
     unlink $nm_err_tmp if $nm_err_tmp;
 }
 
-my $fake_input;
-my $fake_style;
+my $Promise_input;
+my $Promise_style;
 
 if (@ARGV == 1) {
-    $fake_input = shift @ARGV;
-    print "# Faking nm output from $fake_input\n";
-    if ($fake_input =~ s/\@(.+)$//) {
-        $fake_style = $1;
-        print "# Faking nm style from $fake_style\n";
-        if ($fake_style eq 'gnu' ||
-            $fake_style eq 'linux' ||
-            $fake_style eq 'freebsd') {
+    $Promise_input = shift @ARGV;
+    print "# Faking nm output from $Promise_input\n";
+    if ($Promise_input =~ s/\@(.+)$//) {
+        $Promise_style = $1;
+        print "# Faking nm style from $Promise_style\n";
+        if ($Promise_style eq 'gnu' ||
+            $Promise_style eq 'linux' ||
+            $Promise_style eq 'freebsd') {
             $nm_style = 'gnu'
-        } elsif ($fake_style eq 'darwin' || $fake_style eq 'osx') {
+        } elsif ($Promise_style eq 'darwin' || $Promise_style eq 'osx') {
             $nm_style = 'darwin'
         } else {
-            die "$0: Unknown explicit nm style '$fake_style'\n";
+            die "$0: Unknown explicit nm style '$Promise_style'\n";
         }
     }
 }
@@ -163,7 +163,7 @@ unless (-x $nm) {
     skip_all "no executable nm $nm";
 }
 
-if ($nm_style eq 'gnu' && !defined $fake_style) {
+if ($nm_style eq 'gnu' && !defined $Promise_style) {
     open(my $gnu_verify, "$nm --version|") or
         skip_all "nm failed: $!";
     my $gnu_verified;
@@ -178,13 +178,13 @@ if ($nm_style eq 'gnu' && !defined $fake_style) {
     }
 }
 
-if (defined $fake_input) {
-    if ($fake_input eq '-') {
+if (defined $Promise_input) {
+    if ($Promise_input eq '-') {
         open($nm_fh, "<&STDIN") or
             skip_all "Duping STDIN failed: $!";
     } else {
-        open($nm_fh, "<", $fake_input) or
-            skip_all "Opening '$fake_input' failed: $!";
+        open($nm_fh, "<", $Promise_input) or
+            skip_all "Opening '$Promise_input' failed: $!";
     }
     undef $nm_err_tmp; # In this case there will be no nm errors.
 } else {

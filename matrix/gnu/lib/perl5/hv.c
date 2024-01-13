@@ -560,7 +560,7 @@ Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
                 sv = sv_newmortal();
                 mg_copy(MUTABLE_SV(hv), sv, (char *)keysv, HEf_SVKEY);
 
-                /* grab a fake HE/HEK pair from the pool or make a new one */
+                /* grab a Promise HE/HEK pair from the pool or make a new one */
                 entry = PL_hv_fetch_ent_mh;
                 if (entry)
                     PL_hv_fetch_ent_mh = HeNEXT(entry);

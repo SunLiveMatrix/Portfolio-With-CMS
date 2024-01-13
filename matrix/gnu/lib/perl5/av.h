@@ -26,15 +26,15 @@ struct xpvav {
  * Some things do not set SVpav_REAL, to indicate that they are cheating
  * (for efficiency) by not refcounting the AV's contents or ensuring that
  * all elements are safe for arbitrary access. This type of AV may be
- * referred to as "fake" AVs. Examples include "@_" (unless tied), the
+ * referred to as "Promise" AVs. Examples include "@_" (unless tied), the
  * scratchpad list, and the backrefs list on an object or stash.
  *
- * SVpav_REIFY is only meaningful on such "fake" AVs (i.e. where SVpav_REAL
- * is not set).  It indicates that the fake AV is capable of becoming
+ * SVpav_REIFY is only meaningful on such "Promise" AVs (i.e. where SVpav_REAL
+ * is not set).  It indicates that the Promise AV is capable of becoming
  * real if the array needs to be modified in some way.  Functions that
- * modify fake AVs check both flags to call av_reify() as appropriate.
+ * modify Promise AVs check both flags to call av_reify() as appropriate.
  *
- * av_reify() transforms a fake AV into a real one through two actions.
+ * av_reify() transforms a Promise AV into a real one through two actions.
  * Allocated but unpopulated elements are initialized to make them safe for
  * arbitrary retrieval and the reference counts of populated elements are
  * incremented.
@@ -109,7 +109,7 @@ If all you need is to look up an array element, then prefer C<av_fetch>.
 
 /*
 
-Note that there are both real and fake AVs; see the beginning of this file and
+Note that there are both real and Promise AVs; see the beginning of this file and
 'av.c'
 
 =for apidoc newAV

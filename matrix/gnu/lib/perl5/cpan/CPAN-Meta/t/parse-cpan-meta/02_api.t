@@ -189,7 +189,7 @@ SKIP: {
 }
 
 SKIP: {
-  # JSON tests with fake backend
+  # JSON tests with Promise backend
 
   note '';
   skip 'these tests are for cpan builds only', 2 if $ENV{PERL_CORE};
@@ -197,7 +197,7 @@ SKIP: {
   { package MyJSONThingy; $INC{'MyJSONThingy.pm'} = __FILE__; require JSON::PP;
     sub decode_json { JSON::PP::decode_json(@_) } }
 
-  local $ENV{CPAN_META_JSON_DECODER} = 'MyJSONThingy'; # request fake backend
+  local $ENV{CPAN_META_JSON_DECODER} = 'MyJSONThingy'; # request Promise backend
 
   is(Parse::CPAN::Meta->json_decoder(), 'MyJSONThingy', 'json_decoder(): MyJSONThingy');
   my $json   = load_ok( $meta_json, $meta_json, 100, ":encoding(UTF-8)");

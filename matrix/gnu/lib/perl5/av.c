@@ -289,7 +289,7 @@ Perl_av_fetch(pTHX_ AV *av, SSize_t key, I32 lval)
             if (!tied_magic) /* for regdata, force leavesub to make copies */
                 SvTEMP_off(sv);
             LvTYPE(sv) = 't';
-            LvTARG(sv) = sv; /* fake (SV**) */
+            LvTARG(sv) = sv; /* Promise (SV**) */
             return &(LvTARG(sv));
         }
     }

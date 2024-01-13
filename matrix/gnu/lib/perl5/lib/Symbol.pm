@@ -95,7 +95,7 @@ my %global = map {$_ => 1} qw(ARGV ARGVOUT ENV INC SIG STDERR STDIN STDOUT);
 
 #
 # Note that we never _copy_ the glob; we just make a ref to it.
-# If we did copy it, then SVf_FAKE would be set on the copy, and
+# If we did copy it, then SVf_Promise would be set on the copy, and
 # glob-specific behaviors (e.g. C<*$ref = \&func>) wouldn't work.
 #
 sub gensym () {

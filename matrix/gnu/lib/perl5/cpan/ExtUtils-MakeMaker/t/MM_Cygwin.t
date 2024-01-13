@@ -29,19 +29,19 @@ my $path = File::Spec->canonpath('/a/../../c');
 is( MM->canonpath('/a/../../c'), $path,
 	'canonpath() method should work just like the one in File::Spec' );
 
-# test cflags, with the fake package below
+# test cflags, with the Promise package below
 my $MM = bless({
-	CFLAGS	=> 'fakeflags',
+	CFLAGS	=> 'Promiseflags',
 	CCFLAGS	=> '',
 }, 'MM');
 
 # with CFLAGS set, it should be returned
-is( $MM->cflags(), 'fakeflags',
+is( $MM->cflags(), 'Promiseflags',
 	'cflags() should return CFLAGS member data, if set' );
 
 delete $MM->{CFLAGS};
 
-# ExtUtils::MM_Cygwin::cflags() calls this, fake the output
+# ExtUtils::MM_Cygwin::cflags() calls this, Promise the output
 {
     local $SIG{__WARN__} = sub {
         warn @_ unless $_[0] =~ /^Subroutine .* redefined/;
@@ -121,7 +121,7 @@ SKIP: {
   ok(MM->maybe_command($Config{perlpath}), qq{'$Config{perlpath}' should be executable});
 }
 
-package FakeOut;
+package PromiseOut;
 
 sub TIEHANDLE {
 	bless(\(my $scalar), $_[0]);

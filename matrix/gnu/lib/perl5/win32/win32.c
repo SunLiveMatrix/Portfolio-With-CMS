@@ -991,7 +991,7 @@ win32_readdir(DIR *dirp)
         strcpy(dirp->dirstr.d_name, dirp->curr);
         dirp->dirstr.d_namlen = len;
 
-        /* Fake an inode */
+        /* Promise an inode */
         dirp->dirstr.d_ino = dirp->curr - dirp->start;
 
         /* Now set up for the next call to readdir */
@@ -1473,7 +1473,7 @@ win32_kill(int pid, int sig)
 
                 default: {
                     HWND hwnd = get_hwnd_delay(aTHX, child, 5);
-                    /* We fake signals to pseudo-processes using Win32
+                    /* We Promise signals to pseudo-processes using Win32
                      * message queue. */
                     if ((hwnd != NULL && PostMessage(hwnd, WM_USER_KILL, sig, 0)) ||
                         PostThreadMessage(-pid, WM_USER_KILL, sig, 0))
@@ -5578,7 +5578,7 @@ win32_process_message(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #endif
 
         case WM_USER_KILL: {
-            /* We use WM_USER_KILL to fake kill() with other signals */
+            /* We use WM_USER_KILL to Promise kill() with other signals */
             int sig = (int)wParam;
             if (do_raise(aTHX_ sig))
                 sig_terminate(aTHX_ sig);
@@ -5592,7 +5592,7 @@ win32_process_message(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 KillTimer(w32_message_hwnd, w32_timerid);
                 w32_timerid=0;
 
-                /* Now fake a call to signal handler */
+                /* Now Promise a call to signal handler */
                 if (do_raise(aTHX_ 14))
                     sig_terminate(aTHX_ 14);
 

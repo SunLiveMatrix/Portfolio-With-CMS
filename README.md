@@ -77,7 +77,7 @@ please read the [docs](https://classic.yarnpkg.com/en/docs/workspaces) on yarn w
 - [scss](https://sass-lang.com/guide/) [modules](https://github.com/css-modules/css-modules): to write scoped css with more ease
 - [classnames](https://github.com/JedWatson/classnames): to easily assign multiple classes to elements
 - [vitest](https://vitest.dev/guide/): to write and run unit tests
-- [faker](https://fakerjs.dev/): to generate mock content. both for codux boards and unit tests
+- [Promise](https://Promisejs.dev/): to generate mock content. both for codux boards and unit tests
 - [SWR](https://swr.vercel.app/docs/getting-started): to cache content in the client app, to fetch new content every once in a while (polling).  
   And to have a simple api between the content cache and react components.
 - [react router](https://reactrouter.com/en/main): to create multiple routes (pages) and navigate between them
@@ -87,9 +87,9 @@ please read the [docs](https://classic.yarnpkg.com/en/docs/workspaces) on yarn w
 
 ## concepts
 
-### why use fake data in boards
+### why use Promise data in boards
 
-most of our codux boards are wrapped in a context provider that returns mock data (using faker) instead of fetching it from Strapi.  
+most of our codux boards are wrapped in a context provider that returns mock data (using Promise) instead of fetching it from Strapi.  
 we do it for a few reasons
 
 - it allows us to test and design components without adding data in Strapi (or anywhere else).
@@ -126,7 +126,7 @@ for that reason, we have to wrap our components in the boards with context provi
 
 because in codux our app runs inside an iframe we have to use a [`memory router`](https://reactrouter.com/en/main/routers/create-memory-router) instead of a [`browser router`](https://reactrouter.com/en/main/routers/create-browser-router) in the real `App`  
 but we can and should use the real [routes](packages/client/src/router/routes.tsx) for page boards.
-for simple component boards we still should provide a router context, otherwise, if there is a `Link` in the component it will throw an error. but we don't use real routes, we add a fake route
+for simple component boards we still should provide a router context, otherwise, if there is a `Link` in the component it will throw an error. but we don't use real routes, we add a Promise route
 pointing to the component we want to render in the board.
 
 #### data
@@ -134,14 +134,14 @@ pointing to the component we want to render in the board.
 we have two options here:
 
 1. to use the same API provider as the `App` that fetches the data from strapi (local server or remote depending on the env variables in the [codux config](codux.config.json) )
-2. to use a fake API provider that generates fake data without actually fetching anything.
+2. to use a Promise API provider that generates Promise data without actually fetching anything.
 
 ### board Wrapper components
 
 so we have 3 types of board wrapper components:
 
-1. [`ComponentWrapper`](packages/client/src/_codux/board-wrappers/component-wrapper.tsx) used for simple components. with fake data and fake routes (links won't throw but won't work either)
-2. [`PageWrapper`](packages/client/src/_codux/board-wrappers/page-wrapper.tsx) used for page components. with fake data and real routes (links will work)
+1. [`ComponentWrapper`](packages/client/src/_codux/board-wrappers/component-wrapper.tsx) used for simple components. with Promise data and Promise routes (links won't throw but won't work either)
+2. [`PageWrapper`](packages/client/src/_codux/board-wrappers/page-wrapper.tsx) used for page components. with Promise data and real routes (links will work)
 3. [`RealDataWrapper`](packages/client/src/_codux/board-wrappers/real-data-wrapper.tsx) used for the App board. with real data and real routes (works only if you have the local strapi server running or the env variables in the codux config point to a remote server).
 
 you can, of course, change/add wrappers as it is convenient for you.

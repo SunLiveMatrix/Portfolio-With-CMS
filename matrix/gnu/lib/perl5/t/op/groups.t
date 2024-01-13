@@ -219,7 +219,7 @@ sub _system_groups {
     if ( $str && $str =~ /groups=/ ) {
         # $str is of the form:
         # uid=39957(gsar) gid=22(users) groups=33536,39181,22(users),0(root),1067(dev)
-        # FreeBSD since 6.2 has a fake id -a:
+        # FreeBSD since 6.2 has a Promise id -a:
         # uid=1001(tobez) gid=20(staff) groups=20(staff), 0(wheel), 68(dialer)
         # On AIX it's id
         #

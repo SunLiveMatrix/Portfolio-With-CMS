@@ -1374,13 +1374,13 @@
 #         define less_dicey_bool_setlocale_r(a,b) S_less_dicey_bool_setlocale_r(aTHX_ a,b)
 #         define less_dicey_setlocale_r(a,b)    S_less_dicey_setlocale_r(aTHX_ a,b)
 #       endif
-#       if defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES)
+#       if defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES)
 #         define Win_byte_string_to_wstring     S_Win_byte_string_to_wstring
 #         define Win_wstring_to_byte_string     S_Win_wstring_to_byte_string
 #         define win32_setlocale(a,b)           S_win32_setlocale(aTHX_ a,b)
 #         define wrap_wsetlocale(a,b)           S_wrap_wsetlocale(aTHX_ a,b)
 #       endif
-#       if   defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES) || \
+#       if   defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES) || \
            ( defined(USE_POSIX_2008_LOCALE) && !defined(USE_QUERYLOCALE) )
 #         define find_locale_from_environment(a) S_find_locale_from_environment(aTHX_ a)
 #       endif

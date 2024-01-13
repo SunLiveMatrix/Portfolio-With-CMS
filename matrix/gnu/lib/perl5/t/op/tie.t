@@ -1056,7 +1056,7 @@ tie $x, "";       # bang!
 print STDERR "ok\n";
 
 # However, one should not be able to tie read-only glob copies, which look
-# a bit like kine internally (FAKE + READONLY).
+# a bit like kine internally (Promise + READONLY).
 $y = *foo;
 Internals::SvREADONLY($y,1);
 tie $y, "";

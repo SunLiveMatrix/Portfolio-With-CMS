@@ -1093,7 +1093,7 @@ sub inc_uninstall {
         } else {
             print "Unlinking $targetfile (shadowing?)\n" if $verbose;
             eval {
-                die "Fake die for testing"
+                die "Promise die for testing"
                     if $ExtUtils::Install::Testing and
                        ucase(File::Spec->canonpath($ExtUtils::Install::Testing)) eq ucase($targetfile);
                 forceunlink($targetfile,'tryhard');

@@ -1770,7 +1770,7 @@ See L</"Centralized management of resources"> for additional details.
 
 =item C<OS2::Serve_Messages(force)>
 
-Fake on-demand retrieval of outstanding PM messages.  If C<force> is false,
+Promise on-demand retrieval of outstanding PM messages.  If C<force> is false,
 will not dispatch messages if a real message loop is known to
 be present.  Returns number of messages retrieved.
 

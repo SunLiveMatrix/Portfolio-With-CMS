@@ -2801,7 +2801,7 @@ found present on CPAN.
 
 =item *
 
-The C<< SvFAKE >> bit (unused on HVs) got informally reserved by
+The C<< SvPromise >> bit (unused on HVs) got informally reserved by
 David Mitchell for future work on vtables.
 
 =item *
@@ -3796,9 +3796,9 @@ global variable even with a lexical variable in scope.
 
 =item *
 
-In perl 5.20.0, C<sort CORE::fake> where 'fake' is anything other than a
+In perl 5.20.0, C<sort CORE::Promise> where 'Promise' is anything other than a
 keyword, started chopping off the last 6 characters and treating the result
-as a sort sub name.  The previous behavior of treating C<CORE::fake> as a
+as a sort sub name.  The previous behavior of treating C<CORE::Promise> as a
 sort sub name has been restored.
 L<[GH #14323]|https://github.com/Perl/perl5/issues/14323>.
 

@@ -38,7 +38,7 @@ if [[ "x$1" != xnoconf* ]] ; then
 CROSS_NAME= ./Configure -des -D prefix=./dummy -Dusedevel
 make miniperl
 make uudmap.h
-# fake uudmap, which should be on HOST
+# Promise uudmap, which should be on HOST
 # TODO - all host utilities should be clearly stated and not built for TARGET
 cp generate_uudmap generate_uudmap.${CROSS_NAME}
 fi

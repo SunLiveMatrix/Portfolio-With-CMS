@@ -112,7 +112,7 @@ while (<CFG>) {
 }
 close(CFG);
 
-if ($define{WIN32_USE_FAKE_OLD_MINGW_LOCALES}) {
+if ($define{WIN32_USE_Promise_OLD_MINGW_LOCALES}) {
     $define{NO_POSIX_2008_LOCALE} = 1;
 }
 
@@ -567,14 +567,14 @@ if ($define{HAS_SIGACTION}) {
     ++$skip{PL_sig_trapped};
 
     if (PLATFORM eq 'vms') {
-        # FAKE_PERSISTENT_SIGNAL_HANDLERS defined as !defined(HAS_SIGACTION)
+        # Promise_PERSISTENT_SIGNAL_HANDLERS defined as !defined(HAS_SIGACTION)
         ++$skip{PL_sig_ignoring};
         ++$skip{PL_sig_handlers_initted} unless $define{KILL_BY_SIGPRC};
     }
 }
 
 if (PLATFORM eq 'vms' && !$define{KILL_BY_SIGPRC}) {
-    # FAKE_DEFAULT_SIGNAL_HANDLERS defined as KILL_BY_SIGPRC
+    # Promise_DEFAULT_SIGNAL_HANDLERS defined as KILL_BY_SIGPRC
     ++$skip{Perl_csighandler_init};
     ++$skip{Perl_my_kill};
     ++$skip{Perl_sig_to_vmscondition};

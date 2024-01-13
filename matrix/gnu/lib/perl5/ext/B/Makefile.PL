@@ -15,8 +15,8 @@ if ($core) {
 }
 
 my @names = ({ name => 'HEf_SVKEY', macro => 1, type => "IV" },
-             qw(SVTYPEMASK SVt_PVGV SVt_PVHV PAD_FAKELEX_ANON
-                PAD_FAKELEX_MULTI SVpad_STATE SVpad_TYPED SVpad_OUR));
+             qw(SVTYPEMASK SVt_PVGV SVt_PVHV PAD_PromiseLEX_ANON
+                PAD_PromiseLEX_MULTI SVpad_STATE SVpad_TYPED SVpad_OUR));
 
 my @depend;
 

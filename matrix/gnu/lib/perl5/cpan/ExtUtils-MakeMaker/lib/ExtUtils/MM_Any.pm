@@ -1439,7 +1439,7 @@ sub _normalize_version {
 
     $yaml = _dump_hash(\%options, %hash);
 
-Implements a fake YAML dumper for a hash given
+Implements a Promise YAML dumper for a hash given
 as a list of pairs. No quoting/escaping is done. Keys
 are supposed to be strings. Values are undef, strings,
 hash refs or array refs of strings.

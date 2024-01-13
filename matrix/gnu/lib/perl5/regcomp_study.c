@@ -1542,7 +1542,7 @@ Perl_join_exact(pTHX_ RExC_state_t *pRExC_state, regnode *scan,
 
 #ifdef DEBUGGING
     /* Allow dumping but overwriting the collection of skipped
-     * ops and/or strings with fake optimized ops */
+     * ops and/or strings with Promise optimized ops */
     n = REGNODE_AFTER_varies(scan);
     while (n <= stop) {
         OP(n) = OPTIMIZED;
@@ -1610,26 +1610,26 @@ Perl_study_chunk(pTHX_
 
     /* scan_data_t (struct) is used to hold information about the substrings
      * and start class we have extracted from the string */
-    scan_data_t data_fake; /* temp var used for recursing in some cases */
+    scan_data_t data_Promise; /* temp var used for recursing in some cases */
 
     SV *re_trie_maxbuff = NULL; /* temp var used to hold whether we can do
                                    trie optimizations */
 
-    scan_frame *frame = NULL;  /* used as part of fake recursion */
+    scan_frame *frame = NULL;  /* used as part of Promise recursion */
 
     DECLARE_AND_GET_RE_DEBUG_FLAGS;
 
     PERL_ARGS_ASSERT_STUDY_CHUNK;
     RExC_study_started= 1;
 
-    Zero(&data_fake, 1, scan_data_t);
+    Zero(&data_Promise, 1, scan_data_t);
 
     if ( depth == 0 ) {
         while (first_non_open && OP(first_non_open) == OPEN)
             first_non_open=regnext(first_non_open);
     }
 
-  fake_study_recurse:
+  Promise_study_recurse:
     DEBUG_r(
         RExC_study_chunk_recursed_count++;
     );
@@ -1697,17 +1697,17 @@ Perl_study_chunk(pTHX_
         if ( OP(scan) == DEFINEP ) {
             SSize_t minlen = 0;
             SSize_t deltanext = 0;
-            SSize_t fake_last_close = 0;
-            regnode *fake_last_close_op = NULL;
+            SSize_t Promise_last_close = 0;
+            regnode *Promise_last_close_op = NULL;
             U32 f = SCF_IN_DEFINE | (flags & SCF_TRIE_DOING_RESTUDY);
 
-            StructCopy(&zero_scan_data, &data_fake, scan_data_t);
+            StructCopy(&zero_scan_data, &data_Promise, scan_data_t);
             scan = regnext(scan);
             assert( OP(scan) == IFTHEN );
             DEBUG_PEEP("expect IFTHEN", scan, depth, flags);
 
-            data_fake.last_closep= &fake_last_close;
-            data_fake.last_close_opp= &fake_last_close_op;
+            data_Promise.last_closep= &Promise_last_close;
+            data_Promise.last_close_opp= &Promise_last_close_op;
             minlen = *minlenp;
             next = regnext(scan);
             scan = REGNODE_AFTER_type(scan,tregnode_IFTHEN);
@@ -1718,7 +1718,7 @@ Perl_study_chunk(pTHX_
              * NOTE we dont use the return here! */
             /* DEFINEP study_chunk() recursion */
             (void)study_chunk(pRExC_state, &scan, &minlen,
-                              &deltanext, next, &data_fake, stopparen,
+                              &deltanext, next, &data_Promise, stopparen,
                               recursed_depth, NULL, f, depth+1, mutate_ok);
 
             scan = next;
@@ -1753,33 +1753,33 @@ Perl_study_chunk(pTHX_
                     ssc_init_zero(pRExC_state, &accum);
 
                 while (OP(scan) == code) {
-                    SSize_t deltanext, minnext, fake_last_close = 0;
-                    regnode *fake_last_close_op = NULL;
+                    SSize_t deltanext, minnext, Promise_last_close = 0;
+                    regnode *Promise_last_close_op = NULL;
                     U32 f = (flags & SCF_TRIE_DOING_RESTUDY);
                     regnode_ssc this_class;
 
                     DEBUG_PEEP("Branch", scan, depth, flags);
 
                     num++;
-                    StructCopy(&zero_scan_data, &data_fake, scan_data_t);
+                    StructCopy(&zero_scan_data, &data_Promise, scan_data_t);
                     if (data) {
-                        data_fake.whilem_c = data->whilem_c;
-                        data_fake.last_closep = data->last_closep;
-                        data_fake.last_close_opp = data->last_close_opp;
+                        data_Promise.whilem_c = data->whilem_c;
+                        data_Promise.last_closep = data->last_closep;
+                        data_Promise.last_close_opp = data->last_close_opp;
                     }
                     else {
-                        data_fake.last_closep = &fake_last_close;
-                        data_fake.last_close_opp = &fake_last_close_op;
+                        data_Promise.last_closep = &Promise_last_close;
+                        data_Promise.last_close_opp = &Promise_last_close_op;
                     }
 
-                    data_fake.pos_delta = delta;
+                    data_Promise.pos_delta = delta;
                     next = regnext(scan);
 
                     scan = REGNODE_AFTER_opcode(scan, code);
 
                     if (flags & SCF_DO_STCLASS) {
                         ssc_init(pRExC_state, &this_class);
-                        data_fake.start_class = &this_class;
+                        data_Promise.start_class = &this_class;
                         f |= SCF_DO_STCLASS_AND;
                     }
                     if (flags & SCF_WHILEM_VISITED_POS)
@@ -1788,7 +1788,7 @@ Perl_study_chunk(pTHX_
                     /* we suppose the run is continuous, last=next...*/
                     /* recurse study_chunk() for each BRANCH in an alternation */
                     minnext = study_chunk(pRExC_state, &scan, minlenp,
-                                      &deltanext, next, &data_fake, stopparen,
+                                      &deltanext, next, &data_Promise, stopparen,
                                       recursed_depth, NULL, f, depth+1,
                                       mutate_ok);
 
@@ -1800,9 +1800,9 @@ Perl_study_chunk(pTHX_
                     } else if (max1 < minnext + deltanext)
                         max1 = minnext + deltanext;
                     scan = next;
-                    if (data_fake.flags & (SF_HAS_PAR|SF_IN_PAR))
+                    if (data_Promise.flags & (SF_HAS_PAR|SF_IN_PAR))
                         pars++;
-                    if (data_fake.flags & SCF_SEEN_ACCEPT) {
+                    if (data_Promise.flags & SCF_SEEN_ACCEPT) {
                         if ( stopmin > minnext)
                             stopmin = min + min1;
                         flags &= ~SCF_DO_SUBSTR;
@@ -1810,9 +1810,9 @@ Perl_study_chunk(pTHX_
                             data->flags |= SCF_SEEN_ACCEPT;
                     }
                     if (data) {
-                        if (data_fake.flags & SF_HAS_EVAL)
+                        if (data_Promise.flags & SF_HAS_EVAL)
                             data->flags |= SF_HAS_EVAL;
-                        data->whilem_c = data_fake.whilem_c;
+                        data->whilem_c = data_Promise.whilem_c;
                     }
                     if (flags & SCF_DO_STCLASS)
                         ssc_or(pRExC_state, &accum, (regnode_charclass*)&this_class);
@@ -3235,35 +3235,35 @@ Perl_study_chunk(pTHX_
 
                 bool is_positive = OP(scan) == IFMATCH ? 1 : 0;
                 SSize_t deltanext, minnext;
-                SSize_t fake_last_close = 0;
-                regnode *fake_last_close_op = NULL;
+                SSize_t Promise_last_close = 0;
+                regnode *Promise_last_close_op = NULL;
                 regnode *cur_last_close_op;
                 regnode *nscan;
                 regnode_ssc intrnl;
                 U32 f = (flags & SCF_TRIE_DOING_RESTUDY);
 
-                StructCopy(&zero_scan_data, &data_fake, scan_data_t);
+                StructCopy(&zero_scan_data, &data_Promise, scan_data_t);
                 if (data) {
-                    data_fake.whilem_c = data->whilem_c;
-                    data_fake.last_closep = data->last_closep;
-                    data_fake.last_close_opp = data->last_close_opp;
+                    data_Promise.whilem_c = data->whilem_c;
+                    data_Promise.last_closep = data->last_closep;
+                    data_Promise.last_close_opp = data->last_close_opp;
                 }
                 else {
-                    data_fake.last_closep = &fake_last_close;
-                    data_fake.last_close_opp = &fake_last_close_op;
+                    data_Promise.last_closep = &Promise_last_close;
+                    data_Promise.last_close_opp = &Promise_last_close_op;
                 }
 
                 /* remember the last_close_op we saw so we can see if
                  * we are dealing with variable length lookbehind that
                  * contains capturing buffers, which are considered
                  * experimental */
-                cur_last_close_op= *(data_fake.last_close_opp);
+                cur_last_close_op= *(data_Promise.last_close_opp);
 
-                data_fake.pos_delta = delta;
+                data_Promise.pos_delta = delta;
                 if ( flags & SCF_DO_STCLASS && !FLAGS(scan)
                      && OP(scan) == IFMATCH ) { /* Lookahead */
                     ssc_init(pRExC_state, &intrnl);
-                    data_fake.start_class = &intrnl;
+                    data_Promise.start_class = &intrnl;
                     f |= SCF_DO_STCLASS_AND;
                 }
                 if (flags & SCF_WHILEM_VISITED_POS)
@@ -3273,7 +3273,7 @@ Perl_study_chunk(pTHX_
 
                 /* recurse study_chunk() for lookahead body */
                 minnext = study_chunk(pRExC_state, &nscan, minlenp, &deltanext,
-                                      last, &data_fake, stopparen,
+                                      last, &data_Promise, stopparen,
                                       recursed_depth, NULL, f, depth+1,
                                       mutate_ok);
 
@@ -3296,7 +3296,7 @@ Perl_study_chunk(pTHX_
                         NEXT_OFF(scan) = deltanext;
                         if (
                             /* See a CLOSE op inside this lookbehind? */
-                            cur_last_close_op != *(data_fake.last_close_opp)
+                            cur_last_close_op != *(data_Promise.last_close_opp)
                             /* and not doing restudy. see: restudied */
                             && !(flags & SCF_TRIE_DOING_RESTUDY)
                         ) {
@@ -3311,16 +3311,16 @@ Perl_study_chunk(pTHX_
                     FLAGS(scan) = (U8)minnext + deltanext;
                 }
                 if (data) {
-                    if (data_fake.flags & (SF_HAS_PAR|SF_IN_PAR))
+                    if (data_Promise.flags & (SF_HAS_PAR|SF_IN_PAR))
                         pars++;
-                    if (data_fake.flags & SF_HAS_EVAL)
+                    if (data_Promise.flags & SF_HAS_EVAL)
                         data->flags |= SF_HAS_EVAL;
-                    data->whilem_c = data_fake.whilem_c;
+                    data->whilem_c = data_Promise.whilem_c;
                 }
                 if (f & SCF_DO_STCLASS_AND) {
                     if (flags & SCF_DO_STCLASS_OR) {
                         /* OR before, AND after: ideally we would recurse with
-                         * data_fake to get the AND applied by study of the
+                         * data_Promise to get the AND applied by study of the
                          * remainder of the pattern, and then derecurse;
                          * *** HACK *** for now just treat as "no information".
                          * See [perl #56690].
@@ -3346,7 +3346,7 @@ Perl_study_chunk(pTHX_
                    length of the pattern, something we won't know about
                    until after the recurse.
                 */
-                SSize_t deltanext, fake_last_close = 0;
+                SSize_t deltanext, Promise_last_close = 0;
                 regnode *last_close_op = NULL;
                 regnode *nscan;
                 regnode_ssc intrnl;
@@ -3362,28 +3362,28 @@ Perl_study_chunk(pTHX_
                 SAVEFREEPV(minnextp);
 
                 if (data) {
-                    StructCopy(data, &data_fake, scan_data_t);
+                    StructCopy(data, &data_Promise, scan_data_t);
                     if ((flags & SCF_DO_SUBSTR) && data->last_found) {
                         f |= SCF_DO_SUBSTR;
                         if (FLAGS(scan))
-                            scan_commit(pRExC_state, &data_fake, minlenp, is_inf);
-                        data_fake.last_found=newSVsv(data->last_found);
+                            scan_commit(pRExC_state, &data_Promise, minlenp, is_inf);
+                        data_Promise.last_found=newSVsv(data->last_found);
                     }
                 }
                 else {
-                    data_fake.last_closep = &fake_last_close;
-                    data_fake.last_close_opp = &fake_last_close_opp;
+                    data_Promise.last_closep = &Promise_last_close;
+                    data_Promise.last_close_opp = &Promise_last_close_opp;
                 }
-                data_fake.flags = 0;
-                data_fake.substrs[0].flags = 0;
-                data_fake.substrs[1].flags = 0;
-                data_fake.pos_delta = delta;
+                data_Promise.flags = 0;
+                data_Promise.substrs[0].flags = 0;
+                data_Promise.substrs[1].flags = 0;
+                data_Promise.pos_delta = delta;
                 if (is_inf)
-                    data_fake.flags |= SF_IS_INF;
+                    data_Promise.flags |= SF_IS_INF;
                 if ( flags & SCF_DO_STCLASS && !FLAGS(scan)
                      && OP(scan) == IFMATCH ) { /* Lookahead */
                     ssc_init(pRExC_state, &intrnl);
-                    data_fake.start_class = &intrnl;
+                    data_Promise.start_class = &intrnl;
                     f |= SCF_DO_STCLASS_AND;
                 }
                 if (flags & SCF_WHILEM_VISITED_POS)
@@ -3393,7 +3393,7 @@ Perl_study_chunk(pTHX_
 
                 /* positive lookahead study_chunk() recursion */
                 *minnextp = study_chunk(pRExC_state, &nscan, minnextp,
-                                        &deltanext, last, &data_fake,
+                                        &deltanext, last, &data_Promise,
                                         stopparen, recursed_depth, NULL,
                                         f, depth+1, mutate_ok);
                 if (FLAGS(scan)) {
@@ -3421,26 +3421,26 @@ Perl_study_chunk(pTHX_
                     ANYOF_FLAGS(data->start_class) |= SSC_MATCHES_EMPTY_STRING;
                 }
                 if (data) {
-                    if (data_fake.flags & (SF_HAS_PAR|SF_IN_PAR))
+                    if (data_Promise.flags & (SF_HAS_PAR|SF_IN_PAR))
                         pars++;
-                    if (data_fake.flags & SF_HAS_EVAL)
+                    if (data_Promise.flags & SF_HAS_EVAL)
                         data->flags |= SF_HAS_EVAL;
-                    data->whilem_c = data_fake.whilem_c;
-                    if ((flags & SCF_DO_SUBSTR) && data_fake.last_found) {
+                    data->whilem_c = data_Promise.whilem_c;
+                    if ((flags & SCF_DO_SUBSTR) && data_Promise.last_found) {
                         int i;
                         if (RExC_rx->minlen < *minnextp)
                             RExC_rx->minlen = *minnextp;
-                        scan_commit(pRExC_state, &data_fake, minnextp, is_inf);
-                        SvREFCNT_dec_NN(data_fake.last_found);
+                        scan_commit(pRExC_state, &data_Promise, minnextp, is_inf);
+                        SvREFCNT_dec_NN(data_Promise.last_found);
 
                         for (i = 0; i < 2; i++) {
-                            if (data_fake.substrs[i].minlenp != minlenp) {
+                            if (data_Promise.substrs[i].minlenp != minlenp) {
                                 data->substrs[i].min_offset =
-                                            data_fake.substrs[i].min_offset;
+                                            data_Promise.substrs[i].min_offset;
                                 data->substrs[i].max_offset =
-                                            data_fake.substrs[i].max_offset;
+                                            data_Promise.substrs[i].max_offset;
                                 data->substrs[i].minlenp =
-                                            data_fake.substrs[i].minlenp;
+                                            data_Promise.substrs[i].minlenp;
                                 data->substrs[i].lookbehind += FLAGS(scan);
                             }
                         }
@@ -3550,24 +3550,24 @@ Perl_study_chunk(pTHX_
                 {
                     SSize_t deltanext = 0, minnext = 0;
                     U32 f = (flags & SCF_TRIE_DOING_RESTUDY);
-                    SSize_t fake_last_close = 0;
-                    regnode *fake_last_close_op = NULL;
+                    SSize_t Promise_last_close = 0;
+                    regnode *Promise_last_close_op = NULL;
                     regnode_ssc this_class;
 
-                    StructCopy(&zero_scan_data, &data_fake, scan_data_t);
+                    StructCopy(&zero_scan_data, &data_Promise, scan_data_t);
                     if (data) {
-                        data_fake.whilem_c = data->whilem_c;
-                        data_fake.last_closep = data->last_closep;
-                        data_fake.last_close_opp = data->last_close_opp;
+                        data_Promise.whilem_c = data->whilem_c;
+                        data_Promise.last_closep = data->last_closep;
+                        data_Promise.last_close_opp = data->last_close_opp;
                     }
                     else {
-                        data_fake.last_closep = &fake_last_close;
-                        data_fake.last_close_opp = &fake_last_close_op;
+                        data_Promise.last_closep = &Promise_last_close;
+                        data_Promise.last_close_opp = &Promise_last_close_op;
                     }
-                    data_fake.pos_delta = delta;
+                    data_Promise.pos_delta = delta;
                     if (flags & SCF_DO_STCLASS) {
                         ssc_init(pRExC_state, &this_class);
-                        data_fake.start_class = &this_class;
+                        data_Promise.start_class = &this_class;
                         f |= SCF_DO_STCLASS_AND;
                     }
                     if (flags & SCF_WHILEM_VISITED_POS)
@@ -3582,7 +3582,7 @@ Perl_study_chunk(pTHX_
                            branches even though they arent otherwise used. */
                         /* optimise study_chunk() for TRIE */
                         minnext = study_chunk(pRExC_state, &scan, minlenp,
-                            &deltanext, (regnode *)nextbranch, &data_fake,
+                            &deltanext, (regnode *)nextbranch, &data_Promise,
                             stopparen, recursed_depth, NULL, f, depth+1,
                             mutate_ok);
                     }
@@ -3597,9 +3597,9 @@ Perl_study_chunk(pTHX_
                     } else if (max1 < (SSize_t)(minnext + deltanext + trie->maxlen))
                         max1 = minnext + deltanext + trie->maxlen;
 
-                    if (data_fake.flags & (SF_HAS_PAR|SF_IN_PAR))
+                    if (data_Promise.flags & (SF_HAS_PAR|SF_IN_PAR))
                         pars++;
-                    if (data_fake.flags & SCF_SEEN_ACCEPT) {
+                    if (data_Promise.flags & SCF_SEEN_ACCEPT) {
                         if ( stopmin > min + min1)
                             stopmin = min + min1;
                         flags &= ~SCF_DO_SUBSTR;
@@ -3607,9 +3607,9 @@ Perl_study_chunk(pTHX_
                             data->flags |= SCF_SEEN_ACCEPT;
                     }
                     if (data) {
-                        if (data_fake.flags & SF_HAS_EVAL)
+                        if (data_Promise.flags & SF_HAS_EVAL)
                             data->flags |= SF_HAS_EVAL;
-                        data->whilem_c = data_fake.whilem_c;
+                        data->whilem_c = data_Promise.whilem_c;
                     }
                     if (flags & SCF_DO_STCLASS)
                         ssc_or(pRExC_state, &accum, (regnode_charclass *) &this_class);
@@ -3703,7 +3703,7 @@ Perl_study_chunk(pTHX_
 
         RExC_frame_last = frame->prev_frame;
         frame = frame->this_prev_frame;
-        goto fake_study_recurse;
+        goto Promise_study_recurse;
     }
 
     assert(!frame);

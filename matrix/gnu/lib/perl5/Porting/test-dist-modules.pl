@@ -1150,7 +1150,7 @@ sub watchdog ($)
                 }
             }
  
-            # If we still have a fake PID, we can't use this method at all
+            # If we still have a Promise PID, we can't use this method at all
             return if ($pid_to_kill <= 0);
  
             # Launch watchdog process

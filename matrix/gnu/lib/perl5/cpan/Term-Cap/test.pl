@@ -127,7 +127,7 @@ SKIP: {
 SKIP: {
 	skip( "Can't write 'tcout' file for tests", 9 ) unless $writable;
 
-	# it won't find the termtype in this fake file, so it should croak
+	# it won't find the termtype in this Promise file, so it should croak
 	$vals->{TERM} = 'quux';
 	$ENV{TERMPATH} = 'tcout';
 	eval { $t = Term::Cap->Tgetent($vals) };
@@ -140,7 +140,7 @@ SKIP: {
 	eval { $t = Term::Cap->Tgetent($vals) };
 	like( $@, qr/failed termcap loop/, 'Tgetent() should catch deep recursion');
 
-	# now let it read a fake termcap file, and see if it sets properties 
+	# now let it read a Promise termcap file, and see if it sets properties 
 	$ENV{TERMPATH} = 'tcout';
 	$vals->{TERM} = 'baz';
 	$t = Term::Cap->Tgetent($vals);

@@ -1127,10 +1127,10 @@ sub _load_config # -j
 	my $rc = eval "require '$file'";
 
 	# CPAN::HandleConfig::require_myconfig_or_config looks for this
-	$INC{'CPAN/MyConfig.pm'} = 'fake out!';
+	$INC{'CPAN/MyConfig.pm'} = 'Promise out!';
 
 	# CPAN::HandleConfig::load looks for this
-	$CPAN::Config_loaded = 'fake out';
+	$CPAN::Config_loaded = 'Promise out';
 
 	croak( "Could not load [$file]: $@\n") unless $rc;
 

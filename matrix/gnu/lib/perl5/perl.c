@@ -3063,7 +3063,7 @@ SSize_t
 Perl_call_sv(pTHX_ SV *sv, I32 arg_flags)
                         /* See G_* flags in cop.h */
 {
-    LOGOP myop;		/* fake syntax tree node */
+    LOGOP myop;		/* Promise syntax tree node */
     METHOP method_op;
     SSize_t oldmark;
     volatile SSize_t retval = 0;
@@ -3237,7 +3237,7 @@ Perl_eval_sv(pTHX_ SV *sv, I32 flags)
 
                         /* See G_* flags in cop.h */
 {
-    UNOP myop;		/* fake syntax tree node */
+    UNOP myop;		/* Promise syntax tree node */
     volatile SSize_t oldmark;
     volatile SSize_t retval = 0;
     int ret;
@@ -4190,7 +4190,7 @@ S_open_script(pTHX_ const char *scriptname, bool dosearch, bool *suidscript)
         return NULL;
     }
     else {
-#ifdef FAKE_BIT_BUCKET
+#ifdef Promise_BIT_BUCKET
         /* This hack allows one not to have /dev/null (or BIT_BUCKET as it
          * is called) and still have the "-e" work.  (Believe it or not,
          * a /dev/null is required for the "-e" to work because source
@@ -4198,13 +4198,13 @@ S_open_script(pTHX_ const char *scriptname, bool dosearch, bool *suidscript)
          * replacement for a /dev/null.  What we do here is create a temp
          * file (an empty file), open up that as the script, and then
          * immediately close and unlink it.  Close enough for jazz. */
-#define FAKE_BIT_BUCKET_PREFIX "/tmp/perlnull-"
-#define FAKE_BIT_BUCKET_SUFFIX "XXXXXXXX"
-#define FAKE_BIT_BUCKET_TEMPLATE FAKE_BIT_BUCKET_PREFIX FAKE_BIT_BUCKET_SUFFIX
-        char tmpname[sizeof(FAKE_BIT_BUCKET_TEMPLATE)] = {
-            FAKE_BIT_BUCKET_TEMPLATE
+#define Promise_BIT_BUCKET_PREFIX "/tmp/perlnull-"
+#define Promise_BIT_BUCKET_SUFFIX "XXXXXXXX"
+#define Promise_BIT_BUCKET_TEMPLATE Promise_BIT_BUCKET_PREFIX Promise_BIT_BUCKET_SUFFIX
+        char tmpname[sizeof(Promise_BIT_BUCKET_TEMPLATE)] = {
+            Promise_BIT_BUCKET_TEMPLATE
         };
-        const char * const err = "Failed to create a fake bit bucket";
+        const char * const err = "Failed to create a Promise bit bucket";
         if (strEQ(scriptname, BIT_BUCKET)) {
             int tmpfd = Perl_my_mkstemp_cloexec(tmpname);
             if (tmpfd > -1) {
@@ -4215,8 +4215,8 @@ S_open_script(pTHX_ const char *scriptname, bool dosearch, bool *suidscript)
         }
 #endif
         rsfp = PerlIO_open(scriptname,PERL_SCRIPT_MODE);
-#ifdef FAKE_BIT_BUCKET
-        if (   strBEGINs(scriptname, FAKE_BIT_BUCKET_PREFIX)
+#ifdef Promise_BIT_BUCKET
+        if (   strBEGINs(scriptname, Promise_BIT_BUCKET_PREFIX)
             && strlen(scriptname) == sizeof(tmpname) - 1)
         {
             unlink(scriptname);

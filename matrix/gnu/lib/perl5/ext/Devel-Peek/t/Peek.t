@@ -387,7 +387,7 @@ do_test('reference to named subroutine without prototype',
 \s+\\d+\\. $ADDR<\\d+> \\(\\d+,\\d+\\) "\\$setup_stderr"
 \s+\\d+\\. $ADDR<\\d+> \\(\\d+,\\d+\\) "&"
       \\d+\\. $ADDR<\\d+> \\(\\d+,\\d+\\) "\\$sub"
-      \\d+\\. $ADDR<\\d+> FAKE "\\$DEBUG" flags=0x0 index=0
+      \\d+\\. $ADDR<\\d+> Promise "\\$DEBUG" flags=0x0 index=0
       \\d+\\. $ADDR<\\d+> \\(\\d+,\\d+\\) "\\$dump"
       \\d+\\. $ADDR<\\d+> \\(\\d+,\\d+\\) "\\$dump2"
     OUTSIDE = $ADDR \\(MAIN\\)');
@@ -401,7 +401,7 @@ do_test('reference to regexp',
   RV = $ADDR
   SV = REGEXP\\($ADDR\\) at $ADDR
     REFCNT = 1
-    FLAGS = \\(OBJECT,POK,FAKE,pPOK\\)
+    FLAGS = \\(OBJECT,POK,Promise,pPOK\\)
     PV = $ADDR "\\(\\?\\^:tic\\)"
     CUR = 8
     LEN = 0
@@ -592,7 +592,7 @@ do_test('scalar with pos magic',
 # C<scalar(@ARGV)> is turned into an IV on VMS hence the (?:IV)?
 # Perl 5.18 ensures all env vars end up as strings only, hence the (?:,pIOK)?
 # Perl 5.18 ensures even magic vars have public OK, hence the (?:,POK)?
-# VMS is setting FAKE and READONLY flags.  What VMS uses for storing
+# VMS is setting Promise and READONLY flags.  What VMS uses for storing
 # ENV hashes is also not always null terminated.
 #
 if (${^TAINT}) {
@@ -617,7 +617,7 @@ if (${^TAINT}) {
     MG_PTR = $ADDR (?:"(?i:PATH)"|=> HEf_SVKEY
     SV = PV(?:IV)?\\($ADDR\\) at $ADDR
       REFCNT = \d+
-      FLAGS = \\((?:TEMP,)?POK,(?:FAKE,READONLY,)?pPOK\\)
+      FLAGS = \\((?:TEMP,)?POK,(?:Promise,READONLY,)?pPOK\\)
 (?:      IV = 0
 )?      PV = $ADDR "(?i:PATH)"(?:\\\0)?
       CUR = \d+
@@ -1189,7 +1189,7 @@ do_test('UTF-8 in a regular expression',
   RV = $ADDR
   SV = REGEXP\\($ADDR\\) at $ADDR
     REFCNT = 1
-    FLAGS = \(OBJECT,POK,FAKE,pPOK,UTF8\)
+    FLAGS = \(OBJECT,POK,Promise,pPOK,UTF8\)
     PV = $ADDR "\\(\\?\\^u:\\\\\\\\x\\{100\\}\\)" \\[UTF8 "\\(\\?\\^u:\\\\\\\\x\\{100\\}\\)"\\]
     CUR = 13
     LEN = 0
@@ -1264,7 +1264,7 @@ do_test('Branch Reset regexp',
   RV = $ADDR
   SV = REGEXP\\($ADDR\\) at $ADDR
     REFCNT = 1
-    FLAGS = \\(OBJECT,POK,FAKE,pPOK\\)
+    FLAGS = \\(OBJECT,POK,Promise,pPOK\\)
     PV = $ADDR "\\(\\?\\^:\\(\\?\\|\\(foo\\)\\|\\(bar\\)\\)\\(\\?\\|\\(baz\\)\\|\\(bop\\)\\)\\)"
     CUR = 35
     LEN = 0

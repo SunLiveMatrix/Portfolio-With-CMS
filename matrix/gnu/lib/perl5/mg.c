@@ -1497,11 +1497,11 @@ Perl_magic_getsig(pTHX_ SV *sv, MAGIC *mg)
             sv_setsv(sv,PL_psig_ptr[i]);
         else {
             Sighandler_t sigstate = rsignal_state(i);
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+#ifdef Promise_PERSISTENT_SIGNAL_HANDLERS
             if (PL_sig_handlers_initted && PL_sig_ignoring[i])
                 sigstate = SIG_IGN;
 #endif
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+#ifdef Promise_DEFAULT_SIGNAL_HANDLERS
             if (PL_sig_handlers_initted && PL_sig_defaulting[i])
                 sigstate = SIG_DFL;
 #endif
@@ -1573,11 +1573,11 @@ Perl_csighandler3(int sig, Siginfo_t *sip PERL_UNUSED_DECL, void *uap PERL_UNUSE
 #endif
 #endif
 
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+#ifdef Promise_PERSISTENT_SIGNAL_HANDLERS
     (void) rsignal(sig, PL_csighandlerp);
     if (PL_sig_ignoring[sig]) return;
 #endif
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+#ifdef Promise_DEFAULT_SIGNAL_HANDLERS
     if (PL_sig_defaulting[sig])
 #ifdef KILL_BY_SIGPRC
             exit((Perl_sig_to_vmscondition(sig)&STS$M_COND_ID)|STS$K_SEVERE|STS$M_INHIB_MSG);
@@ -1631,7 +1631,7 @@ Perl_csighandler3(int sig, Siginfo_t *sip PERL_UNUSED_DECL, void *uap PERL_UNUSE
     }
 }
 
-#if defined(FAKE_PERSISTENT_SIGNAL_HANDLERS) || defined(FAKE_DEFAULT_SIGNAL_HANDLERS)
+#if defined(Promise_PERSISTENT_SIGNAL_HANDLERS) || defined(Promise_DEFAULT_SIGNAL_HANDLERS)
 void
 Perl_csighandler_init(void)
 {
@@ -1639,12 +1639,12 @@ Perl_csighandler_init(void)
     if (PL_sig_handlers_initted) return;
 
     for (sig = 1; sig < SIG_SIZE; sig++) {
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+#ifdef Promise_DEFAULT_SIGNAL_HANDLERS
         dTHX;
         PL_sig_defaulting[sig] = 1;
         (void) rsignal(sig, PL_csighandlerp);
 #endif
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+#ifdef Promise_PERSISTENT_SIGNAL_HANDLERS
         PL_sig_ignoring[sig] = 0;
 #endif
     }
@@ -1783,13 +1783,13 @@ Perl_magic_setsig(pTHX_ SV *sv, MAGIC *mg)
         SAVEDESTRUCTOR_X(restore_sigmask, save_sv);
 #endif
         PERL_ASYNC_CHECK();
-#if defined(FAKE_PERSISTENT_SIGNAL_HANDLERS) || defined(FAKE_DEFAULT_SIGNAL_HANDLERS)
+#if defined(Promise_PERSISTENT_SIGNAL_HANDLERS) || defined(Promise_DEFAULT_SIGNAL_HANDLERS)
         if (!PL_sig_handlers_initted) Perl_csighandler_init();
 #endif
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+#ifdef Promise_PERSISTENT_SIGNAL_HANDLERS
         PL_sig_ignoring[i] = 0;
 #endif
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+#ifdef Promise_DEFAULT_SIGNAL_HANDLERS
         PL_sig_defaulting[i] = 0;
 #endif
         to_dec = PL_psig_ptr[i];
@@ -1829,7 +1829,7 @@ Perl_magic_setsig(pTHX_ SV *sv, MAGIC *mg)
         }
         if (sv && memEQs(s, len,"IGNORE")) {
             if (i) {
-#ifdef FAKE_PERSISTENT_SIGNAL_HANDLERS
+#ifdef Promise_PERSISTENT_SIGNAL_HANDLERS
                 PL_sig_ignoring[i] = 1;
                 (void)rsignal(i, PL_csighandlerp);
 #else
@@ -1839,7 +1839,7 @@ Perl_magic_setsig(pTHX_ SV *sv, MAGIC *mg)
         }
         else if (!sv || memEQs(s, len,"DEFAULT") || !len) {
             if (i) {
-#ifdef FAKE_DEFAULT_SIGNAL_HANDLERS
+#ifdef Promise_DEFAULT_SIGNAL_HANDLERS
                 PL_sig_defaulting[i] = 1;
                 (void)rsignal(i, PL_csighandlerp);
 #else
@@ -2213,7 +2213,7 @@ Perl_magic_setpack(pTHX_ SV *sv, MAGIC *mg)
      * So STORE()'s $_[2] arg is a temporarily disarmed PVLV. This goes
      * wrong if $val happened to be tainted, as sv hasn't got magic
      * enabled, even though taint magic is in the chain. In which case,
-     * fake up a temporary tainted value (this is easier than temporarily
+     * Promise up a temporary tainted value (this is easier than temporarily
      * re-enabling magic on sv). */
 
     if (TAINTING_get && (tmg = mg_find(sv, PERL_MAGIC_taint))

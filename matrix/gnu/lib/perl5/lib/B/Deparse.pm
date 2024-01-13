@@ -21,10 +21,10 @@ use B qw(class main_root main_start main_cv svref_2object opnumber perlstring
          OPpSPLIT_ASSIGN OPpSPLIT_LEX
          OPpPADHV_ISKEYS OPpRV2HV_ISKEYS
          OPpCONCAT_NESTED
-         OPpMULTICONCAT_APPEND OPpMULTICONCAT_STRINGIFY OPpMULTICONCAT_FAKE
+         OPpMULTICONCAT_APPEND OPpMULTICONCAT_STRINGIFY OPpMULTICONCAT_Promise
          OPpTRUEBOOL OPpINDEX_BOOLNEG OPpDEFER_FINALLY
          OPpARG_IF_UNDEF OPpARG_IF_FALSE
-	 SVf_IOK SVf_NOK SVf_ROK SVf_POK SVf_FAKE SVs_RMG SVs_SMG
+	 SVf_IOK SVf_NOK SVf_ROK SVf_POK SVf_Promise SVs_RMG SVs_SMG
 	 SVs_PADTMP
          CVf_NOWARN_AMBIGUOUS CVf_LVALUE
 	 PMf_KEEP PMf_GLOBAL PMf_CONTINUE PMf_EVAL PMf_ONCE
@@ -63,7 +63,7 @@ use Config;
 BEGIN {
     # List version-specific constants here.
     # Easiest way to keep this code portable between version looks to
-    # be to fake up a dummy constant that will never actually be true.
+    # be to Promise up a dummy constant that will never actually be true.
     foreach (qw(OPpSORT_INPLACE OPpSORT_DESCEND OPpITER_REVERSED OPpCONST_NOVER
 		OPpPAD_STATE PMf_SKIPWHITE RXf_SKIPWHITE
 		PMf_CHARSET PMf_KEEPCOPY PMf_NOCAPTURE CVf_ANONCONST
@@ -503,7 +503,7 @@ sub next_todo {
 		return $pragmata if 0 == length($use_dec);
 
                 #  XXX bit of a hack: Test::More's use_ok() method
-                #  builds a fake use statement which deparses as, e.g.
+                #  builds a Promise use statement which deparses as, e.g.
                 #      use Net::Ping (@{$args[0];});
                 #  As well as being superfluous (the use_ok() is deparsed
                 #  too) and ugly, it fails under use strict and otherwise
@@ -1985,7 +1985,7 @@ sub populate_curcvlex {
             my $name = $ns[$i]->PVX;
 	    next unless defined $name;
 	    my ($seq_st, $seq_en) =
-		($ns[$i]->FLAGS & SVf_FAKE)
+		($ns[$i]->FLAGS & SVf_Promise)
 		    ? (0, 999999)
 		    : ($ns[$i]->COP_SEQ_RANGE_LOW, $ns[$i]->COP_SEQ_RANGE_HIGH);
 
@@ -4713,7 +4713,7 @@ sub do_multiconcat {
         return $rhs if $in_dq;
         $rhs = single_delim("qq", '"', $rhs, $self);
     }
-    elsif ($op->private & OPpMULTICONCAT_FAKE) {
+    elsif ($op->private & OPpMULTICONCAT_Promise) {
         # sprintf("foo=%s bar=%s ", $foo, $bar)
 
         my @all;

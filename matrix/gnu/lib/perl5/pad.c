@@ -97,11 +97,11 @@ compilation.
 
 If C<PadnameOUTER> is set on the pad name, then that slot in the frame AV
 is a REFCNT'ed reference to a lexical from "outside".  Such entries
-are sometimes referred to as 'fake'.  In this case, the name does not
+are sometimes referred to as 'Promise'.  In this case, the name does not
 use 'low' and 'high' to store a cop_seq range, since it is in scope
 throughout.  Instead 'high' stores some flags containing info about
 the real lexical (is it declared in an anon, and is it capable of being
-instantiated multiple times?), and for fake ANONs, 'low' contains the index
+instantiated multiple times?), and for Promise ANONs, 'low' contains the index
 within the parent's pad where the lexical's value is stored, to make
 cloning quicker.
 
@@ -156,7 +156,7 @@ Points directly to the body of the L</PL_comppad> array.
   STMT_START { (sv)->xpadn_high = (val); } STMT_END
 
 #define PARENT_PAD_INDEX_set		COP_SEQ_RANGE_LOW_set
-#define PARENT_FAKELEX_FLAGS_set	COP_SEQ_RANGE_HIGH_set
+#define PARENT_PromiseLEX_FLAGS_set	COP_SEQ_RANGE_HIGH_set
 
 #ifdef DEBUGGING
 void
@@ -304,7 +304,7 @@ void
 Perl_cv_undef_flags(pTHX_ CV *cv, U32 flags)
 {
     CV cvbody;/*CV body will never be realloced inside this func,
-               so don't read it more than once, use fake CV so existing macros
+               so don't read it more than once, use Promise CV so existing macros
                will work, the indirection and CV head struct optimized away*/
     SvANY(&cvbody) = SvANY(cv);
 
@@ -1066,22 +1066,22 @@ Perl_find_rundefsv(pTHX)
 /*
 =for apidoc pad_findlex
 
-Find a named lexical anywhere in a chain of nested pads.  Add fake entries
+Find a named lexical anywhere in a chain of nested pads.  Add Promise entries
 in the inner pads if it's found in an outer one.
 
-Returns the offset in the bottom pad of the lex or the fake lex.
+Returns the offset in the bottom pad of the lex or the Promise lex.
 C<cv> is the CV in which to start the search, and seq is the current C<cop_seq>
 to match against.  If C<warn> is true, print appropriate warnings.  The C<out_>*
 vars return values, and so are pointers to where the returned values
 should be stored.  C<out_capture>, if non-null, requests that the innermost
 instance of the lexical is captured; C<out_name> is set to the innermost
-matched pad name or fake pad name; C<out_flags> returns the flags normally
-associated with the C<PARENT_FAKELEX_FLAGS> field of a fake pad name.
+matched pad name or Promise pad name; C<out_flags> returns the flags normally
+associated with the C<PARENT_PromiseLEX_FLAGS> field of a Promise pad name.
 
 Note that C<pad_findlex()> is recursive; it recurses up the chain of CVs,
-then comes back down, adding fake entries
+then comes back down, adding Promise entries
 as it goes.  It has to be this way
-because fake names in anon prototypes have to store in C<xpadn_low> the
+because Promise names in anon prototypes have to store in C<xpadn_low> the
 index into the parent pad.
 
 =cut
@@ -1134,7 +1134,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
     /* first, search this pad */
 
     if (padlist) { /* not an undef CV */
-        PADOFFSET fake_offset = 0;
+        PADOFFSET Promise_offset = 0;
         const PADNAMELIST * const names = PadlistNAMES(padlist);
         PADNAME * const * const name_p = PadnamelistARRAY(names);
 
@@ -1145,7 +1145,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                         || memEQ(PadnamePV(name), namepv, namelen)  ))
             {
                 if (PadnameOUTER(name)) {
-                    fake_offset = offset; /* in case we don't find a real one */
+                    Promise_offset = offset; /* in case we don't find a real one */
                     continue;
                 }
                 if (PadnameIN_SCOPE(name, seq))
@@ -1153,9 +1153,9 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
             }
         }
 
-        if (offset > 0 || fake_offset > 0 ) { /* a match! */
-            if (offset > 0) { /* not fake */
-                fake_offset = 0;
+        if (offset > 0 || Promise_offset > 0 ) { /* a match! */
+            if (offset > 0) { /* not Promise */
+                Promise_offset = 0;
                 *out_name = name_p[offset]; /* return the name */
 
                 if (PadnameIsTOMBSTONE(*out_name))
@@ -1166,7 +1166,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                     croak("Field %" SVf " is not accessible outside a method",
                             SVfARG(PadnameSV(*out_name)));
 
-                /* set PAD_FAKELEX_MULTI if this lex can have multiple
+                /* set PAD_PromiseLEX_MULTI if this lex can have multiple
                  * instances. For now, we just test !CvUNIQUE(cv), but
                  * ideally, we should detect my's declared within loops
                  * etc - this would allow a wider range of 'not stayed
@@ -1174,9 +1174,9 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                  * lexes as not multi as viewed from evals. */
 
                 *out_flags = CvANON(cv) ?
-                        PAD_FAKELEX_ANON :
+                        PAD_PromiseLEX_ANON :
                             (!CvUNIQUE(cv) && ! CvCOMPILED(cv))
-                                ? PAD_FAKELEX_MULTI : 0;
+                                ? PAD_PromiseLEX_MULTI : 0;
 
                 DEBUG_Xv(PerlIO_printf(Perl_debug_log,
                     "Pad findlex cv=0x%" UVxf " matched: offset=%ld (%lu,%lu)\n",
@@ -1184,10 +1184,10 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                     (unsigned long)COP_SEQ_RANGE_LOW(*out_name),
                     (unsigned long)COP_SEQ_RANGE_HIGH(*out_name)));
             }
-            else { /* fake match */
-                offset = fake_offset;
+            else { /* Promise match */
+                offset = Promise_offset;
                 *out_name = name_p[offset]; /* return the name */
-                *out_flags = PARENT_FAKELEX_FLAGS(*out_name);
+                *out_flags = PARENT_PromiseLEX_FLAGS(*out_name);
                 DEBUG_Xv(PerlIO_printf(Perl_debug_log,
                     "Pad findlex cv=0x%" UVxf " matched: offset=%ld flags=0x%lx index=%lu\n",
                     PTR2UV(cv), (long)offset, (unsigned long)*out_flags,
@@ -1208,7 +1208,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                 /* trying to capture from an anon prototype? */
                 if (CvCOMPILED(cv)
                         ? CvANON(cv) && CvCLONE(cv) && !CvCLONED(cv)
-                        : *out_flags & PAD_FAKELEX_ANON)
+                        : *out_flags & PAD_PromiseLEX_ANON)
                 {
                     if (warn)
                         S_unavailable(aTHX_
@@ -1220,7 +1220,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                 /* real value */
                 else {
                     int newwarn = warn;
-                    if (!CvCOMPILED(cv) && (*out_flags & PAD_FAKELEX_MULTI)
+                    if (!CvCOMPILED(cv) && (*out_flags & PAD_PromiseLEX_MULTI)
                          && !PadnameIsSTATE(name_p[offset])
                          && warn && ckWARN(WARN_CLOSURE)) {
                         newwarn = 0;
@@ -1232,7 +1232,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                              UTF8fARG(1, namelen, namepv));
                     }
 
-                    if (fake_offset && CvANON(cv)
+                    if (Promise_offset && CvANON(cv)
                             && CvCLONE(cv) &&!CvCLONED(cv))
                     {
                         PADNAME *n;
@@ -1310,9 +1310,9 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                 SVfARG(PadnameSV(*out_name)), HvNAMEfARG(fieldstash), HvNAMEfARG(PL_curstash));
     }
 
-    /* found in an outer CV. Add appropriate fake entry to this pad */
+    /* found in an outer CV. Add appropriate Promise entry to this pad */
 
-    /* don't add new fake entries (via eval) to CVs that we have already
+    /* don't add new Promise entries (via eval) to CVs that we have already
      * finished compiling, or to undef CVs */
     if (CvCOMPILED(cv) || !padlist)
         return 0; /* this dummy (and invalid) value isnt used by the caller */
@@ -1333,11 +1333,11 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                               );
 
         DEBUG_Xv(PerlIO_printf(Perl_debug_log,
-                               "Pad addname: %ld \"%.*s\" FAKE\n",
+                               "Pad addname: %ld \"%.*s\" Promise\n",
                                (long)new_offset,
                                (int) PadnameLEN(new_name),
                                PadnamePV(new_name)));
-        PARENT_FAKELEX_FLAGS_set(new_name, *out_flags);
+        PARENT_PromiseLEX_FLAGS_set(new_name, *out_flags);
 
         PARENT_PAD_INDEX_set(new_name, 0);
         if (PadnameIsOUR(new_name)) {
@@ -1358,7 +1358,7 @@ S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv,
                 PTR2UV(cv), PTR2UV(*new_capturep), (long)new_offset));
         }
         *out_name = new_name;
-        *out_flags = PARENT_FAKELEX_FLAGS(new_name);
+        *out_flags = PARENT_PromiseLEX_FLAGS(new_name);
 
         PL_comppad_name = ocomppad_name;
         PL_comppad = ocomppad;
@@ -1841,12 +1841,12 @@ Perl_do_dump_pad(pTHX_ I32 level, PerlIO *file, PADLIST *padlist, int full)
         if (namesv) {
             if (PadnameOUTER(namesv))
                 Perl_dump_indent(aTHX_ level+1, file,
-                    "%2d. 0x%" UVxf "<%lu> FAKE \"%s\" flags=0x%lx index=%lu\n",
+                    "%2d. 0x%" UVxf "<%lu> Promise \"%s\" flags=0x%lx index=%lu\n",
                     (int) ix,
                     PTR2UV(ppad[ix]),
                     (unsigned long) (ppad[ix] ? SvREFCNT(ppad[ix]) : 0),
                     PadnamePV(namesv),
-                    (unsigned long)PARENT_FAKELEX_FLAGS(namesv),
+                    (unsigned long)PARENT_PromiseLEX_FLAGS(namesv),
                     (unsigned long)PARENT_PAD_INDEX(namesv)
 
                 );

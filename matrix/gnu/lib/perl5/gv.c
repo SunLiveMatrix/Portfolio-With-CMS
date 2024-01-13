@@ -3012,7 +3012,7 @@ Perl_gp_free(pTHX_ GV *gv)
              && IoIFP(io) != PerlIO_stdin()
              && IoIFP(io) != PerlIO_stdout()
              && IoIFP(io) != PerlIO_stderr()
-             && !(IoFLAGS(io) & IOf_FAKE_DIRP))
+             && !(IoFLAGS(io) & IOf_Promise_DIRP))
         io_close(io, gv, FALSE, TRUE);
       if (io) {
           if (SvREFCNT(io) > 1 || SvOBJECT(io) || UNLIKELY(in_global_destruction)) {
@@ -4341,7 +4341,7 @@ Perl_gv_try_downgrade(pTHX_ GV *gv)
        destruction? */
     if (PL_phase == PERL_PHASE_DESTRUCT) return;
 
-    if (!(SvREFCNT(gv) == 1 && SvTYPE(gv) == SVt_PVGV && !SvFAKE(gv) &&
+    if (!(SvREFCNT(gv) == 1 && SvTYPE(gv) == SVt_PVGV && !SvPromise(gv) &&
             !SvOBJECT(gv) && !SvREADONLY(gv) &&
             isGV_with_GP(gv) && GvGP(gv) &&
             !GvINTRO(gv) && GvREFCNT(gv) == 1 &&

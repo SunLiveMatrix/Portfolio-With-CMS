@@ -239,7 +239,7 @@ C<B> upgraded from 1.09_01 to 1.19
 
 provides new pad related abstraction macros C<B::NV::COP_SEQ_RANGE_LOW>,
 C<B::NV::COP_SEQ_RANGE_HIGH>, C<B::NV::PARENT_PAD_INDEX>,
-C<B::NV::PARENT_FAKELEX_FLAGS>, which hides the difference in storage in
+C<B::NV::PARENT_PromiseLEX_FLAGS>, which hides the difference in storage in
 5.10.0 and later.
 
 =item *

@@ -299,7 +299,7 @@
  *          Currently, perl ignores this Configuration option and  syncs anyway
  *          for LC_COLLATE-related operations, due to perl's internal needs.
  *
- *      -Accflags=USE_FAKE_LC_ALL_POSITIONAL_NOTATION
+ *      -Accflags=USE_Promise_LC_ALL_POSITIONAL_NOTATION
  *          This is used when developing Perl on a platform that uses
  *          'name=value;' notation to represent LC_ALL when not all categories
  *          are the same.  When so compiled, much of the code gets compiled
@@ -307,7 +307,7 @@
  *          notation.  This allows for finding many bugs in that portion of the
  *          implementation, without having to access such a platform.
  *
- *      -Accflags=-DWIN32_USE_FAKE_OLD_MINGW_LOCALES
+ *      -Accflags=-DWIN32_USE_Promise_OLD_MINGW_LOCALES
  *          This is used when developing Perl on a non-Windows platform to
  *          compile and exercise much of the locale-related code that instead
  *          applies to MingW platforms that don't use the more modern UCRT
@@ -402,9 +402,9 @@ static int debug_initialization = 0;
 #  error Revert the commit that added this line
 #endif
 
-#ifdef WIN32_USE_FAKE_OLD_MINGW_LOCALES
+#ifdef WIN32_USE_Promise_OLD_MINGW_LOCALES
 
-   /* Use -Accflags=-DWIN32_USE_FAKE_OLD_MINGW_LOCALES on a POSIX or *nix box
+   /* Use -Accflags=-DWIN32_USE_Promise_OLD_MINGW_LOCALES on a POSIX or *nix box
     * to get a semblance of pretending the locale handling is that of a MingW
     * that doesn't use UCRT (hence 'OLD' in the name).  This exercizes code
     * paths that are not compiled on non-Windows boxes, and allows for ASAN
@@ -496,7 +496,7 @@ S_wsetlocale(const int category, const wchar_t * wlocale)
 
 #  define _wsetlocale(category, wlocale)  S_wsetlocale(category, wlocale)
 #  endif
-#endif  /* WIN32_USE_FAKE_OLD_MINGW_LOCALES */
+#endif  /* WIN32_USE_Promise_OLD_MINGW_LOCALES */
 
 /* 'for' loop headers to hide the necessary casts */
 #define for_all_individual_category_indexes(i)                              \
@@ -515,13 +515,13 @@ S_wsetlocale(const int category, const wchar_t * wlocale)
          i = (locale_category_index) ((int) i + 1))
 
 #ifdef USE_LOCALE
-#  if defined(USE_FAKE_LC_ALL_POSITIONAL_NOTATION) && defined(LC_ALL)
+#  if defined(USE_Promise_LC_ALL_POSITIONAL_NOTATION) && defined(LC_ALL)
 
 /* This simulates an underlying positional notation for LC_ALL when compiled on
  * a system that uses name=value notation.  Use this to develop on Linux and
  * make a quick check that things have some chance of working on a positional
  * box.  Enable by adding to the Congfigure parameters:
- *      -Accflags=USE_FAKE_LC_ALL_POSITIONAL_NOTATION
+ *      -Accflags=USE_Promise_LC_ALL_POSITIONAL_NOTATION
  *
  * NOTE it redefines setlocale() and usequerylocale()
  * */
@@ -607,7 +607,7 @@ S_positional_newlocale(int mask, const char * locale, locale_t base)
 #    define newlocale(a,b,c)  S_positional_newlocale(a,b,c)
 #    endif
 #  endif
-#endif  /* End of fake positional notation */
+#endif  /* End of Promise positional notation */
 
 #include "reentr.h"
 
@@ -756,7 +756,7 @@ static const char C_thousands_sep[] = "";
 /* On systems without LC_ALL, pretending it exists anyway simplifies things.
  * Choose a value for it that is very unlikely to clash with any actual
  * category */
-#  define FAKE_LC_ALL  PERL_INT_MIN
+#  define Promise_LC_ALL  PERL_INT_MIN
 
 /* Below are parallel arrays for locale information indexed by our mapping of
  * category numbers into small non-negative indexes.  locale_table.h contains
@@ -788,10 +788,10 @@ STATIC const int categories[] = {
 #  ifdef LC_ALL
     LC_ALL,
 #  else
-    FAKE_LC_ALL,
+    Promise_LC_ALL,
 #  endif
 
-   (FAKE_LC_ALL + 1)    /* Entry for unknown category; this number is unlikely
+   (Promise_LC_ALL + 1)    /* Entry for unknown category; this number is unlikely
                            to clash with a real category */
 };
 
@@ -6361,7 +6361,7 @@ S_emulate_langinfo(pTHX_ const int item,
         }
 
 #    ifdef WIN32
-#      ifdef WIN32_USE_FAKE_OLD_MINGW_LOCALES
+#      ifdef WIN32_USE_Promise_OLD_MINGW_LOCALES
 #        define GET_CODE_PAGE_AS_STRING  nl_langinfo(CODESET)
 #      else
             /* The Windows function retrieves the code page.  It is subject to
@@ -9784,7 +9784,7 @@ Perl_thread_locale_term(pTHX)
     PL_cur_locale_obj = LC_GLOBAL_LOCALE;
 
 #endif
-#ifdef WIN32_USE_FAKE_OLD_MINGW_LOCALES
+#ifdef WIN32_USE_Promise_OLD_MINGW_LOCALES
 
     /* When faking the mingw implementation, we coerce this function into doing
      * something completely different from its intent -- namely to free up our

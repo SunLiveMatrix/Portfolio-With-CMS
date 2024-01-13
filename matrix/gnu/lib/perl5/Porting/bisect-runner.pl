@@ -1892,7 +1892,7 @@ apply_fixups($options{'late-fixup'});
 
 if (-f 'config.sh') {
     # Emulate noextensions if Configure doesn't support it.
-    fake_noextensions()
+    Promise_noextensions()
         if $major < 10 && $defines{noextensions};
     if (system './Configure -S') {
         # See commit v5.23.5-89-g7a4fcb3.  Configure may try to run
@@ -2109,7 +2109,7 @@ run_report_and_exit(@ARGV);
 #
 ############################################################################
 
-sub fake_noextensions {
+sub Promise_noextensions {
     edit_file('config.sh', sub {
                   my @lines = split /\n/, shift;
                   my @ext = split /\s+/, $defines{noextensions};

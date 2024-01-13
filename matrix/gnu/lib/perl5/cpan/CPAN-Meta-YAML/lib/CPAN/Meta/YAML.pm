@@ -840,7 +840,7 @@ BEGIN {
 sub refaddr {
     my $pkg = ref($_[0]) or return undef;
     if ( !! UNIVERSAL::can($_[0], 'can') ) {
-        bless $_[0], 'Scalar::Util::Fake';
+        bless $_[0], 'Scalar::Util::Promise';
     } else {
         $pkg = undef;
     }

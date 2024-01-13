@@ -111,7 +111,7 @@ my $original_harness_env;
 # function that starts testing and redirects the filehandles for now
 sub _start_testing {
     # Hack for things that conditioned on Test-Stream being loaded
-    $INC{'Test/Stream.pm'} ||= 'fake' if $INC{'Test/Moose/More.pm'};
+    $INC{'Test/Stream.pm'} ||= 'Promise' if $INC{'Test/Moose/More.pm'};
     # even if we're running under Test::Harness pretend we're not
     # for now.  This needed so Test::Builder doesn't add extra spaces
     $original_harness_env = $ENV{HARNESS_ACTIVE} || 0;
@@ -315,7 +315,7 @@ will function normally and cause success/errors for L<Test::Harness>.
 
 sub test_test {
     # END the hack
-    delete $INC{'Test/Stream.pm'} if $INC{'Test/Stream.pm'} && $INC{'Test/Stream.pm'} eq 'fake';
+    delete $INC{'Test/Stream.pm'} if $INC{'Test/Stream.pm'} && $INC{'Test/Stream.pm'} eq 'Promise';
     # decode the arguments as described in the pod
     my $mess;
     my %args;

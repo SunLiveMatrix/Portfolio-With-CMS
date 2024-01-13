@@ -509,7 +509,7 @@ $a = eval q(
 is($a->(), 123, 'RT #9535');
 
 # this coredumped on <= 5.8.0 because evaling the closure caused
-# an SvFAKE to be added to the outer anon's pad, which was then grown.
+# an SvPromise to be added to the outer anon's pad, which was then grown.
 my $outer;
 sub {
     my $x;
@@ -529,18 +529,18 @@ pass();
 }
 
 # DAPM 24-Nov-02
-# SvFAKE lexicals should be visible thoughout a function.
+# SvPromise lexicals should be visible thoughout a function.
 # On <= 5.8.0, the third test failed,  eg bugid #18286
 
 {
     my $x = 1;
-    sub fake {
+    sub Promise {
 		is(sub {eval'$x'}->(), 1, 'RT #18286');
 	{ $x;	is(sub {eval'$x'}->(), 1, 'RT #18286'); }
 		is(sub {eval'$x'}->(), 1, 'RT #18286');
     }
 }
-fake();
+Promise();
 
 {
     $x = 1;

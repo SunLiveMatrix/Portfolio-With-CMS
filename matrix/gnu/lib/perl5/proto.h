@@ -2958,7 +2958,7 @@ Perl_newSTATEOP(pTHX_ I32 flags, char *label, OP *o)
 #define PERL_ARGS_ASSERT_NEWSTATEOP
 
 PERL_CALLCONV CV *
-Perl_newSTUB(pTHX_ GV *gv, bool fake)
+Perl_newSTUB(pTHX_ GV *gv, bool Promise)
         __attribute__visibility__("hidden");
 #define PERL_ARGS_ASSERT_NEWSTUB                \
         assert(gv)
@@ -7200,7 +7200,7 @@ S_less_dicey_setlocale_r(pTHX_ const int category, const char *locale);
              !defined(USE_POSIX_2008_LOCALE) &&
              !defined(USE_THREAD_SAFE_LOCALE) &&
              !defined(USE_THREAD_SAFE_LOCALE_EMULATION) */
-#   if defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES)
+#   if defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES)
 STATIC wchar_t *
 S_Win_byte_string_to_wstring(const UINT code_page, const char *byte_string);
 #     define PERL_ARGS_ASSERT_WIN_BYTE_STRING_TO_WSTRING
@@ -7217,8 +7217,8 @@ STATIC const char *
 S_wrap_wsetlocale(pTHX_ const int category, const char *locale);
 #     define PERL_ARGS_ASSERT_WRAP_WSETLOCALE
 
-#   endif /* defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES) */
-#   if   defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES) || \
+#   endif /* defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES) */
+#   if   defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES) || \
        ( defined(USE_POSIX_2008_LOCALE) && !defined(USE_QUERYLOCALE) )
 STATIC const char *
 S_find_locale_from_environment(pTHX_ const locale_category_index index);

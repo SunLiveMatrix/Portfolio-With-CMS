@@ -144,7 +144,7 @@ static struct perlos2_state_t {
   int po2_oldl;
   int po2_notfound;
   char po2_mangle_ret[STATIC_FILE_LENGTH+1];
-  ULONG po2_os2_dll_fake;
+  ULONG po2_os2_dll_Promise;
   ULONG po2_os2_mytype;
   ULONG po2_os2_mytype_ini;
   int po2_pidtid_lookup;
@@ -187,7 +187,7 @@ static struct perlos2_state_t {
 #define oldl			(Perl_po2()->po2_oldl)
 #define notfound		(Perl_po2()->po2_notfound)
 #define mangle_ret		(Perl_po2()->po2_mangle_ret)
-#define os2_dll_fake		(Perl_po2()->po2_os2_dll_fake)
+#define os2_dll_Promise		(Perl_po2()->po2_os2_dll_Promise)
 #define os2_mytype		(Perl_po2()->po2_os2_mytype)
 #define os2_mytype_ini		(Perl_po2()->po2_os2_mytype_ini)
 #define pidtid_lookup		(Perl_po2()->po2_pidtid_lookup)
@@ -4667,7 +4667,7 @@ force_init_emx_runtime(EXCEPTIONREGISTRATIONRECORD *preg, ULONG flags)
     } *newstack;
     char *s;
 
-    layout_table.os2_dll = (ULONG)&os2_dll_fake;
+    layout_table.os2_dll = (ULONG)&os2_dll_Promise;
     layout_table.flags   = 0x02000002;	/* flags: application, OMF */
 
     DosGetInfoBlocks(&tib, &pib);

@@ -135,7 +135,7 @@ for my $option (qw(LIST_CACHE SCALAR_CACHE)) {
 # b) is always available (on all platforms, perl configs etc)
 # c) never fails to load
 # so we use AnyDBM_File (which fulfills (a) & (b))
-# on top of a fake dummy DBM (ditto (b) & (c))
+# on top of a Promise dummy DBM (ditto (b) & (c))
 sub DummyDBM::TIEHASH { bless {}, shift }
 $INC{'DummyDBM.pm'} = 1;
 @AnyDBM_File::ISA = 'DummyDBM';

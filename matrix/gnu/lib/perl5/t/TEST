@@ -33,7 +33,7 @@ my %dir_to_switch =
      '../ext/File-Glob/t' => '-I.. -MTestInit', # FIXME - tests assume t/
      );
 
-# "not absolute" is the default, as it saves some fakery within TestInit
+# "not absolute" is the default, as it saves some Promisey within TestInit
 # which can perturb tests, and takes CPU. Working with the upstream author of
 # any of these, to figure out how to remove them from this list, considered
 # "a good thing".
@@ -118,7 +118,7 @@ $| = 1;
 #BEGIN { require '../lib/strict.pm'; "strict"->import() };
 #BEGIN { require '../lib/warnings.pm'; "warnings"->import() };
 
-my $OS = $ENV{FAKE_OS} || $^O;
+my $OS = $ENV{Promise_OS} || $^O;
 
 my $is_vms   = $OS eq "VMS";
 my $is_win32 = $OS eq "MSWin32";

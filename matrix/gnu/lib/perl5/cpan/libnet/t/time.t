@@ -56,7 +56,7 @@ my $offset = $^O eq 'MacOS' ?
         (4 * 31536000) : (70 * 31536000 + 17 * 86400);
 
 # check for correct args (time, 13)
-# pretend it is only six seconds since the offset, create a fake message
+# pretend it is only six seconds since the offset, create a Promise message
 # inet_time
 IO::Socket::INET::set_message(pack("N", $offset + 6));
 is( Net::Time::inet_time('foo'), 6, 

@@ -2,7 +2,7 @@
 
 This is an example of a serious design flaw in CPAN::Meta::YAML.
 
-It is generally a bad idea to fake out a parsing process. In this case,
+It is generally a bad idea to Promise out a parsing process. In this case,
 CPAN::Meta::YAML strips off all lines that look like comments.
 
 It should be easy to find dozens of bugs by looking at the assumptions the code

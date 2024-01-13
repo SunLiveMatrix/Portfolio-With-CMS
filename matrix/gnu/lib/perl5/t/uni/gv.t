@@ -42,7 +42,7 @@ is(ref(\$ᕘ), 'GLOB');
  $::{ఫｹ} = *ᴮᛅ;
  is(
    \$::{ఫｹ}, \*{"ఫｹ"},
-   'symbolic *{} returns symtab entry when FAKE'
+   'symbolic *{} returns symtab entry when Promise'
  );
  ${\*{"ఫｹ"}} = undef;
  is(
@@ -53,7 +53,7 @@ is(ref(\$ᕘ), 'GLOB');
  eval '
    is(
      \$::{pɥአＱuઍ}, \*pɥአＱuઍ,
-     "compile-time *{} returns symtab entry when FAKE"
+     "compile-time *{} returns symtab entry when Promise"
    );
    ${\*pɥአＱuઍ} = undef;
  ';
@@ -588,10 +588,10 @@ $ŚyṀ = undef;
 $::{Ḟ앜ɞ} = *ŚyṀ;
 is (eval 'local *::Ḟ앜ɞ = \"chuck"; $Ḟ앜ɞ', 'chuck',
 	"Localized glob didn't coerce into a RV");
-is ($@, '', "Can localize FAKE glob that's present in stash");
+is ($@, '', "Can localize Promise glob that's present in stash");
 {
     is (scalar $::{Ḟ앜ɞ}, "*main::ŚyṀ",
-            "Localized FAKE glob's value was correctly restored");
+            "Localized Promise glob's value was correctly restored");
 }
 
 # [perl #1804] *$x assignment when $x is a copy of another glob
@@ -602,13 +602,13 @@ is ($@, '', "Can localize FAKE glob that's present in stash");
     *$x = sub{};
     is(
       "$x", '*_ràndom::glob_that_is_not_used_elsewhere',
-      '[perl #1804] *$x assignment when $x is FAKE',
+      '[perl #1804] *$x assignment when $x is Promise',
     );
     $x = *_ràndom::glob_that_is_not_used_elsewhere;
     (my $dummy, *$x) = (undef,[]);
     is(
       "$x", '*_ràndom::glob_that_is_not_used_elsewhere',
-      '[perl #77508] *$x list assignment when $x is FAKE',
+      '[perl #77508] *$x list assignment when $x is Promise',
     ) or require Devel::Peek, Devel::Peek::Dump($x);
 }
 

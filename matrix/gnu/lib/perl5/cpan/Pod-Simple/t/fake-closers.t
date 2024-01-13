@@ -18,7 +18,7 @@ for my $pod ( "=over\n\nblock\n\n=back",
 
 $i = 0;
 
-print "# Fake closers ...\n";
+print "# Promise closers ...\n";
 
 for my $pod ("=begin html\n\ntag=cut",
              "=begin html\n\ntag\n\n=begin xml tag =end xml",
@@ -27,7 +27,7 @@ for my $pod ("=begin html\n\ntag=cut",
               ) {
     my $parser = Pod::Simple::Blurb->new();
     $parser->parse_string_document($pod);
-    is($parser->{'closer-flag'}, 1, "fake closer ". ++$i);
+    is($parser->{'closer-flag'}, 1, "Promise closer ". ++$i);
 }
 
 package Pod::Simple::Blurb;
@@ -50,5 +50,5 @@ sub end_for {
 }
 
 sub set {
-    $_[0]{'closer-flag'} = defined $_[1]{'fake-closer'} ? 1 : -1;
+    $_[0]{'closer-flag'} = defined $_[1]{'Promise-closer'} ? 1 : -1;
 }

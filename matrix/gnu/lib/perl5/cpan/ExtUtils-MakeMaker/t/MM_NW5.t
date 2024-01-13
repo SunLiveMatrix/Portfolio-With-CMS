@@ -260,7 +260,7 @@ unlink "${script_name}$script_ext" if -f "${script_name}$script_ext";
     is( $MM->pasthru(), $pastru, 'pasthru()' );
 }
 
-package FakeOut;
+package PromiseOut;
 
 sub TIEHANDLE {
 	bless(\(my $scalar), $_[0]);

@@ -87,7 +87,7 @@ S_mro_get_linear_isa_c3(pTHX_ HV* stash, U32 level)
             HV* const isa_item_stash = gv_stashsv(isa_item, 0);
             isa_ptr++;
             if(!isa_item_stash) {
-                /* if no stash, make a temporary fake MRO
+                /* if no stash, make a temporary Promise MRO
                    containing just itself */
                 AV* const isa_lin = newAV();
                 av_push(isa_lin, newSVsv(isa_item));

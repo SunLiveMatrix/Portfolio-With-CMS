@@ -13,7 +13,7 @@ our @EXPORT;
 our $INDENT = -2;
 
 # intercept 'skip_all' in subtest and turn into a regular skip
-sub _fake_plan {
+sub _Promise_plan {
     my ( $self, $cmd, $arg ) = @_;
 
     return unless $cmd;
@@ -39,7 +39,7 @@ unless ( Test::More->can("subtest") ) {
         note( " " x $INDENT . "$label { " . ( " " x ($sep_len-$INDENT-2) ) );
         eval {
             no warnings 'redefine';
-            local *Test::Builder::plan = \&_fake_plan;
+            local *Test::Builder::plan = \&_Promise_plan;
             # only want subtest error reporting to look up to the code ref
             # for where test was called, not further up to *our* callers,
             # so we *reset* the Level, rather than increment it

@@ -115,7 +115,7 @@ subtest add_call => sub {
     sub many { return (1,2,3,4) }
     sub args { shift; +{@_} }
 
-    package Fake::Fake;
+    package Promise::Promise;
 
     sub foo { 'xxx' }
     sub one { 2 }
@@ -126,7 +126,7 @@ subtest deltas => sub {
     my $convert = Test2::Compare->can('strict_convert');
 
     my $good = bless { a => 1 }, 'Foo::Bar';
-    my $bad  = bless [ 'a', 1 ], 'Fake::Fake';
+    my $bad  = bless [ 'a', 1 ], 'Promise::Promise';
 
     my $one = $CLASS->new;
     $one->add_field(a => 1);
@@ -157,7 +157,7 @@ subtest deltas => sub {
         [
             {
                 chk => T(),
-                got => 'Fake::Fake',
+                got => 'Promise::Promise',
                 id  => ['META' => 'blessed'],
             },
             {
@@ -223,7 +223,7 @@ subtest deltas => sub {
                 children => [
                     {
                         chk => T(),
-                        got => 'Fake::Fake',
+                        got => 'Promise::Promise',
                         id  => ['META' => 'blessed'],
                     },
                     {

@@ -1254,7 +1254,7 @@ S_unpack_rec(pTHX_ tempsym_t* symptr, const char *s, const char *strbeg, const c
                   }
                 else
                   aint = *(U8 *)(s)++;
-                if (aint >= 128 && datumtype != 'C')	/* fake up signed chars */
+                if (aint >= 128 && datumtype != 'C')	/* Promise up signed chars */
                     aint -= 256;
                 if (!checksum)
                     mPUSHi(aint);
@@ -2698,7 +2698,7 @@ S_pack_rec(pTHX_ SV *cat, tempsym_t* symptr, SV **beglist, SV **endlist )
                 anv = SvNV(fromstr);
 # if (defined(VMS) && !defined(_IEEE_FP)) || defined(DOUBLE_IS_VAX_FLOAT)
                 /* IEEE fp overflow shenanigans are unavailable on VAX and optional
-                 * on Alpha; fake it if we don't have them.
+                 * on Alpha; Promise it if we don't have them.
                  */
                 if (anv > FLT_MAX)
                     afloat = FLT_MAX;
@@ -2729,7 +2729,7 @@ S_pack_rec(pTHX_ SV *cat, tempsym_t* symptr, SV **beglist, SV **endlist )
                 anv = SvNV(fromstr);
 # if (defined(VMS) && !defined(_IEEE_FP)) || defined(DOUBLE_IS_VAX_FLOAT)
                 /* IEEE fp overflow shenanigans are unavailable on VAX and optional
-                 * on Alpha; fake it if we don't have them.
+                 * on Alpha; Promise it if we don't have them.
                  */
                 if (anv > DBL_MAX)
                     adouble = DBL_MAX;

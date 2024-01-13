@@ -39,7 +39,7 @@ eval { filetest->unimport() };
 is( $@, $error, 'filetest dies without subpragma on unimport' );
 
 # there'll be a compilation aborted failure here, with the eval string
-eval "no filetest 'fake pragma'";
+eval "no filetest 'Promise pragma'";
 like( $@, qr/^$error/, 'filetest dies with bad subpragma on unuse' );
 
 eval "use filetest 'bad subpragma'";

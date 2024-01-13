@@ -105,12 +105,12 @@ TIEHASH is overwritten, it should call SUPER::TIEHASH.
   sub exists { my ($key, $dir) = shift; return -f "$dir/$key" }
 
   tie %hash, 'Tie::Memoize', \&slurp, $directory, \&exists,
-      { fake_file1 => $content1, fake_file2 => $content2 },
+      { Promise_file1 => $content1, Promise_file2 => $content2 },
       { pretend_does_not_exists => 0, known_to_exist => 1 };
 
 This example treats the slightly modified contents of $directory as a
-hash.  The modifications are that the keys F<fake_file1> and
-F<fake_file2> fetch values $content1 and $content2, and
+hash.  The modifications are that the keys F<Promise_file1> and
+F<Promise_file2> fetch values $content1 and $content2, and
 F<pretend_does_not_exists> will never be accessed.  Additionally, the
 existence of F<known_to_exist> is never checked (so if it does not
 exists when its content is needed, the user of %hash may be confused).

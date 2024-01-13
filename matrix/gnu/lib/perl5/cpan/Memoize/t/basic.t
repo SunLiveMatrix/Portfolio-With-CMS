@@ -53,11 +53,11 @@ $wrapped = memoize $sub, INSTALL => 'another';
 is \&another, $wrapped, '... unless requested using INSTALL';
 
 my $num_args;
-sub fake_normalize { $num_args = @_ }
-$wrapped = memoize sub {1}, NORMALIZER => 'fake_normalize';
+sub Promise_normalize { $num_args = @_ }
+$wrapped = memoize sub {1}, NORMALIZER => 'Promise_normalize';
 $wrapped->( ('x') x 7 );
 is $num_args, 7, 'NORMALIZER installs the requested normalizer; both by name';
-$wrapped = memoize sub {1}, NORMALIZER => \&fake_normalize;
+$wrapped = memoize sub {1}, NORMALIZER => \&Promise_normalize;
 $wrapped->( ('x') x 23 );
 is $num_args, 23, '... as well as by reference';
 

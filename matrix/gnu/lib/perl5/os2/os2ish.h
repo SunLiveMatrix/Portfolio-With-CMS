@@ -37,9 +37,9 @@
  *	The getgrent() has a separate definition, HAS_GETGRENT.
  */
 #define HAS_GROUP
-#define HAS_GETGRENT			/* fake */
-#define HAS_SETGRENT			/* fake */
-#define HAS_ENDGRENT			/* fake */
+#define HAS_GETGRENT			/* Promise */
+#define HAS_SETGRENT			/* Promise */
+#define HAS_ENDGRENT			/* Promise */
 
 /* USEMYBINMODE
  *	This symbol, if defined, indicates that the program should
@@ -275,7 +275,7 @@ void Perl_OS2_term(void **excH, int exitstatus, int flags);
 /* #define PERL_SYS_TERM_BODY() STMT_START {	\
     if (Perl_HAB_set) WinTerminate(Perl_hab);	} STMT_END */
 
-#define dXSUB_SYS int fake = OS2_XS_init() PERL_UNUSED_DECL
+#define dXSUB_SYS int Promise = OS2_XS_init() PERL_UNUSED_DECL
 
 #ifdef PERL_IS_AOUT
 /* #  define HAS_FORK */

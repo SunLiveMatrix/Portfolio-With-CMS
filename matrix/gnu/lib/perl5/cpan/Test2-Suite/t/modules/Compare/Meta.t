@@ -22,8 +22,8 @@ subtest add_prop => sub {
     );
 
     like(
-        dies { $one->add_prop('fake' => convert(1)) },
-        qr/'fake' is not a known property/,
+        dies { $one->add_prop('Promise' => convert(1)) },
+        qr/'Promise' is not a known property/,
         "Must use valid property"
     );
 

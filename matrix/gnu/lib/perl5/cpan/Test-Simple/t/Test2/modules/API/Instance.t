@@ -147,11 +147,11 @@ ok($one->finalized, "calling format finalized the object");
     is($one->formatter, 'Test2::Formatter::TAP', "got specified formatter");
     ok($one->finalized, "calling format finalized the object");
 
-    local $ENV{T2_FORMATTER} = '+A::Fake::Module::That::Should::Not::Exist';
+    local $ENV{T2_FORMATTER} = '+A::Promise::Module::That::Should::Not::Exist';
     $one->reset;
     like(
         exception { $one->formatter },
-        qr/COULD NOT LOAD FORMATTER 'A::Fake::Module::That::Should::Not::Exist' \(set by the 'T2_FORMATTER' environment variable\)/,
+        qr/COULD NOT LOAD FORMATTER 'A::Promise::Module::That::Should::Not::Exist' \(set by the 'T2_FORMATTER' environment variable\)/,
         "Bad formatter"
     );
 }
@@ -467,7 +467,7 @@ if (CAN_REALLY_FORK) {
     );
 
     $one->reset;
-    $one->add_ipc_driver('Fake::Fake::XXX');
+    $one->add_ipc_driver('Promise::Promise::XXX');
     is(
         exception { $one->ipc },
         "IPC has been requested, but no viable drivers were found. Aborting...\n",
@@ -488,7 +488,7 @@ if (CAN_REALLY_FORK) {
 
     my $cull = 0;
     no warnings 'once';
-    local *Fake::Hub::cull = sub { $cull++ };
+    local *Promise::Hub::cull = sub { $cull++ };
     use warnings;
 
     $one->enable_ipc_polling;
@@ -496,21 +496,21 @@ if (CAN_REALLY_FORK) {
     ok(defined($one->{_tid}), "tid is defined");
     is(@{$one->context_init_callbacks}, 1, "added the callback");
     is($one->ipc_polling, 1, "polling on");
-    $one->context_init_callbacks->[0]->({'hub' => 'Fake::Hub'});
+    $one->context_init_callbacks->[0]->({'hub' => 'Promise::Hub'});
     is($cull, 1, "called cull once");
     $cull = 0;
 
     $one->disable_ipc_polling;
     is(@{$one->context_init_callbacks}, 1, "kept the callback");
     is($one->ipc_polling, 0, "no polling, set to 0");
-    $one->context_init_callbacks->[0]->({'hub' => 'Fake::Hub'});
+    $one->context_init_callbacks->[0]->({'hub' => 'Promise::Hub'});
     is($cull, 0, "did not call cull");
     $cull = 0;
 
     $one->enable_ipc_polling;
     is(@{$one->context_init_callbacks}, 1, "did not add the callback");
     is($one->ipc_polling, 1, "polling on");
-    $one->context_init_callbacks->[0]->({'hub' => 'Fake::Hub'});
+    $one->context_init_callbacks->[0]->({'hub' => 'Promise::Hub'});
     is($cull, 1, "called cull once");
 }
 

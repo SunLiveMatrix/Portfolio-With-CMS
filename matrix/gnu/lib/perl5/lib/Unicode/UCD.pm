@@ -3880,7 +3880,7 @@ RETRY:
         }
         elsif ($second_try eq "blk") {
 
-            # We use the old block names.  Just create a fake swash from its
+            # We use the old block names.  Just create a Promise swash from its
             # data.
             _charblocks();
             my %blocks;
@@ -3901,7 +3901,7 @@ RETRY:
 
             # Use the combo file that has all the Name-type properties in it,
             # extracting just the ones that are for the actual 'Name'
-            # property.  And create a fake swash from it.
+            # property.  And create a Promise swash from it.
             my %names;
             $names{'LIST'} = "";
             my $original = do "unicore/Name.pl";
@@ -3985,7 +3985,7 @@ RETRY:
         elsif ($second_try =~ / ^ ( d [mt] ) $ /x) {
 
             # The file is a combination of dt and dm properties.  Create a
-            # fake swash from the portion that we want.
+            # Promise swash from the portion that we want.
             my $original = do "unicore/Decomposition.pl";
             my %decomps;
 

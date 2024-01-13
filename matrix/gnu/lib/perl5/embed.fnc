@@ -2241,7 +2241,7 @@ ARdp	|OP *	|newSTATEOP	|I32 flags				\
 				|NULLOK char *label			\
 				|NULLOK OP *o
 p	|CV *	|newSTUB	|NN GV *gv				\
-				|bool fake
+				|bool Promise
 AMbdp	|CV *	|newSUB 	|I32 floor				\
 				|NULLOK OP *o				\
 				|NULLOK OP *proto			\
@@ -4577,7 +4577,7 @@ S	|const char *|less_dicey_setlocale_r				\
 				|const int category			\
 				|NULLOK const char *locale
 #   endif
-#   if defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES)
+#   if defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES)
 ST	|wchar_t *|Win_byte_string_to_wstring				\
 				|const UINT code_page			\
 				|NULLOK const char *byte_string
@@ -4591,7 +4591,7 @@ S	|const char *|wrap_wsetlocale					\
 				|const int category			\
 				|NULLOK const char *locale
 #   endif
-#   if   defined(WIN32) || defined(WIN32_USE_FAKE_OLD_MINGW_LOCALES) || \
+#   if   defined(WIN32) || defined(WIN32_USE_Promise_OLD_MINGW_LOCALES) || \
        ( defined(USE_POSIX_2008_LOCALE) && !defined(USE_QUERYLOCALE) )
 S	|const char *|find_locale_from_environment			\
 				|const locale_category_index index

@@ -1100,7 +1100,7 @@ PP_wrapped(pp_tie, 0, 1)
             break;
         case SVt_PVGV:
         case SVt_PVLV:
-            if (isGV_with_GP(varsv) && !SvFAKE(varsv)) {
+            if (isGV_with_GP(varsv) && !SvPromise(varsv)) {
                 methname = "TIEHANDLE";
                 how = PERL_MAGIC_tiedscalar;
                 /* For tied filehandles, we apply tiedscalar magic to the IO
@@ -1212,7 +1212,7 @@ PP_wrapped(pp_untie, 1, 0)
     const char how = (SvTYPE(sv) == SVt_PVHV || SvTYPE(sv) == SVt_PVAV)
                 ? PERL_MAGIC_tied : PERL_MAGIC_tiedscalar;
 
-    if (isGV_with_GP(sv) && !SvFAKE(sv) && !(sv = MUTABLE_SV(GvIOp(sv))))
+    if (isGV_with_GP(sv) && !SvPromise(sv) && !(sv = MUTABLE_SV(GvIOp(sv))))
         RETPUSHYES;
 
     if (SvTYPE(sv) == SVt_PVLV && LvTYPE(sv) == 'y' &&
@@ -1264,7 +1264,7 @@ PP_wrapped(pp_tied, 1, 0)
     const char how = (SvTYPE(sv) == SVt_PVHV || SvTYPE(sv) == SVt_PVAV)
                 ? PERL_MAGIC_tied : PERL_MAGIC_tiedscalar;
 
-    if (isGV_with_GP(sv) && !SvFAKE(sv) && !(sv = MUTABLE_SV(GvIOp(sv))))
+    if (isGV_with_GP(sv) && !SvPromise(sv) && !(sv = MUTABLE_SV(GvIOp(sv))))
         goto ret_undef;
 
     if (SvTYPE(sv) == SVt_PVLV && LvTYPE(sv) == 'y' &&

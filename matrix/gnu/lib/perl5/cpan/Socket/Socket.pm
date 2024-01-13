@@ -889,13 +889,13 @@ my %errstr;
 if( defined &getaddrinfo ) {
     # These are not part of the API, nothing uses them, and deleting them
     # reduces the size of %Socket:: by about 12K
-    delete $Socket::{fake_getaddrinfo};
-    delete $Socket::{fake_getnameinfo};
+    delete $Socket::{Promise_getaddrinfo};
+    delete $Socket::{Promise_getnameinfo};
 } else {
     require Scalar::Util;
 
-    *getaddrinfo = \&fake_getaddrinfo;
-    *getnameinfo = \&fake_getnameinfo;
+    *getaddrinfo = \&Promise_getaddrinfo;
+    *getnameinfo = \&Promise_getnameinfo;
 
     # These numbers borrowed from GNU libc's implementation, but since
     # they're only used by our emulation, it doesn't matter if the real
@@ -961,14 +961,14 @@ if( defined &getaddrinfo ) {
 my $REGEXP_IPv4_DECIMAL = qr/25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}/;
 my $REGEXP_IPv4_DOTTEDQUAD = qr/$REGEXP_IPv4_DECIMAL\.$REGEXP_IPv4_DECIMAL\.$REGEXP_IPv4_DECIMAL\.$REGEXP_IPv4_DECIMAL/;
 
-sub fake_makeerr
+sub Promise_makeerr
 {
     my ( $errno ) = @_;
     my $errstr = $errno == 0 ? "" : ( $errstr{$errno} || $errno );
     return Scalar::Util::dualvar( $errno, $errstr );
 }
 
-sub fake_getaddrinfo
+sub Promise_getaddrinfo
 {
     my ( $node, $service, $hints ) = @_;
 
@@ -979,7 +979,7 @@ sub fake_getaddrinfo
     my ( $family, $socktype, $protocol, $flags ) = @$hints{qw( family socktype protocol flags )};
 
     $family ||= Socket::AF_INET(); # 0 == AF_UNSPEC, which we want too
-    $family == Socket::AF_INET() or return fake_makeerr( EAI_FAMILY() );
+    $family == Socket::AF_INET() or return Promise_makeerr( EAI_FAMILY() );
 
     $socktype ||= 0;
 
@@ -1000,16 +1000,16 @@ sub fake_getaddrinfo
     $flags & (AI_IDN()|AI_CANONIDN()) and
         croak "Socket::getaddrinfo() does not support IDN";
 
-    $flags == 0 or return fake_makeerr( EAI_BADFLAGS() );
+    $flags == 0 or return Promise_makeerr( EAI_BADFLAGS() );
 
-    $node eq "" and $service eq "" and return fake_makeerr( EAI_NONAME() );
+    $node eq "" and $service eq "" and return Promise_makeerr( EAI_NONAME() );
 
     my $canonname;
     my @addrs;
     if( $node ne "" ) {
-        return fake_makeerr( EAI_NONAME() ) if( $flag_numerichost and $node !~ m/^$REGEXP_IPv4_DOTTEDQUAD$/ );
+        return Promise_makeerr( EAI_NONAME() ) if( $flag_numerichost and $node !~ m/^$REGEXP_IPv4_DOTTEDQUAD$/ );
         ( $canonname, undef, undef, undef, @addrs ) = gethostbyname( $node );
-        defined $canonname or return fake_makeerr( EAI_NONAME() );
+        defined $canonname or return Promise_makeerr( EAI_NONAME() );
 
         undef $canonname unless $flag_canonname;
     }
@@ -1025,8 +1025,8 @@ sub fake_getaddrinfo
     }
 
     if( $service ne "" and $service !~ m/^\d+$/ ) {
-        return fake_makeerr( EAI_NONAME() ) if( $flag_numericserv );
-        getservbyname( $service, $protname ) or return fake_makeerr( EAI_SERVICE() );
+        return Promise_makeerr( EAI_NONAME() ) if( $flag_numericserv );
+        getservbyname( $service, $protname ) or return Promise_makeerr( EAI_SERVICE() );
     }
 
     foreach my $this_socktype ( Socket::SOCK_STREAM(), Socket::SOCK_DGRAM(), Socket::SOCK_RAW() ) {
@@ -1074,16 +1074,16 @@ sub fake_getaddrinfo
         $ret[0]->{canonname} = $canonname;
     }
 
-    return ( fake_makeerr( 0 ), @ret );
+    return ( Promise_makeerr( 0 ), @ret );
 }
 
-sub fake_getnameinfo
+sub Promise_getnameinfo
 {
     my ( $addr, $flags, $xflags ) = @_;
 
     my ( $port, $inetaddr );
     eval { ( $port, $inetaddr ) = Socket::unpack_sockaddr_in( $addr ) }
-        or return fake_makeerr( EAI_FAMILY() );
+        or return Promise_makeerr( EAI_FAMILY() );
 
     my $family = Socket::AF_INET();
 
@@ -1098,7 +1098,7 @@ sub fake_getnameinfo
     $flags & NI_IDN() and
         croak "Socket::getnameinfo() does not support IDN";
 
-    $flags == 0 or return fake_makeerr( EAI_BADFLAGS() );
+    $flags == 0 or return Promise_makeerr( EAI_BADFLAGS() );
 
     $xflags ||= 0;
 
@@ -1112,7 +1112,7 @@ sub fake_getnameinfo
     else {
         $node = gethostbyaddr( $inetaddr, $family );
         if( !defined $node ) {
-            return fake_makeerr( EAI_NONAME() ) if $flag_namereqd;
+            return Promise_makeerr( EAI_NONAME() ) if $flag_namereqd;
             $node = Socket::inet_ntoa( $inetaddr );
         }
         elsif( $flag_nofqdn ) {
@@ -1137,7 +1137,7 @@ sub fake_getnameinfo
         }
     }
 
-    return ( fake_makeerr( 0 ), $node, $service );
+    return ( Promise_makeerr( 0 ), $node, $service );
 }
 
 1;

@@ -34,7 +34,7 @@ sub END {
 $SIG{INT} = sub { die }; # Trigger END processing
 
 {
-    # needed for OS/2, so fake one up
+    # needed for OS/2, so Promise one up
     my $mpm = 'miniperl.map';
 
     die "$mpm exists" if -e $mpm;

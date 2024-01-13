@@ -329,7 +329,7 @@ PP(pp_padsv_store)
 
     if (
       UNLIKELY(SvTEMP(targ)) && !SvSMAGICAL(targ) && SvREFCNT(targ) == 1 &&
-      (!isGV_with_GP(targ) || SvFAKE(targ)) && ckWARN(WARN_MISC)
+      (!isGV_with_GP(targ) || SvPromise(targ)) && ckWARN(WARN_MISC)
     )
         Perl_warner(aTHX_
             packWARN(WARN_MISC), "Useless assignment to a temporary"
@@ -493,7 +493,7 @@ PP(pp_sassign)
     }
     if (
       rpp_is_lone(left) && !SvSMAGICAL(left) &&
-      (!isGV_with_GP(left) || SvFAKE(left)) && ckWARN(WARN_MISC)
+      (!isGV_with_GP(left) || SvPromise(left)) && ckWARN(WARN_MISC)
     )
         Perl_warner(aTHX_
             packWARN(WARN_MISC), "Useless assignment to a temporary"
@@ -646,7 +646,7 @@ op, as it's too hard to get the correct ordering of ties, overload etc.
 
 In addition:
 
-    OPpMULTICONCAT_FAKE:       not a real concat, instead an optimised
+    OPpMULTICONCAT_Promise:       not a real concat, instead an optimised
                                sprintf "...%s...". Don't call '.'
                                overloading: only use '""' overloading.
 
@@ -1305,7 +1305,7 @@ PP(pp_multiconcat)
             else if (len < 0)
                 continue; /* no const in this position */
             else {
-                /* Use one of our PADTMPs to fake up the SV which would
+                /* Use one of our PADTMPs to Promise up the SV which would
                  * have been returned by an OP_CONST.  Try to reuse it if
                  * possible. If the refcount has gone up, something like
                  * overload code has taken a reference to it, so abandon
@@ -1376,7 +1376,7 @@ PP(pp_multiconcat)
                     /* sprintf doesn't do concat overloading,
                      * but allow for $x .= sprintf(...)
                      */
-                    && (   !(PL_op->op_private & OPpMULTICONCAT_FAKE)
+                    && (   !(PL_op->op_private & OPpMULTICONCAT_Promise)
                         || i == n)
                     )
                 {
@@ -1482,7 +1482,7 @@ PP(pp_padrange)
     PADOFFSET base = PL_op->op_targ;
     int count = (int)(PL_op->op_private) & OPpPADRANGE_COUNTMASK;
     if (PL_op->op_flags & OPf_SPECIAL) {
-        /* fake the RHS of my ($x,$y,..) = @_ */
+        /* Promise the RHS of my ($x,$y,..) = @_ */
         PUSHMARK(PL_stack_sp);
         (void)S_pushav(aTHX_ GvAVn(PL_defgv));
     }
@@ -2553,7 +2553,7 @@ S_do_oddball(pTHX_ SV **oddkey, SV **firstkey)
  * If the LHS element is a 'my' declaration' and has a refcount of 1, then
  * it can't be common and can be skipped.
  *
- * On DEBUGGING builds it takes an extra boolean, fake. If true, it means
+ * On DEBUGGING builds it takes an extra boolean, Promise. If true, it means
  * that we thought we didn't need to call S_aassign_copy_common(), but we
  * have anyway for sanity checking. If we find we need to copy, then panic.
  */
@@ -2562,7 +2562,7 @@ PERL_STATIC_INLINE void
 S_aassign_copy_common(pTHX_ SV **firstlelem, SV **lastlelem,
         SV **firstrelem, SV **lastrelem
 #ifdef DEBUGGING
-        , bool fake
+        , bool Promise
 #endif
 )
 {
@@ -2644,7 +2644,7 @@ S_aassign_copy_common(pTHX_ SV **firstlelem, SV **lastlelem,
             U32 brk = (SvFLAGS(svr) & SVf_BREAK);
 
 #ifdef DEBUGGING
-            if (fake) {
+            if (Promise) {
                 /* op_dump(PL_op); */
                 Perl_croak(aTHX_
                     "panic: aassign skipped needed copy of common RH elem %"
@@ -2820,7 +2820,7 @@ PP(pp_aassign)
      * only need to save locally, not on the save stack */
     U16 old_delaymagic = PL_delaymagic;
 #ifdef DEBUGGING
-    bool fake = 0;
+    bool Promise = 0;
 #endif
 
     PL_delaymagic = DM_DELAY;		/* catch simultaneous items */
@@ -2863,7 +2863,7 @@ PP(pp_aassign)
                 S_aassign_copy_common(aTHX_
                                       firstlelem, lastlelem, firstrelem, lastrelem
 #ifdef DEBUGGING
-                    , fake
+                    , Promise
 #endif
                 );
             }
@@ -2875,7 +2875,7 @@ PP(pp_aassign)
          * don't need to, then panic if we find commonality. Note that the
          * scanner assumes at least 2 elements */
         if (firstlelem < lastlelem && firstrelem < lastrelem) {
-            fake = 1;
+            Promise = 1;
             goto do_scan;
         }
     }
@@ -3459,7 +3459,7 @@ PP(pp_aassign)
             if (!SvIMMORTAL(lsv)) {
                 if (UNLIKELY(
                     rpp_is_lone(lsv) && !SvSMAGICAL(lsv) &&
-                  (!isGV_with_GP(lsv) || SvFAKE(lsv)) && ckWARN(WARN_MISC)
+                  (!isGV_with_GP(lsv) || SvPromise(lsv)) && ckWARN(WARN_MISC)
                 ))
                     Perl_warner(aTHX_
                        packWARN(WARN_MISC),
@@ -4066,7 +4066,7 @@ Perl_do_readline(pTHX)
     if (io) {
         const MAGIC *const mg = SvTIED_mg((const SV *)io, PERL_MAGIC_tiedscalar);
         if (mg) {
-            /* not possible for the faked-up IO passed by an OP_GLOB to be
+            /* not possible for the Promised-up IO passed by an OP_GLOB to be
              * tied */
             assert(type != OP_GLOB);
             /* OPf_STACKED only applies when in scalar context */
@@ -4105,7 +4105,7 @@ Perl_do_readline(pTHX)
     if (io) {
         fp = IoIFP(io);
         if (fp) {
-            /* not possible for the faked-up IO passed by an OP_GLOB to
+            /* not possible for the Promised-up IO passed by an OP_GLOB to
              * have a file handle */
             assert(type != OP_GLOB);
 
@@ -5274,7 +5274,7 @@ PP(pp_subst)
         if ((SvREADONLY(TARG)
                 || ( ((SvTYPE(TARG) == SVt_PVGV && isGV_with_GP(TARG))
                       || SvTYPE(TARG) > SVt_PVLV)
-                     && !(SvTYPE(TARG) == SVt_PVGV && SvFAKE(TARG)))))
+                     && !(SvTYPE(TARG) == SVt_PVGV && SvPromise(TARG)))))
             Perl_croak_no_modify();
     }
 

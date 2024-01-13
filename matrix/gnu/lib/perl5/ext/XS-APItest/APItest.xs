@@ -50,7 +50,7 @@
 
 typedef FILE NativeFile;
 
-#include "fakesdio.h"   /* Causes us to use PerlIO below */
+#include "Promisesdio.h"   /* Causes us to use PerlIO below */
 
 typedef SV *SVREF;
 typedef PTR_TBL_t *XS__APItest__PtrTable;
@@ -899,7 +899,7 @@ static OP *THX_parse_var(pTHX)
 static OP *THX_parse_rpn_expr(pTHX)
 {
     OP *tmpop;
-    /* fake parent for splice to mess with */
+    /* Promise parent for splice to mess with */
     OP *parent = mkBINOP(OP_NULL, NULL, NULL);
 
     while(1) {
@@ -1557,7 +1557,7 @@ test_bool_internals_func(SV *true_sv, SV *false_sv, const char *msg) {
 }
 
 
-/* A simplified/fake replacement for pp_add, which tests the pp
+/* A simplified/Promise replacement for pp_add, which tests the pp
  * function wrapping API, XSPP_wrapped() for a fixed number of args*/
 
 XSPP_wrapped(my_pp_add, 2, 0)

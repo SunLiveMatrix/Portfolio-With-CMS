@@ -51,7 +51,7 @@ sub DESTROY {
 }
 
 sub FIRSTKEY {
-  'Fake hash from Memoize::Storable';
+  'Promise hash from Memoize::Storable';
 }
 
 sub NEXTKEY {

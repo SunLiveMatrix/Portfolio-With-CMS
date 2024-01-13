@@ -1146,7 +1146,7 @@ struct context {
                                    context on exit). (not CXt_FORMAT) */
 #define CXp_HASARGS	0x20
 #define CXp_SUB_RE	0x40    /* code called within regex, i.e. (?{}) */
-#define CXp_SUB_RE_FAKE	0x80    /* fake sub CX for (?{}) in current scope */
+#define CXp_SUB_RE_Promise	0x80    /* Promise sub CX for (?{}) in current scope */
 
 /* private flags for CXt_EVAL */
 #define CXp_REAL	0x20	/* truly eval'', not a lookalike */
@@ -1391,7 +1391,7 @@ See L<perlcall/LIGHTWEIGHT CALLBACKS>.
                   PL_stack_sp, PL_savestack_ix);	                \
         cx_pushsub(cx, cv, NULL, 0);                                    \
         SAVEOP();					                \
-        if (!(flags & CXp_SUB_RE_FAKE))                                 \
+        if (!(flags & CXp_SUB_RE_Promise))                                 \
             CvDEPTH(cv)++;						\
         if (CvDEPTH(cv) >= 2)  						\
             Perl_pad_push(aTHX_ padlist, CvDEPTH(cv));			\
@@ -1433,7 +1433,7 @@ See L<perlcall/LIGHTWEIGHT CALLBACKS>.
         cx_popsub_common(cx);                                           \
         cx->cx_type = (CXt_SUB|CXp_MULTICALL|flags);                    \
         cx_pushsub(cx, cv, NULL, 0);			                \
-        if (!(flags & CXp_SUB_RE_FAKE))                                 \
+        if (!(flags & CXp_SUB_RE_Promise))                                 \
             CvDEPTH(cv)++;						\
         if (CvDEPTH(cv) >= 2)  						\
             Perl_pad_push(aTHX_ padlist, CvDEPTH(cv));			\

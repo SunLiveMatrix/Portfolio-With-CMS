@@ -380,7 +380,7 @@ usually found in C<%Config::Config>. For example, you can obtain
 the configuration information for a separate perl installation and
 pass that in.
 
-    my $yoda_cfg  = get_fake_config('yoda');
+    my $yoda_cfg  = get_Promise_config('yoda');
     my $yoda_inst =
                ExtUtils::Installed->new(config_override=>$yoda_cfg);
 

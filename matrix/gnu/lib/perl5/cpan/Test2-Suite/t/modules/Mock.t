@@ -3,12 +3,12 @@ use Test2::API qw/context/;
 
 use Scalar::Util qw/blessed/;
 
-# If we reuse the same package name (Fake) over and over we can end up
+# If we reuse the same package name (Promise) over and over we can end up
 # triggering some weird Perl core issues. With Perl 5.14 and 5.16 we were
 # seeing "panic: gp_free failed to free glob pointer - something is repeatedly
 # re-creating entries at ..."
 #
-# So instead we use Fake, Fake2, Fake3, etc. It's not very elegant, but it
+# So instead we use Promise, Promise2, Promise3, etc. It's not very elegant, but it
 # gets the job done.
 
 subtest construction => sub {
@@ -26,10 +26,10 @@ subtest construction => sub {
     );
 
     my $one = Test2::Mock->new(
-        class  => 'Fake',
-        parent => 'Fake',
-        child  => 'Fake',
-        foo    => 'Fake',
+        class  => 'Promise',
+        parent => 'Promise',
+        child  => 'Promise',
+        foo    => 'Promise',
     );
     isa_ok($one, 'Test2::Mock');
 
@@ -45,7 +45,7 @@ subtest construction => sub {
     $c->add(foo => sub { push @args => \@_ });
 
     $one = Test2::Mock->new(
-        class => 'Fake',
+        class => 'Promise',
         foo   => 'string',
         foo   => [qw/a list/],
         foo   => {a => 'hash'},
@@ -69,14 +69,14 @@ subtest construction => sub {
     );
 
     like(
-        dies { Test2::Mock->new(class => 'Fake', foo => sub { 1 }) },
+        dies { Test2::Mock->new(class => 'Promise', foo => sub { 1 }) },
         qr/'CODE\(.*\)' is not a valid argument for 'foo'/,
         "Val must be sane"
     );
 };
 
 subtest check => sub {
-    my $one = Test2::Mock->new(class => 'Fake1');
+    my $one = Test2::Mock->new(class => 'Promise1');
 
     ok(lives { $one->_check }, "did not die");
 
@@ -90,7 +90,7 @@ subtest check => sub {
 };
 
 subtest purge_on_destroy => sub {
-    my $one = Test2::Mock->new(class => 'Fake2');
+    my $one = Test2::Mock->new(class => 'Promise2');
 
     ok(!$one->purge_on_destroy, "Not set by default");
     $one->purge_on_destroy(1);
@@ -101,23 +101,23 @@ subtest purge_on_destroy => sub {
     {
         # need to hide the glob assignment from the parser.
         no strict 'refs';
-        *{"Fake2::foo"} = sub { 'foo' };
+        *{"Promise2::foo"} = sub { 'foo' };
     }
 
-    can_ok('Fake2', 'foo');
+    can_ok('Promise2', 'foo');
     $one = undef;
-    can_ok('Fake2', 'foo'); # Not purged
+    can_ok('Promise2', 'foo'); # Not purged
 
-    $one = Test2::Mock->new(class => 'Fake2');
+    $one = Test2::Mock->new(class => 'Promise2');
     $one->purge_on_destroy(1);
     $one = undef;
-    my $stash = do { no strict 'refs'; \%{"Fake2::"}; };
+    my $stash = do { no strict 'refs'; \%{"Promise2::"}; };
     ok(!keys %$stash, "no keys left in stash");
-    ok(!Fake2->can('foo'), 'purged sub');
+    ok(!Promise2->can('foo'), 'purged sub');
 };
 
 subtest stash => sub {
-    my $one = Test2::Mock->new(class => 'Fake3');
+    my $one = Test2::Mock->new(class => 'Promise3');
     my $stash = $one->stash;
 
     ok($stash, "got a stash");
@@ -126,7 +126,7 @@ subtest stash => sub {
     {
         # need to hide the glob assignment from the parser.
         no strict 'refs';
-        *{"Fake3::foo"} = sub { 'foo' };
+        *{"Promise3::foo"} = sub { 'foo' };
     }
 
     ok($stash->{foo}, "See the new sub in the stash");
@@ -134,83 +134,83 @@ subtest stash => sub {
 };
 
 subtest file => sub {
-    my $fake = Test2::Mock->new(class => 'Fake4');
-    my $complex = Test2::Mock->new(class => "A::Fake'Module::With'Separators");
+    my $Promise = Test2::Mock->new(class => 'Promise4');
+    my $complex = Test2::Mock->new(class => "A::Promise'Module::With'Separators");
 
-    is($fake->file, "Fake4.pm", "Got simple filename");
+    is($Promise->file, "Promise4.pm", "Got simple filename");
 
-    is($complex->file, "A/Fake/Module/With/Separators.pm", "got complex filename");
+    is($complex->file, "A/Promise/Module/With/Separators.pm", "got complex filename");
 };
 
 subtest block_load => sub {
     my $one;
 
     my $construction = sub {
-        $one = Test2::Mock->new(class => 'Fake5', block_load => 1);
+        $one = Test2::Mock->new(class => 'Promise5', block_load => 1);
     };
 
     my $post_construction = sub {
-        $one = Test2::Mock->new(class => 'Fake5');
+        $one = Test2::Mock->new(class => 'Promise5');
         $one->block_load;
     };
 
     for my $case ($construction, $post_construction) {
         $one = undef;
-        ok(!$INC{'Fake5.pm'}, "Does not appear to be loaded yet");
+        ok(!$INC{'Promise5.pm'}, "Does not appear to be loaded yet");
 
         $case->();
 
-        ok($INC{'Fake5.pm'}, '%INC is populated');
+        ok($INC{'Promise5.pm'}, '%INC is populated');
 
         $one = undef;
-        ok(!$INC{'Fake5.pm'}, "Does not appear to be loaded anymore");
+        ok(!$INC{'Promise5.pm'}, "Does not appear to be loaded anymore");
     }
 };
 
 subtest block_load_fail => sub {
-    $INC{'Fake6.pm'} = 'path/to/Fake6.pm';
+    $INC{'Promise6.pm'} = 'path/to/Promise6.pm';
 
-    my $one = Test2::Mock->new(class => 'Fake6');
+    my $one = Test2::Mock->new(class => 'Promise6');
 
     like(
         dies { $one->block_load },
-        qr/Cannot block the loading of module 'Fake6', already loaded in file/,
+        qr/Cannot block the loading of module 'Promise6', already loaded in file/,
         "Fails if file is already loaded"
     );
 };
 
 subtest constructors => sub {
     my $one = Test2::Mock->new(
-        class => 'Fake7',
+        class => 'Promise7',
         add_constructor => [new => 'hash'],
     );
 
-    can_ok('Fake7', 'new');
+    can_ok('Promise7', 'new');
 
-    my $i = Fake7->new(foo => 'bar');
-    isa_ok($i, 'Fake7');
+    my $i = Promise7->new(foo => 'bar');
+    isa_ok($i, 'Promise7');
     is($i, { foo => 'bar' }, "Has params");
 
     $one->override_constructor(new => 'ref');
 
     my $ref = { 'foo' => 'baz' };
-    $i = Fake7->new($ref);
-    isa_ok($i, 'Fake7');
+    $i = Promise7->new($ref);
+    isa_ok($i, 'Promise7');
     is($i, { foo => 'baz' }, "Has params");
     is($i, $ref, "same reference");
     ok(blessed($ref), "blessed original ref");
 
     $one->override_constructor(new => 'ref_copy');
     $ref = { 'foo' => 'bat' };
-    $i = Fake7->new($ref);
-    isa_ok($i, 'Fake7');
+    $i = Promise7->new($ref);
+    isa_ok($i, 'Promise7');
     is($i, { foo => 'bat' }, "Has params");
     ok($i != $ref, "different reference");
     ok(!blessed($ref), "original ref is not blessed");
 
     $ref = [ 'foo', 'bar' ];
-    $i = Fake7->new($ref);
-    isa_ok($i, 'Fake7');
+    $i = Promise7->new($ref);
+    isa_ok($i, 'Promise7');
     is($i, [ 'foo', 'bar' ], "has the items");
     ok($i != $ref, "different reference");
     ok(!blessed($ref), "original ref is not blessed");
@@ -228,22 +228,22 @@ subtest constructors => sub {
     );
 
     $one->override_constructor(new => 'array');
-    $one = Fake7->new('a', 'b');
+    $one = Promise7->new('a', 'b');
     is($one, ['a', 'b'], "is an array");
-    isa_ok($one, 'Fake7');
+    isa_ok($one, 'Promise7');
 };
 
 subtest autoload => sub {
     my $one = Test2::Mock->new(
-        class => 'Fake8',
+        class => 'Promise8',
         add_constructor => [new => 'hash'],
     );
 
-    my $i = Fake8->new;
-    isa_ok($i, 'Fake8');
+    my $i = Promise8->new;
+    isa_ok($i, 'Promise8');
 
     ok(!$i->can('foo'), "Cannot do 'foo'");
-    like(dies {$i->foo}, qr/Can't locate object method "foo" via package "Fake8"/, "Did not autload");
+    like(dies {$i->foo}, qr/Can't locate object method "foo" via package "Promise8"/, "Did not autload");
 
     $one->autoload;
 
@@ -258,7 +258,7 @@ subtest autoload => sub {
 
     ok(
         dies { $one->autoload },
-        qr/Class 'Fake8' already has an AUTOLOAD/,
+        qr/Class 'Promise8' already has an AUTOLOAD/,
         "Cannot add additional autoloads"
     );
 
@@ -279,13 +279,13 @@ subtest autoload => sub {
     ok(!$i->can('foo'), "AUTOLOADed sub removed (destroy)");
 
     my $two = Test2::Mock->new(
-        class => 'Fake88',
+        class => 'Promise88',
         add_constructor => [new => 'hash'],
         track => 1,
         autoload => 1,
     );
 
-    my $j = Fake88->new;
+    my $j = Promise88->new;
     ok(lives { $j->foo }, "Created foo") || return;
     can_ok($j, 'foo'); # Added the sub to the package
 
@@ -304,13 +304,13 @@ subtest autoload => sub {
 };
 
 subtest autoload_failures => sub {
-    my $one = Test2::Mock->new(class => 'fake');
+    my $one = Test2::Mock->new(class => 'Promise');
 
     $one->add('AUTOLOAD' => sub { 1 });
 
     like(
         dies { $one->autoload },
-        qr/Class 'fake' already has an AUTOLOAD/,
+        qr/Class 'Promise' already has an AUTOLOAD/,
         "Cannot add autoload when there is already an autoload"
     );
 
@@ -330,31 +330,31 @@ subtest ISA => sub {
     local *My::Parent::foo = sub { 'foo' };
 
     my $one = Test2::Mock->new(
-        class => 'Fake9',
+        class => 'Promise9',
         add_constructor => [new => 'hash'],
         add => [
             -ISA => ['My::Parent'],
         ],
     );
 
-    isa_ok('Fake9', 'My::Parent');
-    is(Fake9->foo, 'foo', "Inherited sub from parent");
+    isa_ok('Promise9', 'My::Parent');
+    is(Promise9->foo, 'foo', "Inherited sub from parent");
 };
 
 subtest before => sub {
     {
         # need to hide the glob assignment from the parser.
         no strict 'refs';
-        *{"Fake10::foo"} = sub { 'foo' };
+        *{"Promise10::foo"} = sub { 'foo' };
     }
 
     my $thing;
 
-    my $one = Test2::Mock->new(class => 'Fake10');
+    my $one = Test2::Mock->new(class => 'Promise10');
     $one->before('foo' => sub { $thing = 'ran before foo' });
 
     ok(!$thing, "nothing ran yet");
-    is(Fake10->foo, 'foo', "got expected return");
+    is(Promise10->foo, 'foo', "got expected return");
     is($thing, 'ran before foo', "ran the before");
 };
 
@@ -363,7 +363,7 @@ subtest before => sub {
     {
         # need to hide the glob assignment from the parser.
         no strict 'refs';
-        *{"Fake11::foo"} = sub {
+        *{"Promise11::foo"} = sub {
             $want = wantarray;
             return qw/f o o/ if $want;
             return 'foo' if defined $want;
@@ -373,20 +373,20 @@ subtest before => sub {
 
     my $ran = 0;
 
-    my $one = Test2::Mock->new(class => 'Fake11');
+    my $one = Test2::Mock->new(class => 'Promise11');
     $one->after('foo' => sub { $ran++ });
 
     is($ran, 0, "nothing ran yet");
 
-    is(Fake11->foo, 'foo', "got expected return (scalar)");
+    is(Promise11->foo, 'foo', "got expected return (scalar)");
     is($ran, 1, "ran the before");
     ok(defined($want) && !$want, "scalar context");
 
-    is([Fake11->foo], [qw/f o o/], "got expected return (list)");
+    is([Promise11->foo], [qw/f o o/], "got expected return (list)");
     is($ran, 2, "ran the before");
     is($want, 1, "list context");
 
-    Fake11->foo; # Void return
+    Promise11->foo; # Void return
     is($ran, 3, "ran the before");
     is($want, undef, "void context");
 };
@@ -396,12 +396,12 @@ subtest around => sub {
     {
         # need to hide the glob assignment from the parser.
         no strict 'refs';
-        *{"Fake12::foo"} = sub {
+        *{"Promise12::foo"} = sub {
             push @things => ['foo', \@_];
         };
     }
 
-    my $one = Test2::Mock->new(class => 'Fake12');
+    my $one = Test2::Mock->new(class => 'Promise12');
     $one->around(foo => sub {
         my ($orig, @args) = @_;
         push @things => ['pre', \@args];
@@ -409,14 +409,14 @@ subtest around => sub {
         push @things => ['post', \@args];
     });
 
-    Fake12->foo(qw/a b c/);
+    Promise12->foo(qw/a b c/);
 
     is(
         \@things,
         [
-            ['pre'  => [qw/Fake12 a b c/]],
-            ['foo'  => [qw/injected Fake12 a b c/]],
-            ['post' => [qw/Fake12 a b c/]],
+            ['pre'  => [qw/Promise12 a b c/]],
+            ['foo'  => [qw/injected Promise12 a b c/]],
+            ['post' => [qw/Promise12 a b c/]],
         ],
         "Got all the things!"
     );
@@ -424,7 +424,7 @@ subtest around => sub {
 
 subtest 'add and current' => sub {
     my $one = Test2::Mock->new(
-        class => 'Fake13',
+        class => 'Promise13',
         add_constructor => [new => 'hash'],
         add => [
             foo => { val => 'foo' },
@@ -449,21 +449,21 @@ subtest 'add and current' => sub {
         nsub   => sub { my $x = ''; sub { $x . 'nsub' } },
     );
 
-    can_ok('Fake13', qw/new foo bar baz DATA reader writer rsub nsub/);
+    can_ok('Promise13', qw/new foo bar baz DATA reader writer rsub nsub/);
 
     like(
         dies { $one->add(foo => sub { 'nope' }) },
-        qr/Cannot add '&Fake13::foo', symbol is already defined/,
+        qr/Cannot add '&Promise13::foo', symbol is already defined/,
         "Cannot add a CODE symbol that is already defined"
     );
 
     like(
         dies { $one->add(-UHG => \'nope') },
-        qr/Cannot add '\$Fake13::UHG', symbol is already defined/,
+        qr/Cannot add '\$Promise13::UHG', symbol is already defined/,
         "Cannot add a SCALAR symbol that is already defined"
     );
 
-    my $i = Fake13->new();
+    my $i = Promise13->new();
     is($i->foo, 'foo', "by value");
 
     is($i->bar, undef, "Accessor not set");
@@ -500,10 +500,10 @@ subtest 'add and current' => sub {
     is($i->DATA, 'my data', "direct sub assignment");
     # These need to be eval'd so the parser does not shortcut the glob references
     ok(eval <<'    EOT', "Ran glob checks") || diag "Error: $@";
-        is($Fake13::UHG, 'UHG', "Set package scalar (UHG)");
-        is($Fake13::DATA, 'data', "Set package scalar (DATA)");
-        is(\%Fake13::DATA, { my => 'data' }, "Set package hash");
-        is(\@Fake13::DATA, [ my => 'data' ], "Set package array");
+        is($Promise13::UHG, 'UHG', "Set package scalar (UHG)");
+        is($Promise13::DATA, 'data', "Set package scalar (DATA)");
+        is(\%Promise13::DATA, { my => 'data' }, "Set package hash");
+        is(\@Promise13::DATA, [ my => 'data' ], "Set package array");
         1;
     EOT
 
@@ -518,9 +518,9 @@ subtest 'add and current' => sub {
 
     $one = undef;
 
-    ok(!Fake13->can($_), "Removed sub $_") for qw/new foo bar baz DATA reader writer rsub nsub/;
+    ok(!Promise13->can($_), "Removed sub $_") for qw/new foo bar baz DATA reader writer rsub nsub/;
 
-    $one = Test2::Mock->new(class => 'Fake13');
+    $one = Test2::Mock->new(class => 'Promise13');
 
     # Scalars are tricky, skip em for now.
     is($one->current('&DATA'), undef, 'no current &DATA');
@@ -531,7 +531,7 @@ subtest 'add and current' => sub {
 subtest 'override and orig' => sub {
     # Define things so we can override them
     eval <<'    EOT' || die $@;
-        package Fake14;
+        package Promise14;
 
         sub new { 'old' }
 
@@ -553,12 +553,12 @@ subtest 'override and orig' => sub {
     EOT
 
     my $check_initial = sub {
-        is(Fake14->$_, 'old', "$_ is not overriden") for qw/new foo bar baz DATA reader writer rsub nsub/;
+        is(Promise14->$_, 'old', "$_ is not overriden") for qw/new foo bar baz DATA reader writer rsub nsub/;
         ok(eval <<'        EOT', "Ran glob checks") || diag "Error: $@";
-            is($Fake14::UHG,  'old',  'old package scalar (UHG)');
-            is($Fake14::DATA, 'old', "Old package scalar (DATA)");
-            is(\%Fake14::DATA, {old => 'old'}, "Old package hash");
-            is(\@Fake14::DATA, ['old'], "Old package array");
+            is($Promise14::UHG,  'old',  'old package scalar (UHG)');
+            is($Promise14::DATA, 'old', "Old package scalar (DATA)");
+            is(\%Promise14::DATA, {old => 'old'}, "Old package hash");
+            is(\@Promise14::DATA, ['old'], "Old package array");
             1;
         EOT
     };
@@ -566,7 +566,7 @@ subtest 'override and orig' => sub {
     $check_initial->();
 
     my $one = Test2::Mock->new(
-        class => 'Fake14',
+        class => 'Promise14',
         override_constructor => [new => 'hash'],
         override => [
             foo => { val => 'foo' },
@@ -593,17 +593,17 @@ subtest 'override and orig' => sub {
 
     like(
         dies { $one->override(nuthin => sub { 'nope' }) },
-        qr/Cannot override '&Fake14::nuthin', symbol is not already defined/,
+        qr/Cannot override '&Promise14::nuthin', symbol is not already defined/,
         "Cannot override a CODE symbol that is not defined"
     );
 
     like(
         dies { $one->override(-nuthin2 => \'nope') },
-        qr/Cannot override '\$Fake14::nuthin2', symbol is not already defined/,
+        qr/Cannot override '\$Promise14::nuthin2', symbol is not already defined/,
         "Cannot override a SCALAR symbol that is not defined"
     );
 
-    my $i = Fake14->new();
+    my $i = Promise14->new();
     is($i->foo, 'foo', "by value");
 
     is($i->bar, undef, "Accessor not set");
@@ -640,10 +640,10 @@ subtest 'override and orig' => sub {
     is($i->DATA, 'my data', "direct sub assignment");
     # These need to be eval'd so the parser does not shortcut the glob references
     ok(eval <<'    EOT', "Ran glob checks") || diag "Error: $@";
-        is($Fake14::UHG, 'UHG', "Set package scalar (UHG)");
-        is($Fake14::DATA, 'data', "Set package scalar (DATA)");
-        is(\%Fake14::DATA, { my => 'data' }, "Set package hash");
-        is(\@Fake14::DATA, [ my => 'data' ], "Set package array");
+        is($Promise14::UHG, 'UHG', "Set package scalar (UHG)");
+        is($Promise14::DATA, 'data', "Set package scalar (DATA)");
+        is(\%Promise14::DATA, { my => 'data' }, "Set package hash");
+        is(\@Promise14::DATA, [ my => 'data' ], "Set package array");
         1;
     EOT
 
@@ -670,7 +670,7 @@ subtest 'override and orig' => sub {
     );
 
     like(
-        dies { Test2::Mock->new(class => 'AnotherFake14')->orig('no_mocks') },
+        dies { Test2::Mock->new(class => 'AnotherPromise14')->orig('no_mocks') },
         qr/No symbols have been mocked yet/,
         "Cannot get original when nothing is mocked"
     );
@@ -681,7 +681,7 @@ subtest 'override and orig' => sub {
 };
 
 subtest restore_reset => sub {
-    my $one = Test2::Mock->new( class => 'Fake15' );
+    my $one = Test2::Mock->new( class => 'Promise15' );
 
     $one->add(foo => sub { 'a' });
     $one->add(-foo => \'a');
@@ -692,58 +692,58 @@ subtest restore_reset => sub {
     $one->override(foo => sub { 'd' });
     $one->override(foo => sub { 'e' });
 
-    is(Fake15->foo, 'e', "latest override");
-    is(eval '$Fake15::foo', 'a', "scalar override remains");
-    is(eval '\@Fake15::foo', ['a'], "array override remains");
+    is(Promise15->foo, 'e', "latest override");
+    is(eval '$Promise15::foo', 'a', "scalar override remains");
+    is(eval '\@Promise15::foo', ['a'], "array override remains");
 
     $one->restore('foo');
-    is(Fake15->foo, 'd', "second latest override");
-    is(eval '$Fake15::foo', 'a', "scalar override remains");
-    is(eval '\@Fake15::foo', ['a'], "array override remains");
+    is(Promise15->foo, 'd', "second latest override");
+    is(eval '$Promise15::foo', 'a', "scalar override remains");
+    is(eval '\@Promise15::foo', ['a'], "array override remains");
 
     $one->restore('foo');
-    is(Fake15->foo, 'c', "second latest override");
-    is(eval '$Fake15::foo', 'a', "scalar override remains");
-    is(eval '\@Fake15::foo', ['a'], "array override remains");
+    is(Promise15->foo, 'c', "second latest override");
+    is(eval '$Promise15::foo', 'a', "scalar override remains");
+    is(eval '\@Promise15::foo', ['a'], "array override remains");
 
     $one->reset('foo');
-    ok(!Fake15->can('foo'), "no more override");
-    is(eval '$Fake15::foo', 'a', "scalar override remains");
-    is(eval '\@Fake15::foo', ['a'], "array override remains");
+    ok(!Promise15->can('foo'), "no more override");
+    is(eval '$Promise15::foo', 'a', "scalar override remains");
+    is(eval '\@Promise15::foo', ['a'], "array override remains");
 
     $one->add(foo => sub { 'a' });
-    is(Fake15->foo, 'a', "override");
+    is(Promise15->foo, 'a', "override");
 
     $one->reset_all;
-    ok(!Fake15->can('foo'), "no more override");
-    is(eval '$Fake15::foo', undef, "scalar override removed");
+    ok(!Promise15->can('foo'), "no more override");
+    is(eval '$Promise15::foo', undef, "scalar override removed");
 
     no strict 'refs';
-    ok(!*{'Fake15::foo'}{ARRAY}, "array override removed");
+    ok(!*{'Promise15::foo'}{ARRAY}, "array override removed");
 };
 
 subtest exceptions => sub {
-    my $one = Test2::Mock->new( class => 'Fake16' );
+    my $one = Test2::Mock->new( class => 'Promise16' );
     like(
-        dies { $one->new(class => 'AnotherFake16') },
+        dies { $one->new(class => 'AnotherPromise16') },
         qr/Called new\(\) on a blessed instance, did you mean to call \$control->class->new\(\)\?/,
         "Cannot call new on a blessed instance"
     );
 
     like(
-        dies { Test2::Mock->new(class => 'AnotherFake16', foo => 1) },
+        dies { Test2::Mock->new(class => 'AnotherPromise16', foo => 1) },
         qr/'foo' is not a valid constructor argument for Test2::Mock/,
         "Validate constructor args"
     );
 
     like(
-        dies { Test2::Mock->new(class => 'AnotherFake16', override_constructor => ['xxx', 'xxx']) },
+        dies { Test2::Mock->new(class => 'AnotherPromise16', override_constructor => ['xxx', 'xxx']) },
         qr/'xxx' is not a known constructor type/,
         "Invalid constructor type"
     );
 
     like(
-        dies { Test2::Mock->new(class => 'AnotherFake16', add_constructor => ['xxx', 'xxx']) },
+        dies { Test2::Mock->new(class => 'AnotherPromise16', add_constructor => ['xxx', 'xxx']) },
         qr/'xxx' is not a known constructor type/,
         "Invalid constructor type"
     );
@@ -784,13 +784,13 @@ subtest exceptions => sub {
     );
 
     my $bare = Test2::Mock->new(
-        class => 'Fake17',
+        class => 'Promise17',
         autoload => 1,
     );
 
     like(
         dies { $bare->override( missing => 1 ) },
-        qr/Cannot override '&Fake17::missing', symbol is not already defined/,
+        qr/Cannot override '&Promise17::missing', symbol is not already defined/,
         "Cannot override a method that is not defined in an AUTOLOAD mock"
     );
 };

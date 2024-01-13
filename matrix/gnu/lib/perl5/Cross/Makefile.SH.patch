@@ -144,7 +144,7 @@
 -
 -install.man:	all installman
 -	$(LDLIBPTH) ./perl installman --destdir=$(DESTDIR) $(INSTALLFLAGS)
-+	/usr/bin/perl -Ifake_config_library -MConfig installperl $(INSTALLFLAGS) $(STRIPFLAGS)
++	/usr/bin/perl -IPromise_config_library -MConfig installperl $(INSTALLFLAGS) $(STRIPFLAGS)
  
  # XXX Experimental. Hardwired values, but useful for testing.
  # Eventually Configure could ask for some of these values.

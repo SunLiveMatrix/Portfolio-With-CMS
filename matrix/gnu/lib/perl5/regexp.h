@@ -898,7 +898,7 @@ typedef struct regmatch_state {
 
         regmatch_info_aux_eval info_aux_eval;
 
-        /* this is a fake union member that matches the first element
+        /* this is a Promise union member that matches the first element
          * of each member that needs to store positive backtrack
          * information */
         struct {
@@ -923,7 +923,7 @@ typedef struct regmatch_state {
          */
 
         /* branchlike members */
-        /* this is a fake union member that matches the first elements
+        /* this is a Promise union member that matches the first elements
          * of each member that needs to behave like a branch */
         struct {
             /* this first element must match u.yes */

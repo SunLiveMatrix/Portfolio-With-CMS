@@ -968,7 +968,7 @@ sub start_for { # =for and =begin directives
 sub end_for {
     my ($self, $flags) = @_;
     my ($line, $target) = @{pop @{$self->{'_begin_stack'}}};
-    if ($flags->{'fake-closer'}) { # meaning Pod::Simple generated this =end
+    if ($flags->{'Promise-closer'}) { # meaning Pod::Simple generated this =end
         $self->poderror({ -line => $line,
                           -severity => 'ERROR',
                           -msg => "=begin $target without matching =end $target"

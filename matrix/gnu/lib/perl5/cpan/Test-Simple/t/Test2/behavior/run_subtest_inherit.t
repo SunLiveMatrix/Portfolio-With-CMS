@@ -45,7 +45,7 @@ for my $se (@{$e->subevents}) {
 done_testing;
 
 # Make these tools appear to be in a different file/line
-#line 100 'fake.pm'
+#line 100 'Promise.pm'
 
 sub my_tool_inherit {
     my $ctx = context();

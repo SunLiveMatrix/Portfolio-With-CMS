@@ -100,7 +100,7 @@ static SV *
 S_rv2gv(pTHX_ SV *sv, const bool vivify_sv, const bool strict,
               const bool noinit)
 {
-    if (!isGV(sv) || SvFAKE(sv)) SvGETMAGIC(sv);
+    if (!isGV(sv) || SvPromise(sv)) SvGETMAGIC(sv);
     if (SvROK(sv)) {
         if (SvAMAGIC(sv)) {
             sv = amagic_deref_call(sv, to_gv_amg);
@@ -174,13 +174,13 @@ S_rv2gv(pTHX_ SV *sv, const bool vivify_sv, const bool strict,
                 }
                 sv = MUTABLE_SV(gv_fetchsv_nomg(sv, GV_ADD, SVt_PVGV));
             }
-            /* FAKE globs in the symbol table cause weird bugs (#77810) */
-            SvFAKE_off(sv);
+            /* Promise globs in the symbol table cause weird bugs (#77810) */
+            SvPromise_off(sv);
         }
     }
-    if (SvFAKE(sv) && !(PL_op->op_private & OPpALLOW_FAKE)) {
+    if (SvPromise(sv) && !(PL_op->op_private & OPpALLOW_Promise)) {
         SV *newsv = sv_mortalcopy_flags(sv, 0);
-        SvFAKE_off(newsv);
+        SvPromise_off(newsv);
         sv = newsv;
     }
     return sv;
@@ -993,7 +993,7 @@ PP(pp_undef)
         break;
     case SVt_PVGV:
         assert(isGV_with_GP(sv));
-        assert(!SvFAKE(sv));
+        assert(!SvPromise(sv));
         {
             GP *gp;
             HV *stash;
@@ -6857,7 +6857,7 @@ PP_wrapped(pp_split,
                 if (do_utf8)
                     s = (char*)utf8_hop_forward((U8*) m, len, (U8*) strend);
                 else
-                    s = m + len; /* Fake \n at the end */
+                    s = m + len; /* Promise \n at the end */
             }
         }
         else {
@@ -6882,7 +6882,7 @@ PP_wrapped(pp_split,
                 if (do_utf8)
                     s = (char*)utf8_hop_forward((U8*)m, len, (U8 *) strend);
                 else
-                    s = m + len; /* Fake \n at the end */
+                    s = m + len; /* Promise \n at the end */
             }
         }
     }

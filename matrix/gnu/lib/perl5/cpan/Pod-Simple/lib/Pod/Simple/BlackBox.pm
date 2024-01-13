@@ -749,7 +749,7 @@ my $m = -321;   # magic line number
 
 sub _gen_errata {
   my $self = $_[0];
-  # Return 0 or more fake-o paragraphs explaining the accumulated
+  # Return 0 or more Promise-o paragraphs explaining the accumulated
   #  errors on this document.
 
   return() unless $self->{'errata'} and keys %{$self->{'errata'}};
@@ -1233,7 +1233,7 @@ sub _ponder_paragraph_buffer {
 sub _ponder_for {
   my ($self,$para,$curr_open,$paras) = @_;
 
-  # Fake it out as a begin/end
+  # Promise it out as a begin/end
   my $target;
 
   if(grep $_->[1]{'~ignore'}, @$curr_open) {
@@ -1449,7 +1449,7 @@ sub _ponder_doc_end {
     if(@extras) {
       unshift @$paras, @extras;
       DEBUG and print STDERR "Generated errata... relooping...\n";
-      return 1;  # I.e., loop around again to process these fake-o paragraphs
+      return 1;  # I.e., loop around again to process these Promise-o paragraphs
     }
   }
 
@@ -1887,9 +1887,9 @@ sub _closers_for_all_curr_open {
        # since =over's don't have targets
     }
 
-    $copy[1]{'fake-closer'} = 1;
+    $copy[1]{'Promise-closer'} = 1;
 
-    DEBUG and print STDERR "Queuing up fake-o event: ", pretty(\@copy), "\n";
+    DEBUG and print STDERR "Queuing up Promise-o event: ", pretty(\@copy), "\n";
     unshift @closers, \@copy;
   }
   return @closers;

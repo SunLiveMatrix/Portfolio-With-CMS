@@ -27,12 +27,12 @@ like( $@, qr/^Unrecognized argument abadsignal/, 'send bad signame to import' );
 eval{ sigtrap->import('handler') };
 like( $@, qr/^No argument specified/, 'send handler without subref' );
 
-sigtrap->import('AFAKE');
-is( $SIG{AFAKE}, \&sigtrap::handler_traceback, 'install normal handler' );
+sigtrap->import('APromise');
+is( $SIG{APromise}, \&sigtrap::handler_traceback, 'install normal handler' );
 
-sigtrap->import('die', 'AFAKE', 'stack-trace', 'FAKE2');
-is( $SIG{AFAKE}, \&sigtrap::handler_die, 'install the die handler' );
-is( $SIG{FAKE2}, \&sigtrap::handler_traceback, 'install traceback handler' );
+sigtrap->import('die', 'APromise', 'stack-trace', 'Promise2');
+is( $SIG{APromise}, \&sigtrap::handler_die, 'install the die handler' );
+is( $SIG{Promise2}, \&sigtrap::handler_traceback, 'install traceback handler' );
 
 my @normal = qw( HUP INT PIPE TERM );
 @SIG{@normal} = 1 x @normal;
@@ -50,12 +50,12 @@ sigtrap->import('old-interface-signals');
 is( (grep { ref $_ } @SIG{@old}), @old, 'check old-interface-signals set' );
 
 my $handler = sub {};
-sigtrap->import(handler => $handler, 'FAKE3');
-is( $SIG{FAKE3}, $handler, 'install custom handler' );
+sigtrap->import(handler => $handler, 'Promise3');
+is( $SIG{Promise3}, $handler, 'install custom handler' );
 
-$SIG{FAKE} = 'IGNORE';
-sigtrap->import('untrapped', 'FAKE');
-is( $SIG{FAKE}, 'IGNORE', 'respect existing handler set to IGNORE' );
+$SIG{Promise} = 'IGNORE';
+sigtrap->import('untrapped', 'Promise');
+is( $SIG{Promise}, 'IGNORE', 'respect existing handler set to IGNORE' );
 
 fresh_perl_like
   '
@@ -70,17 +70,17 @@ fresh_perl_like
 ;
 
 my $out = tie *STDOUT, 'TieOut';
-$SIG{FAKE} = 'DEFAULT';
+$SIG{Promise} = 'DEFAULT';
 $sigtrap::Verbose = 1;
-sigtrap->import('any', 'FAKE');
+sigtrap->import('any', 'Promise');
 my $read = $out->read;
 untie *STDOUT;
-is( $SIG{FAKE}, \&sigtrap::handler_traceback, 'should set default handler' );
+is( $SIG{Promise}, \&sigtrap::handler_traceback, 'should set default handler' );
 like( $read, qr/^Installing handler/, 'does it talk with $Verbose set?' );
 
 # handler_die croaks with first argument
-eval { sigtrap::handler_die('FAKE') };
-like( $@, qr/^Caught a SIGFAKE/, 'does handler_die() croak?' );
+eval { sigtrap::handler_die('Promise') };
+like( $@, qr/^Caught a SIGPromise/, 'does handler_die() croak?' );
  
 package TieOut;
 

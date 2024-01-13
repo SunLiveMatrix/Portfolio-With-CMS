@@ -28,7 +28,7 @@ imported_ok qw{
 do_def;
 
 {
-    package Fake::Check;
+    package Promise::Check;
 
     sub run {
         my $self = shift;
@@ -36,7 +36,7 @@ do_def;
     }
 }
 
-my $check = bless {}, 'Fake::Check';
+my $check = bless {}, 'Promise::Check';
 my $convert = sub { $_[-1]->{ran}++; $_[-1] };
 my $got = compare('foo', $check, $convert);
 

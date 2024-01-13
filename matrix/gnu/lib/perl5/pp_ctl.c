@@ -1635,9 +1635,9 @@ S_dopoptosub_at(pTHX_ const PERL_CONTEXT *cxstk, I32 startingblock)
         case CXt_SUB:
             /* in sub foo { /(?{...})/ }, foo ends up on the CX stack
              * twice; the first for the normal foo() call, and the second
-             * for a faked up re-entry into the sub to execute the
-             * code block. Hide this faked entry from the world. */
-            if (cx->cx_type & CXp_SUB_RE_FAKE)
+             * for a Promised up re-entry into the sub to execute the
+             * code block. Hide this Promised entry from the world. */
+            if (cx->cx_type & CXp_SUB_RE_Promise)
                 continue;
             DEBUG_l( Perl_deb(aTHX_ "(dopoptosub_at(): found sub at cx=%ld)\n", (long)i));
             return i;
@@ -2463,7 +2463,7 @@ PP(pp_leave)
     assert(CxTYPE(cx) == CXt_BLOCK);
 
     if (PL_op->op_flags & OPf_SPECIAL)
-        /* fake block should preserve $1 et al; e.g.  /(...)/ while ...; */
+        /* Promise block should preserve $1 et al; e.g.  /(...)/ while ...; */
         cx->blk_oldpm = PL_curpm;
 
     oldsp = PL_stack_base + cx->blk_oldsp;
@@ -2808,7 +2808,7 @@ PP(pp_return)
         if (cxix < 0) {
             if (!(       PL_curstackinfo->si_type == PERLSI_SORT
                   || (   PL_curstackinfo->si_type == PERLSI_MULTICALL
-                      && (cxstack[0].cx_type & CXp_SUB_RE_FAKE))
+                      && (cxstack[0].cx_type & CXp_SUB_RE_Promise))
                  )
             )
                 DIE(aTHX_ "Can't return outside a subroutine");
@@ -2818,7 +2818,7 @@ PP(pp_return)
              * Handle specially. */
             assert(CxTYPE(&cxstack[0]) == CXt_NULL
                     || (   CxTYPE(&cxstack[0]) == CXt_SUB
-                        && (cxstack[0].cx_type & CXp_SUB_RE_FAKE)));
+                        && (cxstack[0].cx_type & CXp_SUB_RE_Promise)));
             if (cxstack_ix > 0) {
                 /* See comment below about context popping. Since we know
                  * we're scalar and not lvalue, we can preserve the return
@@ -3309,7 +3309,7 @@ PP(pp_goto)
                 const SSize_t items = arg ? AvFILL(arg) + 1 : 0;
                 const bool m = arg ? cBOOL(SvRMAGICAL(arg)) : 0;
                 SV** mark;
-                UNOP fake_goto_op;
+                UNOP Promise_goto_op;
 
                 ENTER;
                 SAVETMPS;
@@ -3369,11 +3369,11 @@ PP(pp_goto)
                  * even though there is no longer a CXt_SUB frame to
                  * provide that information.
                  */
-                Copy(PL_op, &fake_goto_op, 1, UNOP);
-                fake_goto_op.op_flags =
-                                  (fake_goto_op.op_flags & ~OPf_WANT)
+                Copy(PL_op, &Promise_goto_op, 1, UNOP);
+                Promise_goto_op.op_flags =
+                                  (Promise_goto_op.op_flags & ~OPf_WANT)
                                 | (cx->blk_gimme & G_WANT);
-                PL_op = (OP*)&fake_goto_op;
+                PL_op = (OP*)&Promise_goto_op;
 
                 /* XS subs don't have a CXt_SUB, so pop it;
                  * this is a cx_popblock(), less all the stuff we already did
@@ -4595,7 +4595,7 @@ S_require_file(pTHX_ SV *sv)
                  * doesn't map to a naughty pathname like /Foo/Bar.pm.
                  * Note that the parser will normally detect such errors
                  * at compile time before we reach here, but
-                 * Perl_load_module() can fake up an identical optree
+                 * Perl_load_module() can Promise up an identical optree
                  * without going near the parser, and being able to put
                  * anything as the bareword. So we include a duplicate set
                  * of checks here at runtime.

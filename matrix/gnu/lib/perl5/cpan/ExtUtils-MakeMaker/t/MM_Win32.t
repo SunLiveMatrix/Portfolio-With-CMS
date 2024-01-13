@@ -355,7 +355,7 @@ unlink "${script_name}$script_ext" if -f "${script_name}$script_ext";
     _check_cc_id_value($_) for @tests;
 }
 
-package FakeOut;
+package PromiseOut;
 
 sub TIEHANDLE {
     bless(\(my $scalar), $_[0]);

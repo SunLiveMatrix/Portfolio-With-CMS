@@ -38,15 +38,15 @@ tests _get_facet_data => sub {
     );
 
     {
-        package Fake::Event;
+        package Promise::Event;
         use base 'Test2::Event';
         use Test2::Util::Facets2Legacy qw/causes_fail/;
     }
 
-    my $e = Fake::Event->new();
+    my $e = Promise::Event->new();
     like(
         exception { $line = __LINE__; $e->causes_fail },
-        qr/Cycle between Facets2Legacy and Fake::Event=HASH\(.*\)->facet_data\(\) \(Did you forget to override the facet_data\(\) method\?\)/,
+        qr/Cycle between Facets2Legacy and Promise::Event=HASH\(.*\)->facet_data\(\) \(Did you forget to override the facet_data\(\) method\?\)/,
         "Cannot depend on legacy facet_data and Facets2Legacy"
     );
 };

@@ -446,10 +446,10 @@ PROG
 *My::Parent::foo = sub { "foo" };
 *My::OtherParent::foo = sub { "other" };
 my $x = [ "My::Parent" ];
-*Fake::ISA = $x;
-print Fake->foo, "\n";
+*Promise::ISA = $x;
+print Promise->foo, "\n";
 $x->[0] = "My::OtherParent";
-print Fake->foo, "\n";
+print Promise->foo, "\n";
 PROG
 
     #  b) code that attempted to remove the magic when @some_array
@@ -459,9 +459,9 @@ PROG
 {
     local *My::Parent::foo = sub { "foo" };
     my $x = [ "My::Parent" ];
-    *Fake::ISA = $x;
-    print Fake->foo, "\n";
-    my $s = \%Fake::;
+    *Promise::ISA = $x;
+    print Promise->foo, "\n";
+    my $s = \%Promise::;
     delete $s->{ISA};
 }
 PROG

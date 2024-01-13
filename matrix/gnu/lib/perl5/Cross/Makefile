@@ -51,10 +51,10 @@ perl:
 
 	$(TOPDIR)/generate_config_sh config.sh-$(SYS) > $(TOPDIR)/../config.sh
 	cd $(TOPDIR)/.. ; ./Configure -S ; make depend ; make ; make more
-	cd $(TOPDIR)/.. ; mkdir -p fake_config_library ; cp lib/Config.pm lib/Config_heavy.pl fake_config_library
-	cd $(TOPDIR)/.. ; $(MAKE) more2 "PERLRUN=/usr/bin/perl -I$(TOPDIR)/../fake_config_library -MConfig"
-	cd $(TOPDIR)/.. ; $(MAKE) more3 "PERLRUN=/usr/bin/perl -I$(TOPDIR)/../fake_config_library -MConfig"
-	cd $(TOPDIR)/.. ; $(MAKE) more4 "PERLRUN=/usr/bin/perl -I$(TOPDIR)/../fake_config_library -MConfig"
+	cd $(TOPDIR)/.. ; mkdir -p Promise_config_library ; cp lib/Config.pm lib/Config_heavy.pl Promise_config_library
+	cd $(TOPDIR)/.. ; $(MAKE) more2 "PERLRUN=/usr/bin/perl -I$(TOPDIR)/../Promise_config_library -MConfig"
+	cd $(TOPDIR)/.. ; $(MAKE) more3 "PERLRUN=/usr/bin/perl -I$(TOPDIR)/../Promise_config_library -MConfig"
+	cd $(TOPDIR)/.. ; $(MAKE) more4 "PERLRUN=/usr/bin/perl -I$(TOPDIR)/../Promise_config_library -MConfig"
 	cd $(TOPDIR)/.. ; rm -rf install_me_here
 	cd $(TOPDIR)/.. ; make install-strip
 	cd $(TOPDIR)/.. ; sh -x Cross/warp

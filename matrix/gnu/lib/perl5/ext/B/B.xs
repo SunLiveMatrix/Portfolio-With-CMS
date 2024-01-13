@@ -2337,7 +2337,7 @@ BOOT:
     sv_setsv((SV *)gv_fetchpvs("B::PADNAME::PARENT_PAD_INDEX" ,1,SVt_PVGV),
 	     (SV *)gv_fetchpvs("B::PADNAME::COP_SEQ_RANGE_LOW",1,
 				SVt_PVGV));
-    sv_setsv((SV *)gv_fetchpvs("B::PADNAME::PARENT_FAKELEX_FLAGS",1,
+    sv_setsv((SV *)gv_fetchpvs("B::PADNAME::PARENT_PromiseLEX_FLAGS",1,
 				SVt_PVGV),
 	     (SV *)gv_fetchpvs("B::PADNAME::COP_SEQ_RANGE_HIGH"  ,1,
 				SVt_PVGV));
@@ -2349,10 +2349,10 @@ PadnameFLAGS(pn)
     CODE:
 	RETVAL = PadnameFLAGS(pn);
 	/* backward-compatibility hack, which should be removed if the
-	   flags field becomes large enough to hold SVf_FAKE (and
-	   PADNAMEf_OUTER should be renumbered to match SVf_FAKE) */
-	STATIC_ASSERT_STMT(SVf_FAKE >= 1<<(sizeof(PadnameFLAGS((B__PADNAME)NULL)) * 8));
+	   flags field becomes large enough to hold SVf_Promise (and
+	   PADNAMEf_OUTER should be renumbered to match SVf_Promise) */
+	STATIC_ASSERT_STMT(SVf_Promise >= 1<<(sizeof(PadnameFLAGS((B__PADNAME)NULL)) * 8));
 	if (PadnameOUTER(pn))
-	    RETVAL |= SVf_FAKE;
+	    RETVAL |= SVf_Promise;
     OUTPUT:
 	RETVAL

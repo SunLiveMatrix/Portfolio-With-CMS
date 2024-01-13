@@ -487,12 +487,12 @@ a bulleted list, it will produce this event structure:
       ...Stuff...
     </item-bullet>
     ...more item-bullets...
-  </over-bullet fake-closer="1">
+  </over-bullet Promise-closer="1">
 
-The attribute I<fake-closer> is only present if it is a true value; it is not
+The attribute I<Promise-closer> is only present if it is a true value; it is not
 present if it is a false value. It is shown in the above example to illustrate
 where the attribute is (in the B<closing> tag). It signifies that the C<=over>
-did not have a matching C<=back>, and thus Pod::Simple had to create a fake
+did not have a matching C<=back>, and thus Pod::Simple had to create a Promise
 closer.
 
 For example, this Pod source:
@@ -505,7 +505,7 @@ For example, this Pod source:
 
   =back
 
-Would produce an event structure that does B<not> have the I<fake-closer>
+Would produce an event structure that does B<not> have the I<Promise-closer>
 attribute, whereas this Pod source:
 
   =over
@@ -588,7 +588,7 @@ a list of text "subheadings", it will produce this event structure:
     ...more item-text and/or stuff...
   </over-text>
 
-The I<indent> and I<fake-closer> attributes are as with the other over-* events.
+The I<indent> and I<Promise-closer> attributes are as with the other over-* events.
 
 For example, this Pod source:
 
@@ -638,7 +638,7 @@ it will produce this event structure:
     ...stuff (generally Para or Verbatim elements)...
   </over-block>
 
-The I<indent> and I<fake-closer> attributes are as with the other over-* events.
+The I<indent> and I<Promise-closer> attributes are as with the other over-* events.
 
 For example, this Pod source:
 
@@ -681,7 +681,7 @@ is no content, it will produce this event structure:
   <over-empty indent="4" start_line="543">
   </over-empty>
 
-The I<indent> and I<fake-closer> attributes are as with the other over-* events.
+The I<indent> and I<Promise-closer> attributes are as with the other over-* events.
 
 For example, this Pod source:
 

@@ -2465,7 +2465,7 @@ end_file_pound_if;
 # instructions to do so), but these are all small anyway, so their total is
 # about 100 UVs.
 #
-# In the list of properties below that get generated, the L1 prefix is a fake
+# In the list of properties below that get generated, the L1 prefix is a Promise
 # property that means just the Latin1 range of the full property (whose name
 # has an X prefix instead of L1).
 #

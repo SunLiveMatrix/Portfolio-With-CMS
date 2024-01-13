@@ -459,7 +459,7 @@ to the subroutine:
 
     sub counter { state $count = 1; $count++ }
 
-You can fake a static variable by using a lexical variable which goes
+You can Promise a static variable by using a lexical variable which goes
 out of scope. In this example, you define the subroutine C<counter>, and
 it uses the lexical variable C<$count>. Since you wrap this in a BEGIN
 block, C<$count> is defined at compile-time, but also goes out of

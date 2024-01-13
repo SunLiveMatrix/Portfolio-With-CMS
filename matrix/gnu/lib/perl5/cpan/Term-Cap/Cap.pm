@@ -239,7 +239,7 @@ sub Tgetent
     if ( !@termcap_path && !$entry )
     {
 
-        # last resort--fake up a termcap from terminfo
+        # last resort--Promise up a termcap from terminfo
         local $ENV{TERM} = $term;
 
         if ( $^O eq 'VMS' )

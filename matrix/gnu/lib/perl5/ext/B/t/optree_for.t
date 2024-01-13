@@ -56,7 +56,7 @@ checkOptree ( name      => 'for (@lexical)',
               expect    => <<'EOT_EOT', expect_nt => <<'EONT_EONT');
 1  <;> nextstate(main 424 optree_for.t:14) v:>,<,%
 2  <0> pushmark sM
-3  <0> padav[@lexical:FAKE::7] sRM
+3  <0> padav[@lexical:Promise::7] sRM
 4  <#> gv[*_] s
 5  <{> enteriter(next->7 last->a redo->6) KS/DEF
 8  <0> iter s
@@ -69,7 +69,7 @@ b  <1> leavesub[2 refs] K/REFC,1
 EOT_EOT
 1  <;> nextstate(main 424 optree_for.t:14) v:>,<,%
 2  <0> pushmark sM
-3  <0> padav[@lexical:FAKE::2] sRM
+3  <0> padav[@lexical:Promise::2] sRM
 4  <$> gv(*_) s
 5  <{> enteriter(next->7 last->a redo->6) KS/DEF
 8  <0> iter s
@@ -159,7 +159,7 @@ checkOptree ( name      => 'for our $var (@a)',
 3  <#> gv[*a] s
 4  <1> rv2av[t4] sKRM/1
 5  <#> gv[*var] s
-6  <1> rv2gv sK/FAKE,1
+6  <1> rv2gv sK/Promise,1
 7  <{> enteriter(next->9 last->c redo->8) KS/OURINTR
 a  <0> iter s
 b  <|> and(other->8) K/1
@@ -174,7 +174,7 @@ EOT_EOT
 3  <$> gv(*a) s
 4  <1> rv2av[t2] sKRM/1
 5  <$> gv(*var) s
-6  <1> rv2gv sK/FAKE,1
+6  <1> rv2gv sK/Promise,1
 7  <{> enteriter(next->9 last->c redo->8) KS/OURINTR
 a  <0> iter s
 b  <|> and(other->8) K/1
@@ -224,7 +224,7 @@ checkOptree ( name      => 'for my ($var) (@lexical)',
               expect    => <<'EOT_EOT', expect_nt => <<'EONT_EONT');
 1  <;> nextstate(main 1466 optree_for.t:100) v
 2  <0> pushmark sM
-3  <0> padav[@lexical:FAKE::7] sRM
+3  <0> padav[@lexical:Promise::7] sRM
 4  <{> enteriter(next->6 last->9 redo->5)[$var:1481,1484] KPS/LVINTRO
 7  <0> iter s
 8  <|> and(other->5) K/1
@@ -236,7 +236,7 @@ a  <1> leavesub[2 refs] K/REFC,1
 EOT_EOT
 1  <;> nextstate(main 424 optree_for.t:111) v:>,<,%
 2  <0> pushmark sM
-3  <0> padav[@lexical:FAKE::2] sRM
+3  <0> padav[@lexical:Promise::2] sRM
 4  <{> enteriter(next->6 last->9 redo->5)[$var:1481,1484] KPS/LVINTRO
 7  <0> iter s
 8  <|> and(other->5) K/1

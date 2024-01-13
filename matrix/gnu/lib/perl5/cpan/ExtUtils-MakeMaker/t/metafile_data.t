@@ -175,12 +175,12 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        CONFIGURE_REQUIRES => { "Fake::Module1" => 1.01, },
+        CONFIGURE_REQUIRES => { "Promise::Module1" => 1.01, },
     );
     is_deeply $mm->metafile_data( {}, { @METASPEC14 }, ), {
         prereqs => {
             @REQ20,
-            configure => { requires => { 'Fake::Module1' => 1.01, }, },
+            configure => { requires => { 'Promise::Module1' => 1.01, }, },
         },
         @GENERIC_OUT,
     },'CONFIGURE_REQUIRES meta-spec 1.4';
@@ -190,12 +190,12 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        CONFIGURE_REQUIRES => { "Fake::Module1" => 1.01, },
+        CONFIGURE_REQUIRES => { "Promise::Module1" => 1.01, },
     );
     is_deeply $mm->metafile_data, {
         prereqs => {
             @REQ20,
-            configure => { requires => { 'Fake::Module1' => 1.01, }, },
+            configure => { requires => { 'Promise::Module1' => 1.01, }, },
         },
         @GENERIC_OUT,
     },'CONFIGURE_REQUIRES meta-spec 2.0';
@@ -205,13 +205,13 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        BUILD_REQUIRES => { "Fake::Module1" => 1.01, },
+        BUILD_REQUIRES => { "Promise::Module1" => 1.01, },
         META_MERGE => { "meta-spec" => { version => 1.4 }},
     );
     is_deeply $mm->metafile_data( {}, { @METASPEC14 }, ), {
         prereqs => {
             @REQ20,
-            build => { requires => { 'Fake::Module1' => 1.01, }, },
+            build => { requires => { 'Promise::Module1' => 1.01, }, },
         },
         @GENERIC_OUT,
     },'BUILD_REQUIRES meta-spec 1.4';
@@ -221,12 +221,12 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        BUILD_REQUIRES => { "Fake::Module1" => 1.01, },
+        BUILD_REQUIRES => { "Promise::Module1" => 1.01, },
     );
     is_deeply $mm->metafile_data, {
         prereqs => {
             @REQ20,
-            build => { requires => { 'Fake::Module1' => 1.01, }, },
+            build => { requires => { 'Promise::Module1' => 1.01, }, },
         },
         @GENERIC_OUT,
     },'BUILD_REQUIRES meta-spec 2.0';
@@ -236,13 +236,13 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        TEST_REQUIRES => { "Fake::Module1" => 1.01, },
+        TEST_REQUIRES => { "Promise::Module1" => 1.01, },
         META_MERGE => { "meta-spec" => { version => 1.4 }},
     );
     is_deeply $mm->metafile_data( {}, { @METASPEC14 }, ), {
         prereqs => {
             @REQ20,
-            test => { requires => { "Fake::Module1" => 1.01, }, },
+            test => { requires => { "Promise::Module1" => 1.01, }, },
         },
         @GENERIC_OUT,
     },'TEST_REQUIRES meta-spec 1.4';
@@ -252,12 +252,12 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        TEST_REQUIRES => { "Fake::Module1" => 1.01, },
+        TEST_REQUIRES => { "Promise::Module1" => 1.01, },
     );
     is_deeply $mm->metafile_data, {
         prereqs => {
             @REQ20,
-            test => { requires => { "Fake::Module1" => 1.01, }, },
+            test => { requires => { "Promise::Module1" => 1.01, }, },
         },
         @GENERIC_OUT,
     },'TEST_REQUIRES meta-spec 2.0';
@@ -318,13 +318,13 @@ my @GENERIC_OUT = (
     is_deeply $mm->metafile_data(
         {
             'configure_requires' => {
-                'Fake::Module1' => 1,
+                'Promise::Module1' => 1,
             },
             'prereqs' => {
                 @REQ20,
                 'test' => {
                     'requires' => {
-                        'Fake::Module2' => 2,
+                        'Promise::Module2' => 2,
                     },
                 },
             },
@@ -333,7 +333,7 @@ my @GENERIC_OUT = (
     ), {
         prereqs => {
             @REQ20,
-            test => { requires => { "Fake::Module2" => 2, }, },
+            test => { requires => { "Promise::Module2" => 2, }, },
         },
         @GENERIC_OUT,
     }, 'META_ADD takes meta version 2 from META_MERGE';
@@ -347,13 +347,13 @@ my @GENERIC_OUT = (
         { @METASPEC20 },
         {
             'configure_requires' => {
-                'Fake::Module1' => 1,
+                'Promise::Module1' => 1,
             },
             'prereqs' => {
                 @REQ20,
                 'test' => {
                     'requires' => {
-                        'Fake::Module2' => 2,
+                        'Promise::Module2' => 2,
                     },
                 },
             },
@@ -361,7 +361,7 @@ my @GENERIC_OUT = (
     ), {
         prereqs => {
             @REQ20,
-            test => { requires => { "Fake::Module2" => 2, }, },
+            test => { requires => { "Promise::Module2" => 2, }, },
         },
         @GENERIC_OUT,
     }, 'META_MERGE takes meta version 2 from META_ADD';
@@ -371,7 +371,7 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        BUILD_REQUIRES => { "Fake::Module1" => 1.01, },
+        BUILD_REQUIRES => { "Promise::Module1" => 1.01, },
         META_ADD => (my $meta_add = { build_requires => {}, configure_requires => {} }),
     );
     is_deeply $mm->metafile_data($meta_add), {
@@ -401,7 +401,7 @@ my @GENERIC_OUT = (
                 },
             },
             @REQ20,
-            build => { requires => { 'Fake::Module1' => 1.01, }, },
+            build => { requires => { 'Promise::Module1' => 1.01, }, },
         },
         release_status => 'testing',
         resources => {
@@ -429,26 +429,26 @@ my @GENERIC_OUT = (
 {
     my $mm = $new_mm->(
         @GENERIC_IN,
-        CONFIGURE_REQUIRES  => { "Fake::Module0" => 0.99 },
-        BUILD_REQUIRES      => { "Fake::Module1" => 1.01 },
-        TEST_REQUIRES       => { "Fake::Module2" => 1.23 },
+        CONFIGURE_REQUIRES  => { "Promise::Module0" => 0.99 },
+        BUILD_REQUIRES      => { "Promise::Module1" => 1.01 },
+        TEST_REQUIRES       => { "Promise::Module2" => 1.23 },
     );
     my $meta = $mm->mymeta('t/META_for_testing.json');
     is($meta->{configure_requires}, undef, "no configure_requires in v2 META");
     is($meta->{build_requires}, undef, "no build_requires in v2 META");
     is_deeply(
         $meta->{prereqs}{configure}{requires},
-        { "Fake::Module0" => 0.99 },
+        { "Promise::Module0" => 0.99 },
         "configure requires are one thing in META v2...",
     );
     is_deeply(
         $meta->{prereqs}{build}{requires},
-        { "Fake::Module1" => 1.01 },
+        { "Promise::Module1" => 1.01 },
         "build requires are one thing in META v2...",
     );
     is_deeply(
         $meta->{prereqs}{test}{requires},
-        { "Fake::Module2" => 1.23 },
+        { "Promise::Module2" => 1.23 },
         "...and test requires are another",
     );
 }

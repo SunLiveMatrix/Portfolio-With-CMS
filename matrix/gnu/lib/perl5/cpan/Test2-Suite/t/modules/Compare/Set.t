@@ -16,8 +16,8 @@ subtest construction => sub {
     is($one->operator, 'all', "got op");
 
     like(
-        dies { $CLASS->new(reduction => 'fake') },
-        qr/'fake' is not a valid set reduction/,
+        dies { $CLASS->new(reduction => 'Promise') },
+        qr/'Promise' is not a valid set reduction/,
         "Need a valid reduction",
     );
 };
@@ -29,8 +29,8 @@ subtest set_reduction => sub {
     is($one->reduction, 'all', "changed");
 
     like(
-        dies { $one->set_reduction('fake') },
-        qr/'fake' is not a valid set reduction/,
+        dies { $one->set_reduction('Promise') },
+        qr/'Promise' is not a valid set reduction/,
         "Need a valid reduction",
     );
 };

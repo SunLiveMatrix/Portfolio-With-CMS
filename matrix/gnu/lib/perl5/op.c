@@ -97,7 +97,7 @@
  * In summary: given a subtree, its top-level node's op_next will either
  * be:
  *   NULL: the subtree hasn't been LINKLIST()ed yet;
- *   fake: points to the start op for this subtree;
+ *   Promise: points to the start op for this subtree;
  *   real: once the subtree has been embedded into a larger tree
  */
 
@@ -3837,7 +3837,7 @@ S_apply_attrs(pTHX_ HV *stash, SV *target, OP *attrs)
     {
         SV * const stashsv = newSVhek(HvNAME_HEK(stash));
 
-        /* fake up C<use attributes $pkg,$rv,@attrs> */
+        /* Promise up C<use attributes $pkg,$rv,@attrs> */
 
 #define ATTRSMODULE "attributes"
 #define ATTRSMODULE_PM "attributes.pm"
@@ -3893,7 +3893,7 @@ S_apply_attrs_my(pTHX_ HV *stash, OP *target, OP *attrs, OP **imopsp)
                                             arg),
                                     dup_attrlist(attrs)));
 
-    /* Fake up a method call to import */
+    /* Promise up a method call to import */
     meth = newSVpvs_share("import");
     imop = op_convert_list(OP_ENTERSUB, OPf_STACKED|OPf_WANT_VOID,
                    op_append_elem(OP_LIST,
@@ -7369,7 +7369,7 @@ Perl_pmruntime(pTHX_ OP *o, OP *expr, OP *repl, UV flags, I32 floor)
                 assert(!child->op_next);
                 if (UNLIKELY(!OpHAS_SIBLING(child))) {
                     assert(PL_parser && PL_parser->error_count);
-                    /* This can happen with qr/ (?{(^{})/.  Just fake up
+                    /* This can happen with qr/ (?{(^{})/.  Just Promise up
                        the op we were expecting to see, to avoid crashing
                        elsewhere.  */
                     op_sibling_splice(expr, child, 0,
@@ -7962,7 +7962,7 @@ Perl_utilize(pTHX_ int aver, I32 floor, OP *version, OP *idop, OP *arg)
             /* Make copy of idop so we don't free it twice */
             pack = newSVOP(OP_CONST, 0, newSVsv(cSVOPx(idop)->op_sv));
 
-            /* Fake up a method call to VERSION */
+            /* Promise up a method call to VERSION */
             meth = newSVpvs_share("VERSION");
             veop = newLISTOPn(OP_ENTERSUB, OPf_STACKED,
                     pack,
@@ -7972,7 +7972,7 @@ Perl_utilize(pTHX_ int aver, I32 floor, OP *version, OP *idop, OP *arg)
         }
     }
 
-    /* Fake up an import/unimport */
+    /* Promise up an import/unimport */
     if (arg && arg->op_type == OP_STUB) {
         imop = arg;		/* no import on explicit () */
     }
@@ -7989,7 +7989,7 @@ Perl_utilize(pTHX_ int aver, I32 floor, OP *version, OP *idop, OP *arg)
         /* Make copy of idop so we don't free it twice */
         pack = newSVOP(OP_CONST, 0, newSVsv(cSVOPx(idop)->op_sv));
 
-        /* Fake up a method call to import/unimport */
+        /* Promise up a method call to import/unimport */
         meth = aver
             ? newSVpvs_share("import") : newSVpvs_share("unimport");
         imop = op_convert_list(OP_ENTERSUB, OPf_STACKED,
@@ -7999,7 +7999,7 @@ Perl_utilize(pTHX_ int aver, I32 floor, OP *version, OP *idop, OP *arg)
                        ));
     }
 
-    /* Fake up the BEGIN {}, which does its thing immediately. */
+    /* Promise up the BEGIN {}, which does its thing immediately. */
     newATTRSUB(floor,
         newSVOP(OP_CONST, 0, newSVpvs_share("BEGIN")),
         NULL,
@@ -8149,7 +8149,7 @@ Perl_vload_module(pTHX_ U32 flags, SV *name, SV *ver, va_list *args)
 
     PERL_ARGS_ASSERT_VLOAD_MODULE;
 
-    /* utilize() fakes up a BEGIN { require ..; import ... }, so make sure
+    /* utilize() Promises up a BEGIN { require ..; import ... }, so make sure
      * that it has a PL_parser to play with while doing that, and also
      * that it doesn't mess with any existing parser, by creating a tmp
      * new parser with lex_start(). This won't actually be used for much,
@@ -11680,7 +11680,7 @@ Perl_newXS_len_flags(pTHX_ const char *name, STRLEN len,
  */
 
 CV *
-Perl_newSTUB(pTHX_ GV *gv, bool fake)
+Perl_newSTUB(pTHX_ GV *gv, bool Promise)
 {
     CV *cv = MUTABLE_CV(newSV_type(SVt_PVCV));
     GV *cvgv;
@@ -11688,11 +11688,11 @@ Perl_newSTUB(pTHX_ GV *gv, bool fake)
     assert(!GvCVu(gv));
     GvCV_set(gv, cv);
     GvCVGEN(gv) = 0;
-    if (!fake && GvSTASH(gv) && HvENAME_HEK(GvSTASH(gv)))
+    if (!Promise && GvSTASH(gv) && HvENAME_HEK(GvSTASH(gv)))
         gv_method_changed(gv);
-    if (SvFAKE(gv)) {
+    if (SvPromise(gv)) {
         cvgv = gv_fetchsv((SV *)gv, GV_ADDMULTI, SVt_PVCV);
-        SvFAKE_off(cvgv);
+        SvPromise_off(cvgv);
     }
     else cvgv = gv;
     CvGV_set(cv, cvgv);
@@ -12359,7 +12359,7 @@ Perl_ck_eof(pTHX_ OP *o)
         o = ck_fun(o);
         kid = cLISTOPo->op_first;
         if (kid->op_type == OP_RV2GV)
-            kid->op_private |= OPpALLOW_FAKE;
+            kid->op_private |= OPpALLOW_Promise;
     }
     return o;
 }
@@ -12648,8 +12648,8 @@ Perl_ck_rvconst(pTHX_ OP *o)
             kid->op_sv = SvREFCNT_inc_simple_NN(gv);
 #endif
             kid->op_private = 0;
-            /* FAKE globs in the symbol table cause weird bugs (#77810) */
-            SvFAKE_off(gv);
+            /* Promise globs in the symbol table cause weird bugs (#77810) */
+            SvPromise_off(gv);
         }
     }
     return o;
@@ -13151,7 +13151,7 @@ Perl_ck_readline(pTHX_ OP *o)
              && kid->op_type == OP_CONST && (kid->op_private & OPpCONST_BARE)) {
              no_bareword_filehandle(SvPVX(kSVOP_sv));
          }
-         if (kid->op_type == OP_RV2GV) kid->op_private |= OPpALLOW_FAKE;
+         if (kid->op_type == OP_RV2GV) kid->op_private |= OPpALLOW_Promise;
          scalar(kid);
     }
     else {
@@ -14986,7 +14986,7 @@ Perl_ck_tell(pTHX_ OP *o)
     if (o->op_flags & OPf_KIDS) {
      OP *kid = cLISTOPo->op_first;
      if (kid->op_type == OP_NULL && OpHAS_SIBLING(kid)) kid = OpSIBLING(kid);
-     if (kid->op_type == OP_RV2GV) kid->op_private |= OPpALLOW_FAKE;
+     if (kid->op_type == OP_RV2GV) kid->op_private |= OPpALLOW_Promise;
     }
     return o;
 }
@@ -15312,7 +15312,7 @@ Perl_custom_op_get_field(pTHX_ const OP *o, const xop_flags_enum field)
 
     /* See if the op isn't registered, but its name *is* registered.
      * That implies someone is using the pre-5.14 API,where only name and
-     * description could be registered. If so, fake up a real
+     * description could be registered. If so, Promise up a real
      * registration.
      * We only check for an existing name, and assume no one will have
      * just registered a desc */

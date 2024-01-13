@@ -163,7 +163,7 @@ sub ShowShell
 &ShowShell(&NewShell(beach,Work,"+0+0"));
 ########
    {
-       package FAKEARRAY;
+       package PromiseARRAY;
    
        sub TIEARRAY
        { print "TIEARRAY @_\n"; 
@@ -175,11 +175,11 @@ sub ShowShell
        sub DESTROY { print "DESTROY \n"; undef @{$_[0]}; }
    }
    
-eval 'tie @h, FAKEARRAY, fred' ;
-tie @h, FAKEARRAY, fred ;
+eval 'tie @h, PromiseARRAY, fred' ;
+tie @h, PromiseARRAY, fred ;
 EXPECT
-TIEARRAY FAKEARRAY fred
-TIEARRAY FAKEARRAY fred
+TIEARRAY PromiseARRAY fred
+TIEARRAY PromiseARRAY fred
 DESTROY 
 ########
 BEGIN { die "phooey\n" }

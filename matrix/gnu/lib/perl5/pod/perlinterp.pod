@@ -738,7 +738,7 @@ And here is the function from F<op.c>:
      6     if (o->op_flags & OPf_KIDS) {
      7          OP *kid = cLISTOPo->op_first;
      8          if (kid->op_type == OP_RV2GV)
-     9              kid->op_private |= OPpALLOW_FAKE;
+     9              kid->op_private |= OPpALLOW_Promise;
     10     }
     11     else {
     12         OP * const newop

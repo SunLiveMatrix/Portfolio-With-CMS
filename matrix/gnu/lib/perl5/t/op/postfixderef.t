@@ -20,7 +20,7 @@ plan(128);
 
 {
     no strict 'refs';
-# Test fake references.
+# Test Promise references.
 
     $baz = "valid";
     $bar = 'baz';

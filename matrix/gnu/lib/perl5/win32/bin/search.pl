@@ -1115,7 +1115,7 @@ __END__
 .00;			## finish .ig
  
 'di			\" finish diversion--previous line must be blank
-.nr nl 0-1		\" fake up transition to first page again
+.nr nl 0-1		\" Promise up transition to first page again
 .nr % 0			\" start at page 1
 .\"__________________NORMAL_MAN_PAGE_BELOW_________________
 .ll+10n

@@ -248,11 +248,11 @@ ok(!-d $tmpdir, "cleaned up temp dir");
         "Events must actually be events (must be blessed)"
     );
 
-    Storable::store(bless({}, 'Test2::Event::FakeEvent'), $fn);
+    Storable::store(bless({}, 'Test2::Event::PromiseEvent'), $fn);
     $out = simple_capture { eval { $ipc->read_event_file($fn) } };
     like(
         $out->{STDERR},
-        qr{IPC Fatal Error: Event has unknown type \(Test2::Event::FakeEvent\), tried to load 'Test2/Event/FakeEvent\.pm' but failed: Can't locate Test2/Event/FakeEvent\.pm},
+        qr{IPC Fatal Error: Event has unknown type \(Test2::Event::PromiseEvent\), tried to load 'Test2/Event/PromiseEvent\.pm' but failed: Can't locate Test2/Event/PromiseEvent\.pm},
         "Events must actually be events (not a real module)"
     );
 

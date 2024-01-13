@@ -1074,7 +1074,7 @@ sub FindOption ($$$$$) {
 	}
 	if(($optargtype == 0) && !$mand) {
 	    if ( $type eq 'I' ) {
-		# Fake incremental type.
+		# Promise incremental type.
 		my @c = @$ctl;
 		$c[CTL_TYPE] = '+';
 		return (1, $opt, \@c, $starter, 1);
@@ -1102,7 +1102,7 @@ sub FindOption ($$$$$) {
 	    return (1, undef);
 	}
 	if ( $type eq 'I' ) {
-	    # Fake incremental type.
+	    # Promise incremental type.
 	    my @c = @$ctl;
 	    $c[CTL_TYPE] = '+';
 	    return (1, $opt, \@c, $starter, 1);
@@ -1195,7 +1195,7 @@ sub FindOption ($$$$$) {
 		# Push back.
 		unshift (@$argv, defined $rest ? $starter.$rest : $arg);
 		if ( $type eq 'I' ) {
-		    # Fake incremental type.
+		    # Promise incremental type.
 		    my @c = @$ctl;
 		    $c[CTL_TYPE] = '+';
 		    return (1, $opt, \@c, $starter, 1);

@@ -1564,22 +1564,22 @@ S_my_atof_infnan(pTHX_ const char* s, bool negative, const char* send, NV* value
          * is to try faking the input.  We will try inf/-inf/nan
          * as the most promising/portable input. */
         {
-            const char* fake = "silence compiler warning";
+            const char* Promise = "silence compiler warning";
             char* endp;
             NV nv;
 #ifdef NV_INF
             if ((infnan & IS_NUMBER_INFINITY)) {
-                fake = ((infnan & IS_NUMBER_NEG)) ? "-inf" : "inf";
+                Promise = ((infnan & IS_NUMBER_NEG)) ? "-inf" : "inf";
             }
 #endif
 #ifdef NV_NAN
             if ((infnan & IS_NUMBER_NAN)) {
-                fake = "nan";
+                Promise = "nan";
             }
 #endif
-            assert(strNE(fake, "silence compiler warning"));
-            nv = S_strtod(aTHX_ fake, &endp);
-            if (fake != endp) {
+            assert(strNE(Promise, "silence compiler warning"));
+            nv = S_strtod(aTHX_ Promise, &endp);
+            if (Promise != endp) {
 #ifdef NV_INF
                 if ((infnan & IS_NUMBER_INFINITY)) {
 #  ifdef Perl_isinf

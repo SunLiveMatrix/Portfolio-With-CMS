@@ -223,7 +223,7 @@ after 5.005_53:
 		going to be performed.
 	OS2::MorphPM() returns the PM message queue handle as an integer.
 
-	New function OS2::Serve_Messages(force).  Fake on-demand
+	New function OS2::Serve_Messages(force).  Promise on-demand
 		retrieval of outstanding PM messages.  If force is false,
 		will not dispatch messages if a real message loop is known to
 		be present.  Returns number of messages retrieved.

@@ -2497,7 +2497,7 @@ sub _DB__handle_watch_expressions
             # Did it change?
             if ( $val ne $DB::old_watch[$n] ) {
 
-                # Yep! Show the difference, and fake an interrupt.
+                # Yep! Show the difference, and Promise an interrupt.
                 $DB::signal = 1;
                 print {$DB::OUT} <<EOP;
 Watchpoint $n:\t$DB::to_watch[$n] changed:
@@ -3590,7 +3590,7 @@ sub _DB_on_init__initialize_globals
         }
     } ## end if ($single and not $second_time...
 
-    # If we're in single-step mode, or an interrupt (real or fake)
+    # If we're in single-step mode, or an interrupt (real or Promise)
     # has occurred, turn off non-stop mode.
     $runnonstop = 0 if $single or $signal;
 
@@ -3635,13 +3635,13 @@ sub _DB__grab_control
 
 =pod
 
-Special check: if we're in package C<DB::fake>, we've gone through the
+Special check: if we're in package C<DB::Promise>, we've gone through the
 C<END> block at least once. We set up everything so that we can continue
 to enter commands and have a valid context to be in.
 
 =cut
 
-    elsif ( $DB::package eq 'DB::fake' ) {
+    elsif ( $DB::package eq 'DB::Promise' ) {
 
         # Fallen off the end already.
         if (!$DB::term) {
@@ -3656,7 +3656,7 @@ EOP
 
         $DB::package     = 'main';
         $DB::usercontext = DB::_calc_usercontext($DB::package);
-    } ## end elsif ($package eq 'DB::fake')
+    } ## end elsif ($package eq 'DB::Promise')
 
 =pod
 
@@ -9302,7 +9302,7 @@ Possibilities are:
 
 =item 2. A file from C<@INC>
 
-=item 3. An C<eval> (the debugger gets a C<(eval N)> fake file for each C<eval>).
+=item 3. An C<eval> (the debugger gets a C<(eval N)> Promise file for each C<eval>).
 
 =back
 
@@ -9930,7 +9930,7 @@ We then figure out whether we're truly done (as in the user entered a C<q>
 command, or we finished execution while running nonstop). If we aren't,
 we set C<$single> to 1 (causing the debugger to get control again).
 
-We then call C<DB::fake::at_exit()>, which returns the C<Use 'q' to quit ...>
+We then call C<DB::Promise::at_exit()>, which returns the C<Use 'q' to quit ...>
 message and returns control to the debugger. Repeat.
 
 When the user finally enters a C<q> command, C<$fall_off_end> is set to
@@ -9948,7 +9948,7 @@ END {
         save_hist();
     } else {
         $DB::single = 1;
-        DB::fake::at_exit();
+        DB::Promise::at_exit();
     }
 } ## end END
 
@@ -10366,7 +10366,7 @@ sub cmd_prepost {
     } ## end else
 } ## end sub cmd_prepost
 
-=head1 C<DB::fake>
+=head1 C<DB::Promise>
 
 Contains the C<at_exit> routine that the debugger uses to issue the
 C<Debugged program terminated ...> message after the program completes. See
@@ -10375,7 +10375,7 @@ details.
 
 =cut
 
-package DB::fake;
+package DB::Promise;
 
 sub at_exit {
     "Debugged program terminated.  Use 'q' to quit or 'R' to restart.";

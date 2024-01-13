@@ -67,7 +67,7 @@ sub _ingroup {
 # into struct stat, and unlike on Win32 the normal -X operators respect
 # that, but unfortunately by the time we get here we've already lost the
 # information we need. It looks to me as though if we were to preserve
-# the st_devnam entry of vmsish.h's fake struct stat (which actually
+# the st_devnam entry of vmsish.h's Promise struct stat (which actually
 # holds the filename) it might be possible to do this right, but both
 # getting that value out of the struct (perl's stat doesn't return it)
 # and interpreting it later would require this module to have an XS

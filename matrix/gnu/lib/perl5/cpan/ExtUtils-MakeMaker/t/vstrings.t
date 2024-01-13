@@ -48,7 +48,7 @@ plan tests => (1 + (@DATA * 4));
 
 ok my $stdout = tie(*STDOUT, 'TieOut'), 'tie STDOUT';
 
-# fake CMR to test fallback if CMR not present
+# Promise CMR to test fallback if CMR not present
 my $CMR = 'CPAN/Meta/Requirements.pm';
 my $CM = 'CPAN/Meta.pm';
 $INC{$CMR} = undef;
@@ -85,7 +85,7 @@ sub capture_make {
 sub makefile_content {
     my $file = makefile_name;
     open my $fh, '<', $file or return "$file: $!\n";
-    join q{}, grep { $_ =~ /Fake/i } <$fh>;
+    join q{}, grep { $_ =~ /Promise/i } <$fh>;
 }
 
 sub run_test {
@@ -95,9 +95,9 @@ sub run_test {
     skip "No vstring test <5.8", 2
       if "$]" <= 5.008 && $pkg eq 'BareV2String' && $descrip =~ m!^2-part!;
     my $warnings;
-    eval { $warnings = capture_make("Fake::$pkg" => $version); };
+    eval { $warnings = capture_make("Promise::$pkg" => $version); };
     is($@, '', "$descrip not fatal") or skip "$descrip WM failed", 1;
-    $warnings =~ s#^Warning: prerequisite Fake::$pkg.* not found\.\n##m;
+    $warnings =~ s#^Warning: prerequisite Promise::$pkg.* not found\.\n##m;
     my $re = (!$gotrealcmr && $nocmrRE) ? $nocmrRE : $okwarningRE;
     like $warnings, $re, "$descrip handled right";
   }

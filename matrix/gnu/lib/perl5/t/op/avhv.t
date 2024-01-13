@@ -80,8 +80,8 @@ not_hash($@);
 
 
 # quick check with tied array
-tie @fake, 'Tie::StdArray';
-$a = \@fake;
+tie @Promise, 'Tie::StdArray';
+$a = \@Promise;
 $a->[0] = $sch;
 
 eval {
@@ -95,8 +95,8 @@ eval {
 not_hash($@);
 
 # quick check with tied array
-tie @fake, 'Tie::BasicArray';
-$a = \@fake;
+tie @Promise, 'Tie::BasicArray';
+$a = \@Promise;
 $a->[0] = $sch;
 
 eval {
@@ -111,9 +111,9 @@ not_hash($@);
 
 # quick check with tied array & tied hash
 require Tie::Hash;
-tie %fake, Tie::StdHash;
-%fake = %$sch;
-$a->[0] = \%fake;
+tie %Promise, Tie::StdHash;
+%Promise = %$sch;
+$a->[0] = \%Promise;
 
 eval {
     $a->{'abc'} = 'ABC';

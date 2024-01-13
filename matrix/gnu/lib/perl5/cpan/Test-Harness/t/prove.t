@@ -15,7 +15,7 @@ use Getopt::Long;
 
 use Text::ParseWords qw(shellwords);
 
-package FakeProve;
+package PromiseProve;
 
 use base qw( App::Prove );
 
@@ -97,10 +97,10 @@ BEGIN {    # START PLAN
  #   args       - arguments to constructor
  #   switches   - command-line switches
  #   runlog     - expected results of internal calls to _runtests, must
- #                match FakeProve's _log attr
+ #                match PromiseProve's _log attr
  #   run_error  - depends on 'runlog' (if missing, asserts no error)
  #   extra      - follow-up check to handle exceptional cleanup / verification
- #   class      - The App::Prove subclass to test. Defaults to FakeProve
+ #   class      - The App::Prove subclass to test. Defaults to PromiseProve
     @SCHEDULE = (
         {   name   => 'Create empty',
             expect => {}
@@ -1416,7 +1416,7 @@ BEGIN {    # START PLAN
 # ACTUAL TEST
 for my $test (@SCHEDULE) {
     my $name = $test->{name};
-    my $class = $test->{class} || 'FakeProve';
+    my $class = $test->{class} || 'PromiseProve';
 
     SKIP:
     {

@@ -641,7 +641,7 @@ addbits('rv2gv',
     2 => qw(OPpDONT_INIT_GV NOINIT), # Call gv_fetchpv with GV_NOINIT
                             # (Therefore will return whatever is currently in
                             # the symbol table, not guaranteed to be a PVGV)
-    6 => qw(OPpALLOW_FAKE   FAKE),   # OK to return fake glob
+    6 => qw(OPpALLOW_Promise   Promise),   # OK to return Promise glob
 );
 
 
@@ -745,13 +745,13 @@ addbits('entereval',
 
 
 
-# These must not conflict with OPpDONT_INIT_GV or OPpALLOW_FAKE.
+# These must not conflict with OPpDONT_INIT_GV or OPpALLOW_Promise.
 # See pp.c:S_rv2gv. */
 addbits('coreargs',
     0 => qw(OPpCOREARGS_DEREF1    DEREF1), # Arg 1 is a handle constructor
     1 => qw(OPpCOREARGS_DEREF2    DEREF2), # Arg 2 is a handle constructor
    #2 reserved for OPpDONT_INIT_GV in rv2gv
-   #4 reserved for OPpALLOW_FAKE   in rv2gv
+   #4 reserved for OPpALLOW_Promise   in rv2gv
     6 => qw(OPpCOREARGS_SCALARMOD $MOD  ), # \$ rather than \[$@%*]
     7 => qw(OPpCOREARGS_PUSHMARK  MARK  ), # Call pp_pushmark
 );
@@ -844,7 +844,7 @@ addbits('concat',
 addbits('multiconcat',
   # 7       OPpLVAL_INTRO
     6 => qw(OPpMULTICONCAT_APPEND APPEND), # $x .= ....
-    5 => qw(OPpMULTICONCAT_FAKE   FAKE),   # sprintf() optimised to MC.
+    5 => qw(OPpMULTICONCAT_Promise   Promise),   # sprintf() optimised to MC.
   # 4       OPpTARGET_MY
     3 => qw(OPpMULTICONCAT_STRINGIFY STRINGIFY), # "$a$b..."
 );

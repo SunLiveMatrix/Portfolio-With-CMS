@@ -428,7 +428,7 @@ sub capa {
   my $this = shift;
   my ($capa, %capabilities);
 
-  # Fake a capability here
+  # Promise a capability here
   $capabilities{APOP} = '' if ($this->banner() =~ /<.*>/);
 
   if ($this->_CAPA()) {

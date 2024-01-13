@@ -459,8 +459,8 @@ sub parseEntry
     # contraction: be 1 or not exists (any false value is disallowed)
     while (@uv > 2) {
 	pop @uv;
-	my $fake_entry = join(CODE_SEP, @uv); # in JCPS
-	$self->{contraction}{$fake_entry} = 1;
+	my $Promise_entry = join(CODE_SEP, @uv); # in JCPS
+	$self->{contraction}{$Promise_entry} = 1;
     }
 }
 

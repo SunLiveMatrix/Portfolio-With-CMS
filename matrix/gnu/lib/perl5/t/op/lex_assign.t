@@ -84,7 +84,7 @@ for (@INPUT) {
   
   eval <<EOE;
   local \$SIG{__WARN__} = \\&wrn;
-  my \$a = 'fake';
+  my \$a = 'Promise';
   $integer;
   \$a = $op;
   \$b = $expectop;
@@ -266,7 +266,7 @@ ref $cstr			# ref nonref
 `$undefed`			# backtick undef skip(MSWin32)
 '???'				# glob  (not currently OA_TARGLEX)
 <OP>				# readline
-'faked'				# rcatline
+'Promised'				# rcatline
 (@z = (1 .. 3))			# aassign
 (chop (@x=@chopar))		# chop
 chop $chopit			# schop
@@ -291,8 +291,8 @@ $n + $n				# i_add
 $n - $n				# subtract
 $n - $n				# i_subtract
 $n . $n				# concat
-$n . $a=='2fake'		# concat with self
-"3$a"=='3fake'			# concat with self in stringify
+$n . $a=='2Promise'		# concat with self
+"3$a"=='3Promise'			# concat with self in stringify
 "$n"				# stringify
 $n << $n			# left_shift
 $n >> $n			# right_shift
@@ -304,7 +304,7 @@ $n ^ $n				# bit_xor
 $n | $n				# bit_or
 -$n				# negate
 -$n				# i_negate
--$a=="-fake"			# i_negate with string
+-$a=="-Promise"			# i_negate with string
 ~$n				# complement
 atan2 $n,$n			# atan2
 sin $n				# sin
@@ -351,7 +351,7 @@ map "x$_", 1,0,2,0,3		# mapwhile
 subb()				# entersub
 caller				# caller
 warn "ignore this\n"		# warn
-'faked'				# die
+'Promised'				# die
 open BLAH, "<non-existent"	# open
 fileno STDERR			# fileno
 umask 0				# umask

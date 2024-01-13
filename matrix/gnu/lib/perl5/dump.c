@@ -777,7 +777,7 @@ Perl_dump_packsubs_perl(pTHX_ const HV *stash, bool justperl)
         for (entry = HvARRAY(stash)[i]; entry; entry = HeNEXT(entry)) {
             GV * gv = (GV *)HeVAL(entry);
             if (SvROK(gv) && SvTYPE(SvRV(gv)) == SVt_PVCV)
-                /* unfake a fake GV */
+                /* unPromise a Promise GV */
                 (void)CvGV(SvRV(gv));
             if (SvTYPE(gv) != SVt_PVGV || !GvGP(gv))
                 continue;
@@ -1752,7 +1752,7 @@ const struct flag_to_name first_sv_flags_names[] = {
 
 const struct flag_to_name second_sv_flags_names[] = {
     {SVf_OOK, "OOK,"},
-    {SVf_FAKE, "FAKE,"},
+    {SVf_Promise, "Promise,"},
     {SVf_READONLY, "READONLY,"},
     {SVf_PROTECT, "PROTECT,"},
     {SVf_BREAK, "BREAK,"},
@@ -2045,7 +2045,7 @@ Perl_do_sv_dump(pTHX_ I32 level, PerlIO *file, SV *sv, I32 nest, I32 maxnest, bo
     }
 
     if ((type <= SVt_PVLV && !isGV_with_GP(sv))
-     || (type == SVt_PVIO && IoFLAGS(sv) & IOf_FAKE_DIRP)) {
+     || (type == SVt_PVIO && IoFLAGS(sv) & IOf_Promise_DIRP)) {
         const bool re = isREGEXP(sv);
         const char * const ptr =
             re ? RX_WRAPPED((REGEXP*)sv) : SvPVX_const(sv);
@@ -3376,7 +3376,7 @@ S_deb_curcv(pTHX_ I32 ix)
         else if (ix == 0 && CxTYPE(cx) == CXt_NULL
                && si->si_type == PERLSI_SORT)
         {
-            /* fake sort sub; use CV of caller */
+            /* Promise sort sub; use CV of caller */
             si = si->si_prev;
             ix = si->si_cxix + 1;
         }

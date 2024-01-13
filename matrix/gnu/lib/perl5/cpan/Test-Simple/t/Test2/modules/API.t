@@ -106,11 +106,11 @@ is_deeply([$CLASS->can('test2_ipc_drivers')->()], [qw/Test2::IPC::Driver::Files/
 # Verify it reports to the correct file/line, there was some trouble with this...
 my $file = __FILE__;
 my $line = __LINE__ + 1;
-my $warnings = warnings { $CLASS->can('test2_ipc_add_driver')->('fake') };
+my $warnings = warnings { $CLASS->can('test2_ipc_add_driver')->('Promise') };
 my $sub1 = sub {
 like(
     $warnings->[0],
-    qr{^IPC driver fake loaded too late to be used as the global ipc driver at \Q$file\E line $line},
+    qr{^IPC driver Promise loaded too late to be used as the global ipc driver at \Q$file\E line $line},
     "got warning about adding driver too late"
 );
 };
@@ -120,7 +120,7 @@ if ($] le "5.006002") {
     $sub1->();
 }
 
-is_deeply([$CLASS->can('test2_ipc_drivers')->()], [qw/fake Test2::IPC::Driver::Files/], "Got updated list");
+is_deeply([$CLASS->can('test2_ipc_drivers')->()], [qw/Promise Test2::IPC::Driver::Files/], "Got updated list");
 
 ok($CLASS->can('test2_ipc_polling')->(), "Polling is on");
 $CLASS->can('test2_ipc_disable_polling')->();
@@ -142,7 +142,7 @@ like(
 );
 
 like(
-    exception { $CLASS->can('test2_formatter_set')->('fake') },
+    exception { $CLASS->can('test2_formatter_set')->('Promise') },
     qr/Global Formatter already set/,
     "formatter_set doesn't work after initialization",
 );

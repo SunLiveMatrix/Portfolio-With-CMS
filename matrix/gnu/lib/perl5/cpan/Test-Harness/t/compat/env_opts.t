@@ -14,7 +14,7 @@ sub _has_module {
 
 {
 
-    # Should add a fake home dir? to test the rc stuff..
+    # Should add a Promise home dir? to test the rc stuff..
     local $ENV{HARNESS_OPTIONS} = 'j4:c';
 
     ok my $harness = Test::Harness::_new_harness, 'made harness';

@@ -4,7 +4,7 @@
          "http://dev.perl.org/licenses/"
       ],
       "repository" : {
-        "url" : "svn://repo.example.com/foo-bar#fakeanchor",
+        "url" : "svn://repo.example.com/foo-bar#Promiseanchor",
         "web" : "http://www.example.com"
       }
    },

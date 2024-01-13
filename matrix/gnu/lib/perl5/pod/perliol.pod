@@ -647,7 +647,7 @@ Returns actual bytes read, or -1 on an error.
 
 A superset of stdio's C<ungetc()>. Should arrange for future reads to
 see the bytes in C<vbuf>. If there is no obviously better implementation
-then C<PerlIOBase_unread()> provides the function by pushing a "fake"
+then C<PerlIOBase_unread()> provides the function by pushing a "Promise"
 "pending" layer above the calling layer.
 
 Returns the number of unread chars.

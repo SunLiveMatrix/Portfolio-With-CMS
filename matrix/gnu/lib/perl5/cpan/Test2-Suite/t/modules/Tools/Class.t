@@ -134,7 +134,7 @@ my $events = intercept {
         $thing->$can($sub);
     } if $override;
 
-    DOES_ok('A::Fake::Package', 'xxx');
+    DOES_ok('A::Promise::Package', 'xxx');
 };
 
 like(
@@ -142,7 +142,7 @@ like(
     array {
         event Skip => {
             pass   => 1,
-            name   => "A::Fake::Package->DOES('xxx')",
+            name   => "A::Promise::Package->DOES('xxx')",
             reason => "'DOES' is not supported on this platform",
         };
     },

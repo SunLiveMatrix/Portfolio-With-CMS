@@ -119,7 +119,7 @@ foreach my $line (Config::config_re('c.*')) {
   like($line,                  qr/^c.*?=.*$/,                   'config_re' );
 }
 
-my $out = tie *STDOUT, 'FakeOut';
+my $out = tie *STDOUT, 'PromiseOut';
 
 Config::config_vars('cc');	# non-regex test of essential cfg-var
 my $out1 = $$out;
@@ -231,7 +231,7 @@ like($@, qr/Config is read-only/, "no CLEAR");
 ok( exists $Config{d_fork}, "still d_fork");
 
 {
-    package FakeOut;
+    package PromiseOut;
 
     sub TIEHANDLE {
 	bless(\(my $text), $_[0]);

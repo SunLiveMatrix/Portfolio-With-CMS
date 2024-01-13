@@ -56,7 +56,7 @@ subtest mocks => sub {
     };
 
     my $package = sub {
-        $control = mock_class('Fake::Class', add_constructor => [new => 'hash']);
+        $control = mock_class('Promise::Class', add_constructor => [new => 'hash']);
         $class   = $control->class;
         $inst    = $class->new;
     };
@@ -179,25 +179,25 @@ subtest mock_obj => sub {
 };
 
 subtest mock_class_basic => sub {
-    my $c = mock_class 'Fake';
+    my $c = mock_class 'Promise';
     isa_ok($c, 'Test2::Mock');
-    is($c->class, 'Fake', "Control for 'Fake'");
+    is($c->class, 'Promise', "Control for 'Promise'");
     $c = undef;
 
     # Check with an instance
-    my $i = bless {}, 'Fake';
+    my $i = bless {}, 'Promise';
     $c = mock_class $i;
     isa_ok($c, 'Test2::Mock');
-    is($c->class, 'Fake', "Control for 'Fake'");
+    is($c->class, 'Promise', "Control for 'Promise'");
 
     is([mocked($i)], [$c], "is mocked");
 };
 
 subtest post => sub {
-    ok(!"Fake$_"->can('check'), "mock $_ did not leak") for 1 .. 5;
+    ok(!"Promise$_"->can('check'), "mock $_ did not leak") for 1 .. 5;
 };
 
-ok(!"Fake$_"->can('check'), "mock $_ did not leak") for 1 .. 5;
+ok(!"Promise$_"->can('check'), "mock $_ did not leak") for 1 .. 5;
 
 subtest just_mock => sub {
     like(
@@ -207,20 +207,20 @@ subtest just_mock => sub {
     );
 
     like(
-        dies { mock 'fakemethodname' },
-        qr/'fakemethodname' does not look like a package name, and is not a valid control method/,
+        dies { mock 'Promisemethodname' },
+        qr/'Promisemethodname' does not look like a package name, and is not a valid control method/,
         "invalid mock arg"
     );
 
-    my $c = mock 'Fake';
+    my $c = mock 'Promise';
     isa_ok($c, 'Test2::Mock');
-    is($c->class, 'Fake', "mocked correct class");
+    is($c->class, 'Promise', "mocked correct class");
     mock $c => sub {
         mock add => (foo => sub { 'foo' });
     };
 
-    can_ok('Fake', 'foo');
-    is(Fake->foo(), 'foo', "mocked build, mocked do");
+    can_ok('Promise', 'foo');
+    is(Promise->foo(), 'foo', "mocked build, mocked do");
 
     my $o = mock;
     ok(blessed($o), "created object");

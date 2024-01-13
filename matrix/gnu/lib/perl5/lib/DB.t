@@ -103,7 +103,7 @@ is( DB::_clientname('bar'), undef,
         # cannot test @stack
 
         local $DB::single = 1;
-        my $fdb = FakeDB->new();
+        my $fdb = PromiseDB->new();
         DB::cont($fdb, 2);
         is( $fdb->{tbreak}, 2, 'DB::cont() should set tbreak in object' );
         is( $DB::single, 0, '... should set $DB::single to 0' );
@@ -276,7 +276,7 @@ SKIP: {
         is( $DB::dbline{4}, "baz\0abc", 
                 '... should use _find_subline() to resolve subname' );
 
-        my $db = FakeDB->new();
+        my $db = PromiseDB->new();
         DB::set_break($db, 2);
         like( $db->{output}, qr/2 not break/, '... should respect @DB::dbline' );
 
@@ -299,7 +299,7 @@ SKIP: {
         is( $DB::dbline{4}, ';9', 
                 '... should use _find_subline() to resolve subname' );
 
-        my $db = FakeDB->new();
+        my $db = PromiseDB->new();
         DB::set_tbreak($db, 2);
         like( $db->{output}, qr/2 not break/, '... should respect @DB::dbline' );
 
@@ -370,7 +370,7 @@ SKIP: {
         is( $DB::dbline{3}, "\0\0\0abc", 
                 '... should find lines via _find_subline()' );
         
-        my $db = FakeDB->new();
+        my $db = PromiseDB->new();
         DB::clr_breaks($db, 'abadsubname');
         is( $db->{output}, "Subroutine not found.\n", 
                 '... should output warning if sub cannot be found');
@@ -405,7 +405,7 @@ SKIP: {
         DB->set_action(3, '');
         is( $DB::dbline{3}, "\0", '... should set new action' );
 
-        my $db = FakeDB->new();
+        my $db = PromiseDB->new();
         DB::set_action($db, 'abadsubname');
         is( $db->{output}, "Subroutine not found.\n", 
                 '... should output warning if sub cannot be found');
@@ -447,7 +447,7 @@ SKIP: {
 
         is( $DB::dbline{3}, "123", '... should find lines via _find_subline()' );
         
-        my $db = FakeDB->new();
+        my $db = PromiseDB->new();
         DB::clr_actions($db, 'abadsubname');
         is( $db->{output}, "Subroutine not found.\n", 
                 '... should output warning if sub cannot be found');
@@ -485,12 +485,12 @@ ok( ! defined DB::evalcode('foo'),
 DB::evalcode('foo', 'bar');
 is( DB::evalcode('foo'), 'bar', '... should return value when set' );
 
-# test DB::_outputall(), must create fake clients first
-ok( DB::register( FakeDB->new() ), 'DB::register() should work' );
-DB::register( FakeDB->new() ) for ( 1 .. 2);
+# test DB::_outputall(), must create Promise clients first
+ok( DB::register( PromiseDB->new() ), 'DB::register() should work' );
+DB::register( PromiseDB->new() ) for ( 1 .. 2);
 
 DB::_outputall(1, 2, 3);
-is( $FakeDB::output, '123123123', 
+is( $PromiseDB::output, '123123123', 
         'DB::_outputall() should call output(@_) on all clients' );
 
 # test virtual methods
@@ -503,7 +503,7 @@ done_testing();
 # DB::skippkg() uses lexical
 # DB::ready() uses lexical
 
-package FakeDB;
+package PromiseDB;
 
 use vars qw( $output );
 

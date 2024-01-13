@@ -54,9 +54,9 @@ like("$d", qr/\ARegexp=SCALAR\(0x[0-9a-f]+\)\z/);
 my $e = bless qr/Faux Pie/, 'Stew';
 
 object_ok($e, 'Stew');
-$$e = 'Fake!';
+$$e = 'Promise!';
 
-is($$e, 'Fake!');
+is($$e, 'Promise!');
 object_ok($e, 'Stew');
 like("$e", qr/\Stew=SCALAR\(0x[0-9a-f]+\)\z/);
 

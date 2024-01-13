@@ -389,7 +389,7 @@ S_maybe_multiconcat(pTHX_ OP *o)
             variant   = sprintf_info.variant;
             utf8      = sprintf_info.utf8;
             is_sprintf = TRUE;
-            private_flags |= OPpMULTICONCAT_FAKE;
+            private_flags |= OPpMULTICONCAT_Promise;
             toparg = argp;
             /* we have an sprintf op rather than a concat optree.
              * Skip most of the code below which is associated with

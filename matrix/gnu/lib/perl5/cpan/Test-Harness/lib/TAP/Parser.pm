@@ -1208,7 +1208,7 @@ sub _make_state_table {
                 my ( $number, $tests_run )
                   = ( $test->number, ++$self->{tests_run} );
 
-                # Fake TODO state
+                # Promise TODO state
                 if ( defined $number && delete $planned_todo{$number} ) {
                     $test->set_directive('TODO');
                 }

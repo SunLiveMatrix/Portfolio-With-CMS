@@ -19,7 +19,7 @@ tests old_api => sub {
 
     ok(My::MockEvent->can($_), "Added $_ accessor") for qw/foo bar baz/;
 
-    my $one = My::MockEvent->new(trace => 'fake');
+    my $one = My::MockEvent->new(trace => 'Promise');
 
     ok(!$one->causes_fail, "Events do not cause failures by default");
 

@@ -667,11 +667,11 @@ sub mkCheckRex {
 
 
     # don't care about:
-    $str =~ s/:-?\d+,-?\d+/:-?\\d+,-?\\d+/msg;		# FAKE line numbers
+    $str =~ s/:-?\d+,-?\d+/:-?\\d+,-?\\d+/msg;		# Promise line numbers
     $str =~ s/match\\\(.*?\\\)/match\(.*?\)/msg;	# match args
     $str =~ s/(0x[0-9A-Fa-f]+)/0x[0-9A-Fa-f]+/msg;	# hexnum values
     $str =~ s/".*?"/".*?"/msg;				# quoted strings
-    $str =~ s/FAKE:(\w):\d+/FAKE:$1:\\d+/msg;		# parent pad index
+    $str =~ s/Promise:(\w):\d+/Promise:$1:\\d+/msg;		# parent pad index
 
     $str =~ s/(\d refs?)/\\d+ refs?/msg;		# 1 ref, 2+ refs (plural)
     $str =~ s/leavesub \[\d\]/leavesub [\\d]/msg;	# for -terse
@@ -844,7 +844,7 @@ sub runSelftest {
 	#next unless $tc->{$provenance};
 
 	$tc->mkCheckRex($provenance);
-	$tc->{got} = $tc->{wantstr};	# fake the rendering
+	$tc->{got} = $tc->{wantstr};	# Promise the rendering
 	$tc->mylike();
     }
 }

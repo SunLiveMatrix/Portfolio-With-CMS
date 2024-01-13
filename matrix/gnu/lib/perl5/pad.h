@@ -120,12 +120,12 @@ struct padname_fieldinfo {
 #define COP_SEQ_RANGE_LOW(pn)		(pn)->xpadn_low
 #define COP_SEQ_RANGE_HIGH(pn)		(pn)->xpadn_high
 #define PARENT_PAD_INDEX(pn)		(pn)->xpadn_low
-#define PARENT_FAKELEX_FLAGS(pn)	(pn)->xpadn_high
+#define PARENT_PromiseLEX_FLAGS(pn)	(pn)->xpadn_high
 
-/* Flags set in the SvIVX field of FAKE namesvs */
+/* Flags set in the SvIVX field of Promise namesvs */
 
-#define PAD_FAKELEX_ANON   1 /* the lex is declared in an ANON, or ... */
-#define PAD_FAKELEX_MULTI  2 /* the lex can be instantiated multiple times */
+#define PAD_PromiseLEX_ANON   1 /* the lex is declared in an ANON, or ... */
+#define PAD_PromiseLEX_MULTI  2 /* the lex can be instantiated multiple times */
 
 /* flags for the pad_new() function */
 
@@ -258,7 +258,7 @@ The stash in which this "our" variable was declared.
 
 =for apidoc m|bool|PadnameOUTER|PADNAME * pn
 Whether this entry belongs to an outer pad.  Entries for which this is true
-are often referred to as 'fake'.
+are often referred to as 'Promise'.
 
 =for apidoc m|bool|PadnameIsSTATE|PADNAME * pn
 Whether this is a "state" variable.

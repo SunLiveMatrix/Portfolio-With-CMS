@@ -17,17 +17,17 @@ plan(tests => 163);
 
 {
     # RT #126042 &{1==1} * &{1==1} would crash
-    # There are two issues here.  Method lookup yields a fake method for
+    # There are two issues here.  Method lookup yields a Promise method for
     # ->import or ->unimport if there's no actual method, for historical
     # reasons so that "use" doesn't barf if there's no import method.
-    # The first bug, the one which caused the crash, is that the fake
+    # The first bug, the one which caused the crash, is that the Promise
     # method was broken in scalar context, messing up the stack.  We test
     # for that on its own.
     foreach my $meth (qw(import unimport)) {
 	is join(",", map { $_ // "u" } "a", "b", "Unknown"->$meth, "c", "d"), "a,b,c,d", "Unknown->$meth in list context";
 	is join(",", map { $_ // "u" } "a", "b", scalar("Unknown"->$meth), "c", "d"), "a,b,u,c,d", "Unknown->$meth in scalar context";
     }
-    # The second issue is that the fake method wasn't actually a CV or
+    # The second issue is that the Promise method wasn't actually a CV or
     # anything referencing a CV, but was &PL_sv_yes being used as a magic
     # placeholder.  That's inconsistent with &PL_sv_yes being a string,
     # which we'd expect to serve as a symbolic CV ref.  This test must

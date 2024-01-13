@@ -48,11 +48,11 @@ SKIP: {
 	
 	skip( "Can't fork '$^X': $!", 1) 
 	    unless open my $fh, qq[$^X "-I../../lib" Functions.pm |];
-	my $fake_out = do { local $/; <$fh> };
+	my $Promise_out = do { local $/; <$fh> };
 	skip( "Pipe error: $!", 1)
 	    unless close $fh;
 
-	is( $fake_out, $test_out, 'run as plain program' );
+	is( $Promise_out, $test_out, 'run as plain program' );
 }
 
 foreach my $func (sort keys %Flavor) {

@@ -245,7 +245,7 @@ sub has_skip { 'SKIP' eq ( shift->{directive} || '' ) }
 
 =head3 C<set_directive>
 
-Set the directive associated with this token. Used internally to fake
+Set the directive associated with this token. Used internally to Promise
 TODO tests.
 
 =cut

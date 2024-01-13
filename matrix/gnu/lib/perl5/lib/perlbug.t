@@ -104,11 +104,11 @@ $result = runperl( progfile => $extracted_program,
                                 '-b', 'testreportbody',
                                 '-e', 'file',
                                 '-F', $testreport] );
-like($result, qr/Report saved/, 'fake bug report saved');
+like($result, qr/Report saved/, 'Promise bug report saved');
 my $contents = _slurp($testreport);
 like($contents, qr/Subject: testingperlbug/,
-     'Subject included in fake bug report');
-like($contents, qr/testreportbody/, 'body included in fake bug report');
+     'Subject included in Promise bug report');
+like($contents, qr/testreportbody/, 'body included in Promise bug report');
 unlink $testreport;
 
 
@@ -136,13 +136,13 @@ $result = runperl( progfile => $extracted_program,
                                 '-p', $attachment,
                                 '-e', 'file',
                                 '-F', $testreport] );
-like($result, qr/Report saved/, 'fake bug report saved');
+like($result, qr/Report saved/, 'Promise bug report saved');
 my $contents = _slurp($testreport);
 unlink $testreport, $body, $attachment;
 like($contents, qr/Subject: testing perlbug/,
-     'Subject included in fake bug report');
-like($contents, qr/$A/, 'body included in fake bug report');
-like($contents, qr/$B/, 'attachment included in fake bug report');
+     'Subject included in Promise bug report');
+like($contents, qr/$A/, 'body included in Promise bug report');
+like($contents, qr/$B/, 'attachment included in Promise bug report');
 
 my $maxlen1 = 0; # body
 my $maxlen2 = 0; # attachment

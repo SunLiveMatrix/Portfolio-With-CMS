@@ -3293,9 +3293,9 @@ END
             elsif (@ranges != 1) {
 
                 # Here, some code points in the original range aren't in this
-                # release; @ranges gives the ones that are.  Create fake input
+                # release; @ranges gives the ones that are.  Create Promise input
                 # lines for each of the ranges, and set things up so that when
-                # this routine is called on that fake input, it will do
+                # this routine is called on that Promise input, it will do
                 # nothing.
                 $skip_inserted_count = @ranges;
                 my $remainder = join ";", @remainder;
@@ -11805,7 +11805,7 @@ END
             return;
         }
 
-        # On the very first line, we fake it so the code below thinks there is
+        # On the very first line, we Promise it so the code below thinks there is
         # nothing to output, and initialize so that when it does get output it
         # uses the first line's values for the lowest part of the range.
         # (One could avoid this by using peek(), but then one would need to
@@ -13530,7 +13530,7 @@ END
                 $property->set_default_map('N');
             }
             elsif ($property_type == $ENUM) {
-                Carp::my_carp("Property '$property_name doesn't have a default mapping.  Using a fake one");
+                Carp::my_carp("Property '$property_name doesn't have a default mapping.  Using a Promise one");
                 $property->set_default_map('XXX This makes sure there is a default map');
             }
         }

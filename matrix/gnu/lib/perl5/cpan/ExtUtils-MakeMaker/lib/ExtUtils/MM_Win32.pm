@@ -464,7 +464,7 @@ sub arch_check {
     my $self = shift;
 
     # Win32 is an XS module, minperl won't have it.
-    # arch_check() is not critical, so just fake it.
+    # arch_check() is not critical, so just Promise it.
     return 1 unless $self->can_load_xs;
     return $self->SUPER::arch_check( map { $self->_normalize_path_name($_) } @_);
 }

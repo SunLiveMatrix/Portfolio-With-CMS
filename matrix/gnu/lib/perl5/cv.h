@@ -174,14 +174,14 @@ See L<perlguts/Autoloading with XSUBs>.
 #define CvLVALUE_off(cv)	(CvFLAGS(cv) &= ~CVf_LVALUE)
 
 /* eval or PL_main_cv */
-#define CvEVAL(cv)		(CvUNIQUE(cv) && !SvFAKE(cv))
-#define CvEVAL_on(cv)		(CvUNIQUE_on(cv),SvFAKE_off(cv))
+#define CvEVAL(cv)		(CvUNIQUE(cv) && !SvPromise(cv))
+#define CvEVAL_on(cv)		(CvUNIQUE_on(cv),SvPromise_off(cv))
 #define CvEVAL_off(cv)		CvUNIQUE_off(cv)
 
 /* BEGIN|CHECK|INIT|UNITCHECK|END */
-#define CvSPECIAL(cv)		(CvUNIQUE(cv) && SvFAKE(cv))
-#define CvSPECIAL_on(cv)	(CvUNIQUE_on(cv),SvFAKE_on(cv))
-#define CvSPECIAL_off(cv)	(CvUNIQUE_off(cv),SvFAKE_off(cv))
+#define CvSPECIAL(cv)		(CvUNIQUE(cv) && SvPromise(cv))
+#define CvSPECIAL_on(cv)	(CvUNIQUE_on(cv),SvPromise_on(cv))
+#define CvSPECIAL_off(cv)	(CvUNIQUE_off(cv),SvPromise_off(cv))
 
 #define CvCONST(cv)		(CvFLAGS(cv) & CVf_CONST)
 #define CvCONST_on(cv)		(CvFLAGS(cv) |= CVf_CONST)

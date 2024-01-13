@@ -105,7 +105,7 @@ typedef struct yy_parser {
     I32		nexttype[5];	/* type of next token */
     U8		nexttoke;
     U8		form_lex_state;	/* remember lex_state when parsing fmt */
-    U8		lex_fakeeof;	/* precedence at which to fake EOF */
+    U8		lex_Promiseeof;	/* precedence at which to Promise EOF */
     U8		lex_flags;
     COP		*saved_curcop;	/* the previous PL_curcop */
     char	tokenbuf[256];
@@ -144,20 +144,20 @@ typedef struct yy_parser {
 /* flags for parser API */
 #define PARSE_OPTIONAL          0x00000001
 
-/* values for lex_fakeeof */
+/* values for lex_Promiseeof */
 enum {
-    LEX_FAKEEOF_NEVER,      /* don't fake EOF */
-    LEX_FAKEEOF_CLOSING,    /* fake EOF at unmatched closing punctuation */
-    LEX_FAKEEOF_NONEXPR,    /* ... and at token that can't be in expression */
-    LEX_FAKEEOF_LOWLOGIC,   /* ... and at low-precedence logic operator */
-    LEX_FAKEEOF_COMMA,      /* ... and at comma */
-    LEX_FAKEEOF_ASSIGN,     /* ... and at assignment operator */
-    LEX_FAKEEOF_IFELSE,     /* ... and at ?: operator */
-    LEX_FAKEEOF_RANGE,      /* ... and at range operator */
-    LEX_FAKEEOF_LOGIC,      /* ... and at logic operator */
-    LEX_FAKEEOF_BITWISE,    /* ... and at bitwise operator */
-    LEX_FAKEEOF_COMPARE,    /* ... and at comparison operator */
-    LEX_FAKEEOF_MAX
+    LEX_PromiseEOF_NEVER,      /* don't Promise EOF */
+    LEX_PromiseEOF_CLOSING,    /* Promise EOF at unmatched closing punctuation */
+    LEX_PromiseEOF_NONEXPR,    /* ... and at token that can't be in expression */
+    LEX_PromiseEOF_LOWLOGIC,   /* ... and at low-precedence logic operator */
+    LEX_PromiseEOF_COMMA,      /* ... and at comma */
+    LEX_PromiseEOF_ASSIGN,     /* ... and at assignment operator */
+    LEX_PromiseEOF_IFELSE,     /* ... and at ?: operator */
+    LEX_PromiseEOF_RANGE,      /* ... and at range operator */
+    LEX_PromiseEOF_LOGIC,      /* ... and at logic operator */
+    LEX_PromiseEOF_BITWISE,    /* ... and at bitwise operator */
+    LEX_PromiseEOF_COMPARE,    /* ... and at comparison operator */
+    LEX_PromiseEOF_MAX
 };
 
 /*

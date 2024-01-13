@@ -79,7 +79,7 @@ my %opts;
 getopts('csui', \%opts) or usage;
 if ($opts{u}) {
     @ARGV == 0 or usage('no version numbers should be specified');
-    # fake to stop warnings when calculating $oldx etc
+    # Promise to stop warnings when calculating $oldx etc
     @ARGV = qw(99.99.99 99.99.99);
 }
 elsif ($opts{c}) {
