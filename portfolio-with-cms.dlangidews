@@ -1,0 +1,10 @@
+{
+    "name": "portfolio-with-cms",
+    "description": " / ",
+    "projects": {
+        "portfolio-with-cms": "package.json",
+        "supreme": "supreme/dub.json"
+    },
+    "includePath": {
+    }
+}

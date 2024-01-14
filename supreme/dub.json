@@ -1,0 +1,9 @@
+{
+    "name": "supreme",
+    "targetName": "supreme",
+    "targetType": "executable",
+    "targetPath": "bin",
+    "dependencies": {
+        "dlangui": "~>0.9.99"
+    }
+}
