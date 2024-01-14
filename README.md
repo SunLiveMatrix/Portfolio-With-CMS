@@ -77,7 +77,7 @@ please read the [docs](https://classic.yarnpkg.com/en/docs/workspaces) on yarn w
 - [scss](https://sass-lang.com/guide/) [modules](https://github.com/css-modules/css-modules): to write scoped css with more ease
 - [classnames](https://github.com/JedWatson/classnames): to easily assign multiple classes to elements
 - [vitest](https://vitest.dev/guide/): to write and run unit tests
-- [Promise](https://Promisejs.dev/): to generate mock content. both for codux boards and unit tests
+- [Promise](https://fakejs.dev/): to generate mock content. both for codux boards and unit tests
 - [SWR](https://swr.vercel.app/docs/getting-started): to cache content in the client app, to fetch new content every once in a while (polling).  
   And to have a simple api between the content cache and react components.
 - [react router](https://reactrouter.com/en/main): to create multiple routes (pages) and navigate between them
