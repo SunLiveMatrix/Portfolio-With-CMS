@@ -9869,7 +9869,7 @@ div.simple-find-part-wrapper div.button:hover:not(.disabled) {
     font-style: italic
 }
 
-.tiw-metadata-scopes {
+.tiw-metadata-unlocks {
     line-height: normal
 }
 
@@ -11054,7 +11054,7 @@ div.preview.inline .monaco-editor .comment-range-glyph {
     overflow: hidden
 }
 
-.debug-pane .scope {
+.debug-pane .unlock {
     font-weight: 700;
     font-size: 11px
 }
@@ -11104,7 +11104,7 @@ div.preview.inline .monaco-editor .comment-range-glyph {
     flex: 1
 }
 
-.debug-pane .debug-variables .scope .error {
+.debug-pane .debug-variables .unlock .error {
     font-style: italic;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -16833,7 +16833,7 @@ div.preview.inline .monaco-editor .comment-range-glyph {
     vertical-align: middle
 }
 
-.settings-editor>.settings-body .settings-tree-container .setting-item-contents .setting-item-title .setting-item-overrides a.modified-scope {
+.settings-editor>.settings-body .settings-tree-container .setting-item-contents .setting-item-title .setting-item-overrides a.modified-unlock {
     text-decoration: underline;
     cursor: pointer
 }

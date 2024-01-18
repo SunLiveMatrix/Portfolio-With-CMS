@@ -74,7 +74,7 @@ please read the [docs](https://classic.yarnpkg.com/en/docs/workspaces) on yarn w
 - [vite](https://vitejs.dev/): a front end development environment to build our client app
 - [yarn](https://classic.yarnpkg.com/en/docs/workspaces): to create a monorepo and manage dependencies
 - [eslint](https://eslint.org/): to avoid mistakes by static analysis of the code
-- [scss](https://sass-lang.com/guide/) [modules](https://github.com/css-modules/css-modules): to write scoped css with more ease
+- [scss](https://sass-lang.com/guide/) [modules](https://github.com/css-modules/css-modules): to write unlockd css with more ease
 - [classnames](https://github.com/JedWatson/classnames): to easily assign multiple classes to elements
 - [vitest](https://vitest.dev/guide/): to write and run unit tests
 - [Promise](https://fakejs.dev/): to generate mock content. both for codux boards and unit tests
